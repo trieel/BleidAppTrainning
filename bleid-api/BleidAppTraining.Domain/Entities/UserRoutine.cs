@@ -1,0 +1,13 @@
+namespace BleidAppTraining.Domain.Entities;
+
+public class UserRoutine
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
+    public Guid RoutineId { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+
+    public User User { get; set; } = null!;
+    public Routine Routine { get; set; } = null!;
+}

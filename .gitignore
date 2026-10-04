@@ -1,0 +1,19 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+
+# Local tooling and secrets
+.idea/
+.env
+.env.*
+!.env.example
+*.user
+*.userosscache
+*.suo
+
+# Frontend output
+node_modules/
+.next/
+out/
