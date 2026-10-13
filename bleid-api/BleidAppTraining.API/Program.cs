@@ -12,7 +12,11 @@ const string FrontendCorsPolicy = "Frontend";
 
 builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-builder.Services.AddEndpointsApiExplorer();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+}
 builder.Services.AddProblemDetails();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -67,6 +71,13 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 if (!app.Environment.IsDevelopment())
     app.UseHsts();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.MapSwagger().AllowAnonymous();
+}
 
 app.UseHttpsRedirection();
 app.UseCors(FrontendCorsPolicy);

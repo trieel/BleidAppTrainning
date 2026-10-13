@@ -42,6 +42,24 @@ npm run dev
 
 The web app runs at `http://localhost:3000` and reads `NEXT_PUBLIC_API_URL` from `.env.local`.
 
+## Supabase (Google OAuth)
+
+The Supabase credentials live outside the repository in `bleid-web/.env.local` (gitignored). Copy the placeholders from `bleid-web/.env.example` and fill them from **Project Settings > API Keys**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (`sb_publishable_...`) and `SUPABASE_SERVICE_KEY` (`sb_secret_...`).
+
+`SUPABASE_SERVICE_KEY`, `SUPABASE_JWT_SECRET` and any signing-key material are server-only: never prefix them with `NEXT_PUBLIC_`. New projects use asymmetric JWT signing keys, so `SUPABASE_JWKS_URL` can be used for public-key verification when no legacy JWT secret is available. The JWKS URL is public; the secret key is not.
+
+Google OAuth configuration:
+
+1. Google Cloud Console > APIs & Services > Credentials > OAuth client ID (Web application).
+2. Authorized redirect URI for Google: `https://<project-ref>.supabase.co/auth/v1/callback`
+3. Supabase Dashboard > Authentication > Providers > Google: enable and paste the Client ID and Client Secret.
+4. Supabase Dashboard > Authentication > URL Configuration: set Site URL and add redirect URLs.
+
+| Environment | Redirect URL |
+| --- | --- |
+| Dev | `http://localhost:3000/auth/callback/google` |
+| Prod | `https://<your-domain>/auth/callback/google` |
+
 ## Useful commands
 
 Run frontend checks:
