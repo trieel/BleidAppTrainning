@@ -11,17 +11,19 @@ public class RoutineService(IApplicationDbContext db) : IRoutineService
 {
     public async Task<RoutineResult> GetActiveAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var routine = await db.UserRoutines
+        var userRoutine = await db.UserRoutines
             .AsNoTracking()
             .Where(userRoutine => userRoutine.UserId == userId && userRoutine.IsActive)
-            .Select(userRoutine => userRoutine.Routine)
-            .Include(routine => routine.Days)
-            .ThenInclude(day => day.Exercises)
-            .ThenInclude(exercise => exercise.Exercise)
-            .SingleOrDefaultAsync(cancellationToken)
-            ?? throw new KeyNotFoundException("The user does not have an active routine.");
+            .Include(userRoutine => userRoutine.Routine)
+                .ThenInclude(routine => routine.Days)
+                    .ThenInclude(day => day.Exercises)
+                        .ThenInclude(exercise => exercise.Exercise)
+            .SingleOrDefaultAsync(cancellationToken);
 
-        return ResultMappings.Routine(routine);
+        if (userRoutine?.Routine is null)
+            throw new KeyNotFoundException("The user does not have an active routine.");
+
+        return ResultMappings.Routine(userRoutine.Routine);
     }
 
     public async Task<RoutineResult> AssignForProfileAsync(
@@ -31,20 +33,25 @@ public class RoutineService(IApplicationDbContext db) : IRoutineService
         int daysPerWeek,
         CancellationToken cancellationToken = default)
     {
-        var template = await db.Routines
+        var templates = await db.Routines
             .AsNoTracking()
-            .Where(routine => routine.IsTemplate &&
-                              routine.Goal == goal &&
-                              routine.Level == level &&
-                              routine.DaysPerWeek == daysPerWeek)
+            .Where(routine => routine.IsTemplate)
             .Include(routine => routine.Days)
             .ThenInclude(day => day.Exercises)
             .ThenInclude(exercise => exercise.Exercise)
-            .OrderBy(routine => routine.Name)
-            .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new ServiceValidationException("No routine template matches the selected profile.");
+            .ToListAsync(cancellationToken);
 
-        return await CloneAndActivateAsync(userId, template, cancellationToken);
+        if (templates.Count == 0)
+            throw new ServiceValidationException("No routine templates are available in the system.");
+
+        var bestTemplate = templates
+            .OrderByDescending(t =>
+                (t.Goal == goal ? 100 : 0) +
+                (t.Level == level ? 50 : 0) -
+                Math.Abs(t.DaysPerWeek - daysPerWeek) * 10)
+            .First();
+
+        return await CloneAndActivateAsync(userId, bestTemplate, cancellationToken);
     }
 
     public async Task<RoutineResult> CustomizeAsync(
@@ -62,6 +69,75 @@ public class RoutineService(IApplicationDbContext db) : IRoutineService
             ?? throw new KeyNotFoundException("The requested routine template was not found.");
 
         return await CloneAndActivateAsync(userId, template, cancellationToken);
+    }
+
+    public async Task<RoutineResult> AddDayAsync(
+        Guid userId,
+        Guid routineId,
+        AddRoutineDayCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        var routine = await db.Routines
+            .Include(r => r.Days)
+            .SingleOrDefaultAsync(r => r.Id == routineId &&
+                                       db.UserRoutines.Any(ur => ur.UserId == userId && ur.RoutineId == routineId), cancellationToken)
+            ?? throw new KeyNotFoundException("The requested routine was not found for this user.");
+
+        var nextDayNumber = routine.Days.Count + 1;
+        var nextOrder = (routine.Days.Select(d => (int?)d.Order).Max() ?? 0) + 1;
+        var dayName = string.IsNullOrWhiteSpace(command.Name) ? $"Día {nextDayNumber}" : command.Name.Trim();
+
+        var newDay = new RoutineDay
+        {
+            RoutineId = routine.Id,
+            DayNumber = nextDayNumber,
+            Name = dayName,
+            Order = nextOrder
+        };
+
+        db.RoutineDays.Add(newDay);
+        routine.DaysPerWeek = routine.Days.Count;
+
+        await db.SaveChangesAsync(cancellationToken);
+        return await GetOwnedRoutineAsync(userId, routineId, cancellationToken);
+    }
+
+    public async Task<RoutineResult> DeleteDayAsync(
+        Guid userId,
+        Guid routineId,
+        Guid dayId,
+        CancellationToken cancellationToken = default)
+    {
+        var routine = await db.Routines
+            .Include(r => r.Days)
+            .SingleOrDefaultAsync(r => r.Id == routineId &&
+                                       db.UserRoutines.Any(ur => ur.UserId == userId && ur.RoutineId == routineId), cancellationToken)
+            ?? throw new KeyNotFoundException("The requested routine was not found for this user.");
+
+        if (routine.Days.Count <= 1)
+            throw new ServiceValidationException("A routine must have at least one day.");
+
+        var dayToRemove = routine.Days.SingleOrDefault(d => d.Id == dayId)
+            ?? throw new KeyNotFoundException("The requested routine day was not found.");
+
+        var hasSessions = await db.WorkoutSessions
+            .AnyAsync(s => s.RoutineDayId == dayId, cancellationToken);
+        if (hasSessions)
+            throw new ServiceValidationException("No es posible eliminar un día que ya tiene sesiones de entrenamiento registradas.");
+
+        db.RoutineDays.Remove(dayToRemove);
+
+        var orderedRemaining = routine.Days.Where(d => d.Id != dayId).OrderBy(d => d.Order).ToList();
+        for (var i = 0; i < orderedRemaining.Count; i++)
+        {
+            orderedRemaining[i].DayNumber = i + 1;
+            orderedRemaining[i].Order = i + 1;
+        }
+
+        routine.DaysPerWeek = orderedRemaining.Count;
+
+        await db.SaveChangesAsync(cancellationToken);
+        return await GetOwnedRoutineAsync(userId, routineId, cancellationToken);
     }
 
     public async Task<RoutineResult> UpdateDayAsync(
@@ -186,9 +262,12 @@ public class RoutineService(IApplicationDbContext db) : IRoutineService
                 var exercise = templateExercise.Exercise;
                 if (ExerciseService.IsContraindicated(exercise.Contraindications, limitations))
                 {
-                    exercise = await FindAlternativeAsync(exercise, limitations, cancellationToken)
-                        ?? throw new ServiceValidationException(
-                            $"No safe alternative was found for '{exercise.Name}'.");
+                    var alternative = await FindAlternativeAsync(exercise, limitations, cancellationToken);
+                    if (alternative is null)
+                    {
+                        continue;
+                    }
+                    exercise = alternative;
                 }
 
                 day.Exercises.Add(new RoutineExercise
