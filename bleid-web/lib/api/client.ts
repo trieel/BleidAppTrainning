@@ -24,10 +24,26 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}) {
     cache: "no-store",
   });
 
-  if (response.status === 401) clearToken();
+  if (response.status === 401) {
+    clearToken();
+    if (
+      typeof window !== "undefined" &&
+      !window.location.pathname.startsWith("/login") &&
+      !window.location.pathname.startsWith("/register")
+    ) {
+      window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
+    }
+  }
   if (!response.ok) {
     const body = await response.json().catch(() => null);
-    throw new ApiError(body?.detail ?? "No pudimos completar la solicitud.", response.status);
+    let errorMessage = body?.detail;
+    if (!errorMessage && body?.errors && typeof body.errors === "object") {
+      errorMessage = Object.values(body.errors).flat().join(" ").trim();
+    }
+    if (!errorMessage && body?.title) {
+      errorMessage = body.title;
+    }
+    throw new ApiError(errorMessage || "No pudimos completar la solicitud.", response.status);
   }
 
   if (response.status === 204) return undefined as T;
