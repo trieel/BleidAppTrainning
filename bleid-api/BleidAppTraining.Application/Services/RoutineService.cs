@@ -95,6 +95,7 @@ public class RoutineService(IApplicationDbContext db) : IRoutineService
             Order = nextOrder
         };
 
+        routine.Days.Add(newDay);
         db.RoutineDays.Add(newDay);
         routine.DaysPerWeek = routine.Days.Count;
 

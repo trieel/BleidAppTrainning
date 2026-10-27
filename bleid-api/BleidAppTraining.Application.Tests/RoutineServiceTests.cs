@@ -212,4 +212,52 @@ public class RoutineServiceTests
             Assert.Contains(ex.Errors, e => e.Contains("sesiones de entrenamiento registradas"));
         }
     }
+
+    [Fact]
+    public async Task AddDayAsync_IncrementsDaysPerWeekCorrectly()
+    {
+        var db = TestDbContextFactory.Create(nameof(AddDayAsync_IncrementsDaysPerWeekCorrectly));
+        using (db)
+        {
+            var service = new RoutineService(db);
+            var userId = Guid.NewGuid();
+            var routine = new Routine
+            {
+                Id = Guid.NewGuid(),
+                CreatedBy = userId,
+                Name = "Routine 3d",
+                Goal = GoalType.GainMuscle,
+                Level = LevelType.Beginner,
+                DaysPerWeek = 3,
+                IsTemplate = false
+            };
+            for (var i = 1; i <= 3; i++)
+            {
+                routine.Days.Add(new RoutineDay
+                {
+                    Id = Guid.NewGuid(),
+                    RoutineId = routine.Id,
+                    DayNumber = i,
+                    Name = $"Día 0{i}",
+                    Order = i
+                });
+            }
+            db.Routines.Add(routine);
+            db.UserRoutines.Add(new UserRoutine
+            {
+                UserId = userId,
+                RoutineId = routine.Id,
+                IsActive = true
+            });
+            await db.SaveChangesAsync();
+
+            var result = await service.AddDayAsync(userId, routine.Id, new BleidAppTraining.Application.Contracts.AddRoutineDayCommand
+            {
+                Name = "Día 04"
+            });
+
+            Assert.Equal(4, result.DaysPerWeek);
+            Assert.Equal(4, result.Days.Count);
+        }
+    }
 }
