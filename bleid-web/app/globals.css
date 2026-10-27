@@ -4,25 +4,48 @@
 
 @layer base {
   :root {
-    --background: 220 18% 3%;
-    --foreground: 48 20% 94%;
-    --card: 220 17% 7%;
-    --card-foreground: 48 20% 94%;
-    --popover: 220 17% 7%;
-    --popover-foreground: 48 20% 94%;
-    --primary: 76 100% 59%;
-    --primary-foreground: 210 25% 7%;
-    --secondary: 220 15% 13%;
-    --secondary-foreground: 48 20% 94%;
-    --muted: 220 16% 10%;
-    --muted-foreground: 210 9% 61%;
-    --accent: 32 100% 61%;
-    --accent-foreground: 210 25% 7%;
-    --destructive: 0 78% 62%;
-    --border: 220 12% 17%;
-    --input: 220 12% 17%;
-    --ring: 76 100% 59%;
-    --radius: 0.75rem;
+    /* Warm Editorial Canvas (Ivory & Espresso) */
+    --background: 36 28% 97%;
+    --foreground: 24 22% 12%;
+    
+    /* Surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 24 22% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 22% 12%;
+    
+    /* Brand Actions (Saddle Bronze & Terracotta) */
+    --primary: 24 45% 36%;
+    --primary-foreground: 36 30% 98%;
+    --secondary: 32 20% 92%;
+    --secondary-foreground: 24 22% 18%;
+    
+    /* Muted & Neutral */
+    --muted: 32 18% 94%;
+    --muted-foreground: 24 10% 45%;
+    --accent: 30 55% 48%;
+    --accent-foreground: 36 30% 98%;
+    
+    /* Status & Feedback */
+    --destructive: 4 54% 43%;
+    --destructive-foreground: 36 30% 98%;
+    --success: 136 27% 33%;
+    --success-foreground: 36 30% 98%;
+    --warning: 32 64% 47%;
+    --warning-foreground: 36 30% 98%;
+    
+    /* Outlines & Form Elements */
+    --border: 32 16% 87%;
+    --input: 32 16% 87%;
+    --ring: 24 45% 36%;
+    --radius: 0.85rem;
+
+    /* Data Visualization (Earth & Bronze) */
+    --chart-1: 24 45% 36%;
+    --chart-2: 30 55% 48%;
+    --chart-3: 136 27% 33%;
+    --chart-4: 38 58% 59%;
+    --chart-5: 24 22% 16%;
   }
 
   * {
@@ -31,11 +54,11 @@
 
   html {
     background: hsl(var(--background));
+    color-scheme: light;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: Arial, Helvetica, sans-serif;
+    @apply bg-background text-foreground antialiased font-sans;
   }
 
   ::selection {
@@ -50,15 +73,59 @@
   }
 
   .safe-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
   }
 
+  /* Tactile Warm Canvas Grain */
   .grain {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+    background-image: radial-gradient(circle at 50% 0%, rgba(133, 72, 38, 0.04) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
   }
 
   .display-face {
-    font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-    letter-spacing: -0.055em;
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.04em;
+  }
+
+  /* Editorial Card Surfaces */
+  .card-editorial {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 2px 8px -2px rgba(29, 23, 20, 0.04), 0 8px 24px -4px rgba(29, 23, 20, 0.06);
+  }
+
+  /* Legacy fallback for gradual migration */
+  .glass-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 2px 10px -2px rgba(29, 23, 20, 0.04), 0 8px 24px -4px rgba(29, 23, 20, 0.06);
+  }
+
+  .glass-card-hover {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-card-hover:hover {
+    border-color: hsl(var(--primary) / 0.35);
+    box-shadow: 0 4px 14px -2px rgba(29, 23, 20, 0.06), 0 14px 32px -4px rgba(29, 23, 20, 0.09);
+    transform: translateY(-1px);
+  }
+
+  .glass-island {
+    background: #16120E;
+    border: 1px solid rgba(229, 221, 209, 0.15);
+    box-shadow: 0 20px 40px -10px rgba(22, 18, 14, 0.25), 0 0 0 1px rgba(229, 221, 209, 0.1);
+  }
+
+  .text-telemetry {
+    font-family: var(--font-geist-mono), monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Design Engineering Micro-Interactions (Emil Kowalski Philosophy) */
+  .tactile-press {
+    transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tactile-press:active {
+    transform: scale(0.975);
   }
 }
