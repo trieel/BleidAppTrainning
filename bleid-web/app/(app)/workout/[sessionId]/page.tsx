@@ -11,6 +11,7 @@ import {
   House,
   Loader2,
   Pause,
+  Plus,
   Sparkles,
   TimerReset,
   Trash2,
@@ -46,36 +47,41 @@ export default function ActiveWorkoutPage() {
     weight: number;
     reps: number;
   } | null>(null);
+  const [extraInputOpen, setExtraInputOpen] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     async function loadSession() {
       try {
-        let currentSession: WorkoutSession | null = null;
         const stored = typeof window !== "undefined" ? window.sessionStorage.getItem("bleid-active-session") : null;
         if (stored) {
           try {
             const parsed = JSON.parse(stored) as WorkoutSession;
             if (parsed.id === params.sessionId) {
-              currentSession = parsed;
+              setSession(parsed);
+              if (parsed.notes) {
+                setNotes(parsed.notes);
+              }
             }
           } catch {
             // ignore JSON error
           }
         }
 
-        if (!currentSession) {
-          currentSession = await getSession(params.sessionId);
-        }
+        const [freshSession, activeRoutine] = await Promise.all([
+          getSession(params.sessionId),
+          getActiveRoutine(),
+        ]);
 
-        setSession(currentSession);
-        if (currentSession.notes) {
-          setNotes(currentSession.notes);
+        setSession(freshSession);
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("bleid-active-session", JSON.stringify(freshSession));
         }
-
-        const activeRoutine = await getActiveRoutine();
+        if (freshSession.notes) {
+          setNotes(freshSession.notes);
+        }
         setRoutine(activeRoutine);
 
-        const currentDay = activeRoutine.days.find((item) => item.id === currentSession.routineDayId);
+        const currentDay = activeRoutine.days.find((item) => item.id === freshSession.routineDayId);
         if (currentDay) {
           const perfMap: Record<string, ExerciseLatestPerformance | null> = {};
           await Promise.all(
@@ -119,7 +125,6 @@ export default function ActiveWorkoutPage() {
     if (!session) return;
     const exerciseSets = session.sets.filter((set) => set.exerciseId === exercise.exerciseId);
     const setNumber = exerciseSets.length + 1;
-    if (setNumber > exercise.sets) return;
     setSaving(true);
     setError("");
     try {
@@ -131,6 +136,7 @@ export default function ActiveWorkoutPage() {
         completed: true,
       });
       persist(updated);
+      setExtraInputOpen((prev) => ({ ...prev, [exercise.exerciseId]: false }));
       setRestTimer({
         seconds: exercise.restSeconds > 0 ? exercise.restSeconds : 90,
         exerciseName: exercise.exerciseName,
@@ -269,17 +275,28 @@ export default function ActiveWorkoutPage() {
                 </div>
 
                 <div className="mt-4 divide-y divide-border/60 rounded-xl bg-secondary/40 px-4 py-1">
-                  {group.sets.map((set) => (
-                    <div key={set.id} className="flex items-center justify-between py-2 text-xs font-mono">
-                      <span className="font-semibold text-muted-foreground">Serie {set.setNumber}</span>
-                      <div className="flex items-center gap-4 font-bold text-foreground">
-                        <span>{set.weightKg} kg</span>
-                        <span>·</span>
-                        <span>{set.reps} reps</span>
-                        <Check className="h-3.5 w-3.5 text-success ml-1" />
+                  {group.sets.map((set) => {
+                    const routineEx = routine?.days.flatMap((d) => d.exercises).find((e) => e.exerciseId === group.id);
+                    const isExtra = routineEx ? set.setNumber > routineEx.sets : false;
+                    return (
+                      <div key={set.id} className="flex items-center justify-between py-2 text-xs font-mono">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-muted-foreground">Serie {set.setNumber}</span>
+                          {isExtra && (
+                            <span className="rounded-full bg-accent/15 border border-accent/30 px-2 py-0.5 text-[10px] font-mono font-bold text-accent">
+                              + Extra
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-4 font-bold text-foreground">
+                          <span>{set.weightKg} kg</span>
+                          <span>·</span>
+                          <span>{set.reps} reps</span>
+                          <Check className="h-3.5 w-3.5 text-success ml-1" />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))
@@ -407,7 +424,14 @@ export default function ActiveWorkoutPage() {
                   )}
                 </div>
                 {finished ? (
-                  <CircleCheck className="h-6 w-6 text-success" />
+                  <div className="flex items-center gap-1.5">
+                    {completed > exercise.sets && (
+                      <span className="rounded-full bg-accent/15 border border-accent/30 px-2 py-0.5 text-[10px] font-mono font-bold text-accent">
+                        +{completed - exercise.sets} extra
+                      </span>
+                    )}
+                    <CircleCheck className="h-6 w-6 text-success" />
+                  </div>
                 ) : (
                   <span className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-mono font-bold text-muted-foreground">
                     {completed}/{exercise.sets}
@@ -420,7 +444,14 @@ export default function ActiveWorkoutPage() {
                 <div className="mt-4 divide-y divide-border rounded-xl border border-border bg-secondary/30 px-3.5 py-1">
                   {exerciseSets.map((set) => (
                     <div key={set.id} className="flex items-center justify-between py-2 text-xs font-mono">
-                      <span className="font-semibold text-muted-foreground">Serie {set.setNumber}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-muted-foreground">Serie {set.setNumber}</span>
+                        {set.setNumber > exercise.sets && (
+                          <span className="rounded-full bg-accent/15 border border-accent/30 px-2 py-0.5 text-[10px] font-mono font-bold text-accent">
+                            + Extra
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-3">
                         <span className="font-black text-foreground text-telemetry">
                           {set.weightKg} kg × {set.reps} reps
@@ -439,73 +470,104 @@ export default function ActiveWorkoutPage() {
                 </div>
               )}
 
-              {!finished && (
-                <div className="mt-5 grid grid-cols-[1fr_1fr_auto] gap-2.5 items-end">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">Kg</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setOneRepMaxTarget({
-                              exerciseId: exercise.exerciseId,
-                              exerciseName: exercise.exerciseName,
-                              weight: Number(weight[exercise.exerciseId] || lastPerf?.maxWeightKg || 60),
-                              reps: Number(reps[exercise.exerciseId] || exercise.repsMin || 8),
-                            })
-                          }
-                          className="flex items-center gap-1 text-[10px] font-mono font-bold text-accent hover:underline transition"
-                          title="Calcular 1RM y zonas"
-                        >
-                          <Trophy className="h-3 w-3" /> 1RM
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setPlateCalcTarget({
-                              exerciseId: exercise.exerciseId,
-                              weight: Number(weight[exercise.exerciseId] || lastPerf?.maxWeightKg || 60),
-                            })
-                          }
-                          className="flex items-center gap-1 text-[10px] font-mono font-bold text-primary hover:underline transition"
-                          title="Calcular discos para barra"
-                        >
-                          <Calculator className="h-3 w-3" /> Discos
-                        </button>
-                      </div>
-                    </div>
-                    <input
-                      className="mt-1 h-11 w-full rounded-xl border border-border bg-muted/40 px-3 font-mono text-sm font-black text-foreground outline-none transition focus:border-primary focus:bg-background text-telemetry"
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      value={weight[exercise.exerciseId] ?? ""}
-                      onChange={(event) =>
-                        setWeight({ ...weight, [exercise.exerciseId]: event.target.value })
-                      }
-                      placeholder={lastPerf ? String(lastPerf.maxWeightKg) : "0"}
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">Reps</span>
-                    <input
-                      className="mt-1 h-11 w-full rounded-xl border border-border bg-muted/40 px-3 font-mono text-sm font-black text-foreground outline-none transition focus:border-primary focus:bg-background text-telemetry"
-                      type="number"
-                      min="1"
-                      value={reps[exercise.exerciseId] ?? ""}
-                      onChange={(event) => setReps({ ...reps, [exercise.exerciseId]: event.target.value })}
-                      placeholder={String(exercise.repsMin)}
-                    />
-                  </div>
+              {finished && !extraInputOpen[exercise.exerciseId] && (
+                <div className="mt-3.5 flex items-center justify-between border-t border-border/60 pt-3">
+                  <span className="text-[11px] font-mono text-muted-foreground">
+                    Objetivo completado
+                  </span>
                   <button
-                    onClick={() => saveSet(exercise)}
-                    disabled={saving}
-                    className="grid h-11 w-11 place-items-center rounded-xl bg-success text-success-foreground disabled:opacity-50 transition active:scale-95 shadow-soft hover:bg-success/90"
-                    title="Guardar serie e iniciar descanso"
+                    type="button"
+                    onClick={() => setExtraInputOpen((prev) => ({ ...prev, [exercise.exerciseId]: true }))}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/80 px-2.5 py-1 text-xs font-mono font-bold text-foreground hover:bg-secondary transition tactile-press"
                   >
-                    <Check className="h-5 w-5 stroke-[2.5]" />
+                    <Plus className="h-3.5 w-3.5 text-primary" /> Serie extra
                   </button>
+                </div>
+              )}
+
+              {(!finished || extraInputOpen[exercise.exerciseId]) && (
+                <div className="mt-5">
+                  {finished && (
+                    <div className="mb-2.5 flex items-center justify-between">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent">
+                        Serie extra #{completed + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setExtraInputOpen((prev) => ({ ...prev, [exercise.exerciseId]: false }))}
+                        className="text-[10px] font-mono font-bold text-muted-foreground hover:text-foreground transition underline"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-[1fr_1fr_auto] gap-2.5 items-end">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">Kg</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setOneRepMaxTarget({
+                                exerciseId: exercise.exerciseId,
+                                exerciseName: exercise.exerciseName,
+                                weight: Number(weight[exercise.exerciseId] || lastPerf?.maxWeightKg || 60),
+                                reps: Number(reps[exercise.exerciseId] || exercise.repsMin || 8),
+                              })
+                            }
+                            className="flex items-center gap-1 text-[10px] font-mono font-bold text-accent hover:underline transition"
+                            title="Calcular 1RM y zonas"
+                          >
+                            <Trophy className="h-3 w-3" /> 1RM
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPlateCalcTarget({
+                                exerciseId: exercise.exerciseId,
+                                weight: Number(weight[exercise.exerciseId] || lastPerf?.maxWeightKg || 60),
+                              })
+                            }
+                            className="flex items-center gap-1 text-[10px] font-mono font-bold text-primary hover:underline transition"
+                            title="Calcular discos para barra"
+                          >
+                            <Calculator className="h-3 w-3" /> Discos
+                          </button>
+                        </div>
+                      </div>
+                      <input
+                        className="mt-1 h-11 w-full rounded-xl border border-border bg-muted/40 px-3 font-mono text-sm font-black text-foreground outline-none transition focus:border-primary focus:bg-background text-telemetry"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        value={weight[exercise.exerciseId] ?? ""}
+                        onChange={(event) =>
+                          setWeight({ ...weight, [exercise.exerciseId]: event.target.value })
+                        }
+                        placeholder={lastPerf ? String(lastPerf.maxWeightKg) : "0"}
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">Reps</span>
+                      <input
+                        className="mt-1 h-11 w-full rounded-xl border border-border bg-muted/40 px-3 font-mono text-sm font-black text-foreground outline-none transition focus:border-primary focus:bg-background text-telemetry"
+                        type="number"
+                        min="1"
+                        value={reps[exercise.exerciseId] ?? ""}
+                        onChange={(event) => setReps({ ...reps, [exercise.exerciseId]: event.target.value })}
+                        placeholder={String(exercise.repsMin)}
+                      />
+                    </div>
+                    <button
+                      onClick={() => saveSet(exercise)}
+                      disabled={saving}
+                      className="grid h-11 w-11 place-items-center rounded-xl bg-success text-success-foreground disabled:opacity-50 transition active:scale-95 shadow-soft hover:bg-success/90"
+                      title="Guardar serie e iniciar descanso"
+                    >
+                      <Check className="h-5 w-5 stroke-[2.5]" />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
