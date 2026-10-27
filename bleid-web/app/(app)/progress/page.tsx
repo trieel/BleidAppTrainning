@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, BarChart3, Dumbbell, Flame, TrendingUp, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ApiError } from "@/lib/api/client";
 import { getActiveRoutine, getExerciseProgress, getStreak, getVolumeProgress } from "@/lib/api";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { BodyWeightTracker } from "@/components/features/body-weight-tracker";
@@ -19,6 +20,7 @@ export default function ProgressPage() {
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [show1RMModal, setShow1RMModal] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     Promise.all([getVolumeProgress(), getStreak(), getActiveRoutine()])
@@ -29,7 +31,13 @@ export default function ProgressPage() {
         const first = routineResult.days[0]?.exercises[0]?.exerciseId;
         if (first) setSelectedExercise(first);
       })
-      .catch(() => router.replace("/onboarding"))
+      .catch((exception) => {
+        if (exception instanceof ApiError && exception.status === 404) {
+          router.replace("/onboarding");
+        } else {
+          setError(exception instanceof ApiError ? exception.message : "No pudimos cargar tus métricas.");
+        }
+      })
       .finally(() => setLoading(false));
   }, [router]);
 
@@ -68,6 +76,12 @@ export default function ProgressPage() {
           <ArrowLeft className="h-4 w-4" />
         </Link>
       </header>
+
+      {error && (
+        <div className="mt-6 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm font-bold text-destructive">
+          {error}
+        </div>
+      )}
 
       {/* Metric Cards */}
       <div className="mt-8 grid gap-4 sm:grid-cols-3">

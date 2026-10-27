@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { addRoutineDay, deleteRoutineDay, getActiveRoutine } from "@/lib/api";
 import { getActiveSession, startSession } from "@/lib/api/workout";
+import { ApiError } from "@/lib/api/client";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { RoutineEditor } from "@/components/features/routine-editor";
 import { ExerciseModal } from "@/components/features/exercise-modal";
@@ -45,7 +46,13 @@ export default function WorkoutPage() {
           setShowAddDayModal(true);
         }
       })
-      .catch(() => router.replace("/onboarding"))
+      .catch((exception) => {
+        if (exception instanceof ApiError && exception.status === 404) {
+          router.replace("/onboarding");
+        } else {
+          setError(exception instanceof ApiError ? exception.message : "No pudimos cargar tu rutina.");
+        }
+      })
       .finally(() => setLoading(false));
   }, [router]);
 
@@ -109,7 +116,19 @@ export default function WorkoutPage() {
   }
 
   if (loading) return <LoadingScreen />;
-  if (!routine || !selectedDay) return <div className="p-6 text-sm text-muted-foreground">No encontramos una rutina activa.</div>;
+  if (!routine || !selectedDay) {
+    return (
+      <div className="px-5 py-6 sm:px-8 lg:px-12 lg:py-10">
+        {error ? (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm font-bold text-destructive">
+            {error}
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">No encontramos una rutina activa.</div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="px-5 py-6 sm:px-8 lg:px-12 lg:py-10">
