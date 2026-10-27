@@ -235,11 +235,11 @@ export default function DashboardPage() {
                 ))}
                 <Link
                   href="/workout?action=new-day"
-                  className="flex items-center gap-1.5 rounded-lg border border-dashed border-primary/40 bg-primary/10 px-2.5 py-1.5 text-xs font-mono font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all tactile-press"
+                  className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-mono font-bold text-muted-foreground hover:border-primary/40 hover:text-foreground hover:bg-secondary/40 transition-all tactile-press"
                   title="Sumar nuevo día a tu rutina"
                 >
-                  <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                  <span>+ Sumar día</span>
+                  <Plus className="h-3.5 w-3.5 stroke-[2.5] text-primary" />
+                  <span>Sumar día</span>
                 </Link>
               </div>
 

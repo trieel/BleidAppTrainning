@@ -192,11 +192,15 @@ export default function WorkoutPage() {
             setNewDayName(`Día 0${routine.days.length + 1}`);
             setShowAddDayModal(true);
           }}
-          className="flex min-w-[130px] h-[68px] items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 text-primary hover:bg-primary/10 transition-all px-4 py-3 shadow-soft group shrink-0 tactile-press"
+          className="flex min-w-[130px] h-[68px] items-center justify-center gap-2.5 rounded-xl border border-border bg-card/80 hover:bg-card hover:border-primary/40 transition-all px-4 py-3 shadow-soft group shrink-0 tactile-press"
           title="Sumar día de entrenamiento"
         >
-          <Plus className="h-5 w-5 stroke-[2.5] transition-transform group-hover:scale-110" />
-          <span className="text-xs font-mono font-bold uppercase tracking-wider">+ Nuevo Día</span>
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200">
+            <Plus className="h-4 w-4 stroke-[2.5]" />
+          </div>
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
+            Nuevo Día
+          </span>
         </button>
       </div>
 
