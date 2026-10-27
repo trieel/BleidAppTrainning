@@ -25,6 +25,22 @@ public class WorkoutService(IApplicationDbContext db) : IWorkoutService
         if (!isActiveDay)
             throw new KeyNotFoundException("The requested routine day is not part of the active routine.");
 
+        var priorActiveSessions = await db.WorkoutSessions
+            .Where(item => item.UserId == userId && item.FinishedAt == null)
+            .OrderByDescending(item => item.StartedAt)
+            .ToListAsync(cancellationToken);
+
+        var existingSameDay = priorActiveSessions.FirstOrDefault(item => item.RoutineDayId == command.RoutineDayId);
+        if (existingSameDay is not null)
+        {
+            return await GetSessionAsync(userId, existingSameDay.Id, cancellationToken);
+        }
+
+        foreach (var prior in priorActiveSessions)
+        {
+            prior.FinishedAt = DateTime.UtcNow;
+        }
+
         var session = new WorkoutSession
         {
             UserId = userId,
@@ -34,6 +50,30 @@ public class WorkoutService(IApplicationDbContext db) : IWorkoutService
         db.WorkoutSessions.Add(session);
         await db.SaveChangesAsync(cancellationToken);
         return await GetSessionAsync(userId, session.Id, cancellationToken);
+    }
+
+    public async Task<WorkoutSessionResult?> GetActiveSessionAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var session = await db.WorkoutSessions
+            .AsNoTracking()
+            .Where(item => item.UserId == userId && item.FinishedAt == null)
+            .OrderByDescending(item => item.StartedAt)
+            .Include(item => item.RoutineDay)
+            .Include(item => item.Sets)
+            .ThenInclude(set => set.Exercise)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return session is null ? null : ResultMappings.Session(session);
+    }
+
+    public async Task<WorkoutSessionResult> GetSessionByIdAsync(
+        Guid userId,
+        Guid sessionId,
+        CancellationToken cancellationToken = default)
+    {
+        return await GetSessionAsync(userId, sessionId, cancellationToken);
     }
 
     public async Task<WorkoutSessionResult> RegisterSetAsync(
@@ -73,6 +113,39 @@ public class WorkoutService(IApplicationDbContext db) : IWorkoutService
             WeightKg = command.WeightKg,
             Completed = command.Completed
         });
+
+        await db.SaveChangesAsync(cancellationToken);
+        return await GetSessionAsync(userId, sessionId, cancellationToken);
+    }
+
+    public async Task<WorkoutSessionResult> DeleteSetAsync(
+        Guid userId,
+        Guid sessionId,
+        Guid setId,
+        CancellationToken cancellationToken = default)
+    {
+        var session = await db.WorkoutSessions
+            .SingleOrDefaultAsync(item => item.Id == sessionId && item.UserId == userId, cancellationToken)
+            ?? throw new KeyNotFoundException("The requested workout session was not found.");
+
+        if (session.FinishedAt.HasValue)
+            throw new ServiceValidationException("The workout session is already finished.");
+
+        var set = await db.WorkoutSets
+            .SingleOrDefaultAsync(item => item.Id == setId && item.SessionId == sessionId, cancellationToken)
+            ?? throw new KeyNotFoundException("The requested workout set was not found.");
+
+        db.WorkoutSets.Remove(set);
+
+        var remainingSets = await db.WorkoutSets
+            .Where(item => item.SessionId == sessionId && item.ExerciseId == set.ExerciseId && item.Id != setId)
+            .OrderBy(item => item.SetNumber)
+            .ToListAsync(cancellationToken);
+
+        for (var i = 0; i < remainingSets.Count; i++)
+        {
+            remainingSets[i].SetNumber = i + 1;
+        }
 
         await db.SaveChangesAsync(cancellationToken);
         return await GetSessionAsync(userId, sessionId, cancellationToken);
