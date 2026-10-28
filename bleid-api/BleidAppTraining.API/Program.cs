@@ -8,13 +8,27 @@ using BleidAppTraining.Infrastructure;
 using BleidAppTraining.Infrastructure.Identity;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var customPort = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(customPort))
+{
+    builder.WebHost.UseUrls($"http://*:{customPort}");
+}
+
 const string FrontendCorsPolicy = "Frontend";
 const string AuthRateLimitPolicy = "AuthPolicy";
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 builder.Services.AddControllers(options =>
     {
@@ -108,6 +122,8 @@ if (app.Environment.IsDevelopment())
     app.MapSwagger().AllowAnonymous();
 }
 
+app.UseForwardedHeaders();
+
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
@@ -117,7 +133,10 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors(FrontendCorsPolicy);
 app.UseRateLimiter();
 app.UseAuthentication();
