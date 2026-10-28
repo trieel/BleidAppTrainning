@@ -12,11 +12,14 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
+Console.WriteLine(">>> [BleidApp] Starting Web API host initialization...");
+
 var builder = WebApplication.CreateBuilder(args);
 
 var customPort = Environment.GetEnvironmentVariable("PORT");
 if (!string.IsNullOrEmpty(customPort))
 {
+    Console.WriteLine($">>> [BleidApp] Binding Kestrel to PORT={customPort}");
     builder.WebHost.UseUrls($"http://*:{customPort}");
 }
 
@@ -26,7 +29,7 @@ const string AuthRateLimitPolicy = "AuthPolicy";
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownNetworks.Clear();
+    options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
 });
 
@@ -108,7 +111,18 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-await app.InitializeDatabaseAsync();
+try
+{
+    Console.WriteLine(">>> [BleidApp] Initializing database and applying migrations...");
+    await app.InitializeDatabaseAsync();
+    Console.WriteLine(">>> [BleidApp] Database migrations and seeds completed successfully.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($">>> [BleidApp] CRITICAL DATABASE INITIALIZATION ERROR: {ex.Message}");
+    Console.WriteLine($">>> [BleidApp] Details: {ex}");
+    throw;
+}
 
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -145,4 +159,5 @@ app.MapControllers();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
 
+Console.WriteLine(">>> [BleidApp] Web API is starting up and listening for incoming requests...");
 app.Run();
