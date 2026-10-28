@@ -14,6 +14,9 @@ public class AuthService(
     IJwtTokenService tokenService,
     IApplicationDbContext db) : IAuthService
 {
+    private static readonly string DummyPasswordHash = new PasswordHasher<User>()
+        .HashPassword(new User(), "BleidAppDummyPassword123!");
+
     public async Task<AuthResult> RegisterAsync(
         RegisterCommand command,
         CancellationToken cancellationToken = default)
@@ -53,9 +56,17 @@ public class AuthService(
         var email = command.Email.Trim().ToLowerInvariant();
         var user = await userManager.FindByEmailAsync(email);
         if (user is null)
+        {
+            userManager.PasswordHasher.VerifyHashedPassword(new User(), DummyPasswordHash, command.Password);
             throw new ServiceValidationException("Invalid email or password.");
+        }
 
         var result = await signInManager.CheckPasswordSignInAsync(user, command.Password, lockoutOnFailure: true);
+        if (result.IsLockedOut)
+        {
+            throw new ServiceValidationException("Demasiados intentos fallidos. Tu cuenta ha sido bloqueada temporalmente por 15 minutos por seguridad.");
+        }
+
         if (!result.Succeeded)
             throw new ServiceValidationException("Invalid email or password.");
 

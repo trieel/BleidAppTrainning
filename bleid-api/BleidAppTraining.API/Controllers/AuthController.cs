@@ -2,11 +2,13 @@ using BleidAppTraining.Application.Contracts;
 using BleidAppTraining.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace BleidAppTraining.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[EnableRateLimiting("AuthPolicy")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
     [AllowAnonymous]
