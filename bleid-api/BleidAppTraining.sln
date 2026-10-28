@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BleidAppTraining.Domain", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BleidAppTraining.Infrastructure", "BleidAppTraining.Infrastructure\BleidAppTraining.Infrastructure.csproj", "{A406FB62-69EA-4FDA-B9AE-6027DA8A89EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BleidAppTraining.Application.Tests", "BleidAppTraining.Application.Tests\BleidAppTraining.Application.Tests.csproj", "{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{A406FB62-69EA-4FDA-B9AE-6027DA8A89EA}.Release|x64.Build.0 = Release|Any CPU
 		{A406FB62-69EA-4FDA-B9AE-6027DA8A89EA}.Release|x86.ActiveCfg = Release|Any CPU
 		{A406FB62-69EA-4FDA-B9AE-6027DA8A89EA}.Release|x86.Build.0 = Release|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Debug|x64.Build.0 = Debug|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Debug|x86.Build.0 = Debug|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Release|x64.ActiveCfg = Release|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Release|x64.Build.0 = Release|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Release|x86.ActiveCfg = Release|Any CPU
+		{FF8B3C83-6623-4F2C-84FE-F4CFD81439C7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

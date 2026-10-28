@@ -33,4 +33,13 @@ public class AuthController(IAuthService authService) : ControllerBase
         var userId = Guid.Parse(User.FindFirst("userId")!.Value);
         return Ok(await authService.GetProfileAsync(userId, cancellationToken));
     }
+
+    [HttpPut("profile")]
+    public async Task<ActionResult<UserProfileResult>> UpdateProfile(
+        UpdateProfileCommand command,
+        CancellationToken cancellationToken)
+    {
+        var userId = Guid.Parse(User.FindFirst("userId")!.Value);
+        return Ok(await authService.UpdateProfileAsync(userId, command, cancellationToken));
+    }
 }

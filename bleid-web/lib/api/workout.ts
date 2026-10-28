@@ -8,6 +8,14 @@ export function startSession(routineDayId: string) {
   });
 }
 
+export function getActiveSession() {
+  return apiFetch<WorkoutSession | null | undefined>("/api/workout/session/active");
+}
+
+export function getSession(sessionId: string) {
+  return apiFetch<WorkoutSession>(`/api/workout/session/${sessionId}`);
+}
+
 export function registerSet(sessionId: string, input: {
   exerciseId: string;
   setNumber: number;
@@ -18,6 +26,12 @@ export function registerSet(sessionId: string, input: {
   return apiFetch<WorkoutSession>(`/api/workout/session/${sessionId}/set`, {
     method: "POST",
     body: JSON.stringify(input),
+  });
+}
+
+export function deleteSet(sessionId: string, setId: string) {
+  return apiFetch<WorkoutSession>(`/api/workout/session/${sessionId}/set/${setId}`, {
+    method: "DELETE",
   });
 }
 

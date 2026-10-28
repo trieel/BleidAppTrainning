@@ -6,18 +6,21 @@ namespace BleidAppTraining.Application.Services;
 
 public class ProgressService(IApplicationDbContext db) : IProgressService
 {
+    private static readonly TimeSpan LocalTimeZoneOffset = TimeSpan.FromHours(-3);
+
     public async Task<IReadOnlyCollection<VolumeProgressResult>> GetVolumeAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
     {
+        var cutoff = DateTime.UtcNow.AddDays(-120);
         var sets = await db.WorkoutSets
             .AsNoTracking()
-            .Where(set => set.Completed && set.Session.UserId == userId)
+            .Where(set => set.Completed && set.Session.UserId == userId && set.Session.StartedAt >= cutoff)
             .Select(set => new { Date = set.Session.StartedAt, Volume = set.WeightKg * set.Reps })
             .ToListAsync(cancellationToken);
 
         return sets
-            .GroupBy(item => GetWeekStart(item.Date))
+            .GroupBy(item => GetWeekStart(item.Date.Add(LocalTimeZoneOffset)))
             .OrderBy(group => group.Key)
             .Select(group => new VolumeProgressResult(
                 DateOnly.FromDateTime(group.Key),
@@ -39,7 +42,7 @@ public class ProgressService(IApplicationDbContext db) : IProgressService
             .ToListAsync(cancellationToken);
 
         return sets
-            .GroupBy(item => item.Date.Date)
+            .GroupBy(item => item.Date.Add(LocalTimeZoneOffset).Date)
             .OrderBy(group => group.Key)
             .Select(group => new ExerciseProgressResult(
                 DateOnly.FromDateTime(group.Key),
@@ -56,7 +59,7 @@ public class ProgressService(IApplicationDbContext db) : IProgressService
         var dates = await db.WorkoutSessions
             .AsNoTracking()
             .Where(session => session.UserId == userId && session.FinishedAt.HasValue)
-            .Select(session => session.FinishedAt!.Value.Date)
+            .Select(session => session.FinishedAt!.Value.Add(LocalTimeZoneOffset).Date)
             .ToListAsync(cancellationToken);
 
         var distinctDates = dates
@@ -80,7 +83,7 @@ public class ProgressService(IApplicationDbContext db) : IProgressService
         }
 
         var lastDate = distinctDates[^1];
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = DateOnly.FromDateTime(DateTime.UtcNow.Add(LocalTimeZoneOffset));
         var current = lastDate < today.AddDays(-1) ? 0 : 1;
         for (var index = distinctDates.Length - 1; current > 0 && index > 0; index--)
         {
@@ -91,6 +94,63 @@ public class ProgressService(IApplicationDbContext db) : IProgressService
         }
 
         return new StreakResult(current, longest, lastDate);
+    }
+
+    public async Task<ExerciseLatestPerformanceResult?> GetLatestPerformanceAsync(
+        Guid userId,
+        Guid exerciseId,
+        Guid? excludeSessionId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = db.WorkoutSets
+            .AsNoTracking()
+            .Where(s => s.Completed &&
+                        s.ExerciseId == exerciseId &&
+                        s.Session.UserId == userId);
+
+        if (excludeSessionId.HasValue)
+        {
+            query = query.Where(s => s.SessionId != excludeSessionId.Value);
+        }
+
+        var latestSession = await query
+            .OrderByDescending(s => s.Session.StartedAt)
+            .Select(s => new { s.SessionId, s.Session.StartedAt })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (latestSession is null)
+        {
+            return null;
+        }
+
+        var sets = await db.WorkoutSets
+            .AsNoTracking()
+            .Where(s => s.SessionId == latestSession.SessionId && s.ExerciseId == exerciseId && s.Completed)
+            .OrderBy(s => s.SetNumber)
+            .Select(s => new ExercisePerformanceSetResult(
+                s.SetNumber,
+                s.Reps,
+                s.WeightKg,
+                s.Completed))
+            .ToListAsync(cancellationToken);
+
+        if (sets.Count == 0)
+        {
+            return null;
+        }
+
+        var maxWeight = sets.Max(s => s.WeightKg);
+        var totalReps = sets.Sum(s => s.Reps);
+        var totalVolume = sets.Sum(s => s.WeightKg * s.Reps);
+        var date = DateOnly.FromDateTime(latestSession.StartedAt.Add(LocalTimeZoneOffset).Date);
+
+        return new ExerciseLatestPerformanceResult(
+            exerciseId,
+            date,
+            maxWeight,
+            totalReps,
+            totalVolume,
+            sets);
     }
 
     private static DateTime GetWeekStart(DateTime date)

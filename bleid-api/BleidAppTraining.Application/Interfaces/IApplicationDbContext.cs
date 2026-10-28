@@ -16,6 +16,7 @@ public interface IApplicationDbContext
     DbSet<UserRoutine> UserRoutines { get; }
     DbSet<WorkoutSession> WorkoutSessions { get; }
     DbSet<WorkoutSet> WorkoutSets { get; }
+    DbSet<BodyWeightEntry> BodyWeightEntries { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

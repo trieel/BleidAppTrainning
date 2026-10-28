@@ -46,6 +46,34 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
         CancellationToken cancellationToken = default) =>
         GetCatalogAsync(userId, muscleGroupId, cancellationToken);
 
+    public async Task<ExerciseResult> GetByIdAsync(
+        Guid userId,
+        Guid exerciseId,
+        CancellationToken cancellationToken = default)
+    {
+        var limitations = await GetLimitationsAsync(userId, cancellationToken);
+        var exercise = await db.Exercises
+            .AsNoTracking()
+            .Include(item => item.MuscleGroup)
+            .SingleOrDefaultAsync(item => item.Id == exerciseId, cancellationToken)
+            ?? throw new KeyNotFoundException("The requested exercise was not found.");
+
+        var isContraindicated = IsContraindicated(exercise.Contraindications, limitations);
+
+        return new ExerciseResult(
+            exercise.Id,
+            exercise.MuscleGroupId,
+            exercise.MuscleGroup.Name,
+            exercise.Name,
+            exercise.Description,
+            exercise.Equipment,
+            exercise.Level,
+            exercise.Contraindications,
+            exercise.ModificationTip,
+            exercise.ImageUrl,
+            isContraindicated);
+    }
+
     public async Task<IReadOnlyCollection<MuscleGroupResult>> GetMuscleGroupsAsync(
         CancellationToken cancellationToken = default)
     {
@@ -67,7 +95,7 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
         return types.ToHashSet();
     }
 
-    internal static bool IsContraindicated(IEnumerable<string> contraindications, IEnumerable<LimitationType> limitations)
+    public static bool IsContraindicated(IEnumerable<string> contraindications, IEnumerable<LimitationType> limitations)
     {
         var normalizedContraindications = contraindications
             .Select(Normalize)

@@ -191,6 +191,10 @@ public static class SeedData
         yield return E("Aperturas con mancuernas", "Pecho", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Shoulder" });
         yield return E("Press declinado con barra", "Pecho", EquipmentType.Barbell, LevelType.Intermediate, new[] { "Wrist" });
         yield return E("Pec deck", "Pecho", EquipmentType.Machine, LevelType.Beginner);
+        yield return E("Fondos en paralelas para pecho", "Pecho", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Shoulder" }, "Inclina el torso 30 grados hacia adelante para enfatizar el pectoral.");
+        yield return E("Pullover con mancuerna", "Pecho", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Shoulder" }, "Mantiene los codos ligeramente flexionados para proteger los hombros.");
+        yield return E("Press inclinado en maquina Smith", "Pecho", EquipmentType.Machine, LevelType.Beginner, new[] { "Wrist" });
+        yield return E("Flexiones con deficit", "Pecho", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Wrist", "Shoulder" });
 
         yield return E("Peso muerto convencional", "Espalda", EquipmentType.Barbell, LevelType.Advanced, new[] { "Lumbar" }, "Usa remo con apoyo de pecho como alternativa.");
         yield return E("Jalon al pecho", "Espalda", EquipmentType.Cable, LevelType.Beginner);
@@ -202,6 +206,10 @@ public static class SeedData
         yield return E("Jalon con brazos rectos", "Espalda", EquipmentType.Cable, LevelType.Intermediate);
         yield return E("Hiperextension lumbar", "Espalda", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Lumbar" });
         yield return E("Face pull", "Espalda", EquipmentType.Cable, LevelType.Beginner, new[] { "Shoulder" });
+        yield return E("Remo con barra T", "Espalda", EquipmentType.Barbell, LevelType.Intermediate, new[] { "Lumbar" }, "Usa apoyo de pecho si tienes molestias en la zona baja.");
+        yield return E("Jalon al pecho agarre supino", "Espalda", EquipmentType.Cable, LevelType.Beginner);
+        yield return E("Remo en polea baja agarre neutro", "Espalda", EquipmentType.Cable, LevelType.Beginner);
+        yield return E("Pullover en polea alta", "Espalda", EquipmentType.Cable, LevelType.Beginner, new[] { "Shoulder" });
 
         yield return E("Sentadilla trasera", "Cuadriceps", EquipmentType.Barbell, LevelType.Advanced, new[] { "Knee", "Lumbar" }, "Proba prensa de piernas con rango controlado.");
         yield return E("Prensa de piernas", "Cuadriceps", EquipmentType.Machine, LevelType.Beginner, new[] { "Knee" }, "Reduce el rango y la carga si aparece molestia.");
@@ -214,6 +222,9 @@ public static class SeedData
         yield return E("Zancada hacia atras", "Cuadriceps", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Knee" });
         yield return E("Sentadilla sissy", "Cuadriceps", EquipmentType.Bodyweight, LevelType.Advanced, new[] { "Knee" });
         yield return E("Contraccion de cuadriceps", "Cuadriceps", EquipmentType.Bodyweight, LevelType.Beginner);
+        yield return E("Prensa 45 grados", "Cuadriceps", EquipmentType.Machine, LevelType.Intermediate, new[] { "Knee" }, "Coloca los pies al ancho de cadera sin despegar la pelvis.");
+        yield return E("Sentadilla con cinturon (Belt squat)", "Cuadriceps", EquipmentType.Machine, LevelType.Beginner, modificationTip: "Descarga completamente la columna vertebral.");
+        yield return E("Sentadilla cosaca", "Cuadriceps", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Knee" });
 
         yield return E("Hip thrust con barra", "Gluteos", EquipmentType.Barbell, LevelType.Intermediate, new[] { "Lumbar" });
         yield return E("Puente de gluteos", "Gluteos", EquipmentType.Bodyweight, LevelType.Beginner);
@@ -223,6 +234,9 @@ public static class SeedData
         yield return E("Zancadas caminando", "Gluteos", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Knee" });
         yield return E("Swing con kettlebell", "Gluteos", EquipmentType.Dumbbell, LevelType.Advanced, new[] { "Lumbar" });
         yield return E("Puente de gluteo a una pierna", "Gluteos", EquipmentType.Bodyweight, LevelType.Intermediate);
+        yield return E("Hiperextensiones a 45 grados para gluteo", "Gluteos", EquipmentType.Bodyweight, LevelType.Beginner, new[] { "Lumbar" }, "Redondea ligeramente la parte alta de la espalda.");
+        yield return E("Peso muerto sumo con mancuerna", "Gluteos", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Knee" });
+        yield return E("Step up cruzado", "Gluteos", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Knee" });
 
         yield return E("Curl femoral acostado", "Isquiotibiales", EquipmentType.Machine, LevelType.Beginner);
         yield return E("Curl femoral sentado", "Isquiotibiales", EquipmentType.Machine, LevelType.Beginner);
@@ -231,9 +245,13 @@ public static class SeedData
         yield return E("Curl femoral con pelota", "Isquiotibiales", EquipmentType.Bodyweight, LevelType.Intermediate);
         yield return E("Peso muerto rumano a una pierna", "Isquiotibiales", EquipmentType.Dumbbell, LevelType.Advanced, new[] { "Lumbar" });
         yield return E("Deslizamiento de isquiotibiales", "Isquiotibiales", EquipmentType.Bodyweight, LevelType.Intermediate);
+        yield return E("Curl femoral de pie en maquina", "Isquiotibiales", EquipmentType.Machine, LevelType.Beginner);
+        yield return E("Peso muerto rumano con mancuernas", "Isquiotibiales", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Lumbar" });
 
         yield return E("Elevacion de pantorrillas", "Pantorrillas", EquipmentType.Machine, LevelType.Beginner, new[] { "Knee" });
         yield return E("Elevacion de pantorrillas sentado", "Pantorrillas", EquipmentType.Machine, LevelType.Beginner);
+        yield return E("Elevacion de talones en prensa", "Pantorrillas", EquipmentType.Machine, LevelType.Beginner);
+        yield return E("Elevacion de talones a una pierna", "Pantorrillas", EquipmentType.Bodyweight, LevelType.Beginner);
 
         yield return E("Press militar con barra", "Hombros", EquipmentType.Barbell, LevelType.Advanced, new[] { "Shoulder" });
         yield return E("Press de hombros con mancuernas", "Hombros", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Shoulder" });
@@ -243,6 +261,10 @@ public static class SeedData
         yield return E("Remo al menton", "Hombros", EquipmentType.Barbell, LevelType.Advanced, new[] { "Shoulder" });
         yield return E("Press Arnold", "Hombros", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Shoulder" });
         yield return E("Elevacion frontal", "Hombros", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Shoulder" });
+        yield return E("Press militar en maquina Smith", "Hombros", EquipmentType.Machine, LevelType.Intermediate, new[] { "Shoulder" });
+        yield return E("Elevaciones laterales en banco inclinado", "Hombros", EquipmentType.Dumbbell, LevelType.Intermediate);
+        yield return E("Y-Raises en banco inclinado", "Hombros", EquipmentType.Dumbbell, LevelType.Beginner, modificationTip: "Excelente para trapecio inferior y salud articular.");
+        yield return E("Face pull con rotacion externa", "Hombros", EquipmentType.Cable, LevelType.Beginner, new[] { "Shoulder" });
 
         yield return E("Curl de biceps con barra", "Biceps", EquipmentType.Barbell, LevelType.Beginner, new[] { "Wrist" });
         yield return E("Curl de biceps con mancuernas", "Biceps", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Wrist" });
@@ -250,6 +272,9 @@ public static class SeedData
         yield return E("Curl inclinado con mancuernas", "Biceps", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Shoulder" });
         yield return E("Curl de biceps en cable", "Biceps", EquipmentType.Cable, LevelType.Beginner);
         yield return E("Curl predicador", "Biceps", EquipmentType.Machine, LevelType.Intermediate, new[] { "Wrist" });
+        yield return E("Curl de concentracion", "Biceps", EquipmentType.Dumbbell, LevelType.Beginner);
+        yield return E("Curl arana en banco inclinado", "Biceps", EquipmentType.Dumbbell, LevelType.Intermediate);
+        yield return E("Curl zottman", "Biceps", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Wrist" });
 
         yield return E("Press cerrado", "Triceps", EquipmentType.Barbell, LevelType.Intermediate, new[] { "Wrist", "Shoulder" });
         yield return E("Jalon de triceps en polea", "Triceps", EquipmentType.Cable, LevelType.Beginner);
@@ -257,6 +282,9 @@ public static class SeedData
         yield return E("Rompecraneos", "Triceps", EquipmentType.Barbell, LevelType.Advanced, new[] { "Wrist" });
         yield return E("Fondos asistidos", "Triceps", EquipmentType.Machine, LevelType.Intermediate, new[] { "Shoulder" });
         yield return E("Patada de triceps", "Triceps", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Wrist" });
+        yield return E("Extension de triceps en polea con cuerda", "Triceps", EquipmentType.Cable, LevelType.Beginner, new[] { "Wrist" });
+        yield return E("Extension francesa con mancuerna sentado", "Triceps", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Shoulder", "Wrist" });
+        yield return E("Fondos en paralelas para triceps", "Triceps", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Shoulder", "Wrist" }, "Torso erguido y codos pegados al cuerpo.");
 
         yield return E("Plancha frontal", "Core", EquipmentType.Bodyweight, LevelType.Beginner);
         yield return E("Plancha lateral", "Core", EquipmentType.Bodyweight, LevelType.Beginner);
@@ -265,6 +293,10 @@ public static class SeedData
         yield return E("Crunch en cable", "Core", EquipmentType.Cable, LevelType.Intermediate);
         yield return E("Elevacion de rodillas colgado", "Core", EquipmentType.Bodyweight, LevelType.Advanced, new[] { "Shoulder" });
         yield return E("Pallof press", "Core", EquipmentType.Cable, LevelType.Beginner);
+        yield return E("Rueda abdominal (Ab wheel)", "Core", EquipmentType.Bodyweight, LevelType.Advanced, new[] { "Lumbar", "Shoulder" }, "Evita hiperextender la zona lumbar.");
+        yield return E("Elevacion de piernas en paralelas", "Core", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Shoulder" });
+        yield return E("Russian twist con peso", "Core", EquipmentType.Dumbbell, LevelType.Intermediate, new[] { "Lumbar" });
+        yield return E("Hollow body hold", "Core", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Lumbar" });
 
         yield return E("Caminata en cinta", "Cardio", EquipmentType.Machine, LevelType.Beginner, new[] { "Knee" });
         yield return E("Bicicleta fija", "Cardio", EquipmentType.Machine, LevelType.Beginner);
@@ -272,6 +304,9 @@ public static class SeedData
         yield return E("Remo ergometro", "Cardio", EquipmentType.Machine, LevelType.Intermediate, new[] { "Lumbar" });
         yield return E("Escaladora", "Cardio", EquipmentType.Machine, LevelType.Intermediate, new[] { "Knee" });
         yield return E("Cuerda de saltar", "Cardio", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Knee" });
+        yield return E("Burpees", "Cardio", EquipmentType.Bodyweight, LevelType.Intermediate, new[] { "Knee", "Wrist" });
+        yield return E("Mountain climbers", "Cardio", EquipmentType.Bodyweight, LevelType.Beginner, new[] { "Wrist" });
+        yield return E("Empuje de trineo (Sled push)", "Cardio", EquipmentType.Machine, LevelType.Intermediate, new[] { "Knee" });
     }
 
     private static IEnumerable<RoutineSeed> RoutineDefinitions()

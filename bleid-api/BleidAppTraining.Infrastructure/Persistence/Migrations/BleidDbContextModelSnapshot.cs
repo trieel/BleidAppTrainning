@@ -23,6 +23,47 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("BleidAppTraining.Domain.Entities.BodyWeightEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("notes");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<decimal>("WeightKg")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("numeric(6,2)")
+                        .HasColumnName("weight_kg");
+
+                    b.HasKey("Id")
+                        .HasName("pk_body_weight_entries");
+
+                    b.HasIndex("UserId", "Date")
+                        .HasDatabaseName("ix_body_weight_entries_user_id_date");
+
+                    b.ToTable("body_weight_entries", (string)null);
+                });
+
             modelBuilder.Entity("BleidAppTraining.Domain.Entities.Exercise", b =>
                 {
                     b.Property<Guid>("Id")
@@ -763,6 +804,18 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                         .HasName("pk_user_tokens");
 
                     b.ToTable("user_tokens", (string)null);
+                });
+
+            modelBuilder.Entity("BleidAppTraining.Domain.Entities.BodyWeightEntry", b =>
+                {
+                    b.HasOne("BleidAppTraining.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_body_weight_entries_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BleidAppTraining.Domain.Entities.Exercise", b =>

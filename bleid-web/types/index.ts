@@ -109,3 +109,27 @@ export type Streak = {
   longestDays: number;
   lastWorkoutDate: string | null;
 };
+
+export type ExercisePerformanceSet = {
+  setNumber: number;
+  reps: number;
+  weightKg: number;
+  completed: boolean;
+};
+
+export type ExerciseLatestPerformance = {
+  exerciseId: string;
+  date: string;
+  maxWeightKg: number;
+  totalReps: number;
+  totalVolumeKg: number;
+  sets: ExercisePerformanceSet[];
+};
+
+export type BodyWeightEntry = {
+  id: string;
+  weightKg: number;
+  date: string;
+  notes: string | null;
+  createdAt: string;
+};

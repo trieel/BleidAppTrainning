@@ -16,6 +16,14 @@ public class ExerciseController(IExerciseService exerciseService) : Authenticate
         return Ok(await exerciseService.GetCatalogAsync(CurrentUserId, muscleGroupId, cancellationToken));
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ExerciseResult>> GetById(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await exerciseService.GetByIdAsync(CurrentUserId, id, cancellationToken));
+    }
+
     [HttpGet("muscle-group/{id:guid}")]
     public async Task<ActionResult<IReadOnlyCollection<ExerciseResult>>> GetByMuscleGroup(
         Guid id,

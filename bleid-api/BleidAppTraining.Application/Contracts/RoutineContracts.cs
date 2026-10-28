@@ -7,6 +7,11 @@ public sealed class CustomizeRoutineCommand
     public Guid TemplateId { get; set; }
 }
 
+public sealed class AddRoutineDayCommand
+{
+    public string? Name { get; set; }
+}
+
 public sealed class UpdateRoutineDayCommand
 {
     public string? Name { get; set; }

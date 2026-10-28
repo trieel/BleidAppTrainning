@@ -19,6 +19,7 @@ public class BleidDbContext(
     public DbSet<UserRoutine> UserRoutines => Set<UserRoutine>();
     public DbSet<WorkoutSession> WorkoutSessions => Set<WorkoutSession>();
     public DbSet<WorkoutSet> WorkoutSets => Set<WorkoutSet>();
+    public DbSet<BodyWeightEntry> BodyWeightEntries => Set<BodyWeightEntry>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

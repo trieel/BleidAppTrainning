@@ -16,6 +16,24 @@ public class WorkoutController(IWorkoutService workoutService) : AuthenticatedCo
         return Ok(await workoutService.StartSessionAsync(CurrentUserId, command, cancellationToken));
     }
 
+    [HttpGet("session/active")]
+    public async Task<ActionResult<WorkoutSessionResult?>> Active(CancellationToken cancellationToken)
+    {
+        var session = await workoutService.GetActiveSessionAsync(CurrentUserId, cancellationToken);
+        if (session is null)
+            return NoContent();
+
+        return Ok(session);
+    }
+
+    [HttpGet("session/{id:guid}")]
+    public async Task<ActionResult<WorkoutSessionResult>> GetById(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await workoutService.GetSessionByIdAsync(CurrentUserId, id, cancellationToken));
+    }
+
     [HttpPost("session/{id:guid}/set")]
     public async Task<ActionResult<WorkoutSessionResult>> RegisterSet(
         Guid id,
@@ -23,6 +41,15 @@ public class WorkoutController(IWorkoutService workoutService) : AuthenticatedCo
         CancellationToken cancellationToken)
     {
         return Ok(await workoutService.RegisterSetAsync(CurrentUserId, id, command, cancellationToken));
+    }
+
+    [HttpDelete("session/{id:guid}/set/{setId:guid}")]
+    public async Task<ActionResult<WorkoutSessionResult>> DeleteSet(
+        Guid id,
+        Guid setId,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await workoutService.DeleteSetAsync(CurrentUserId, id, setId, cancellationToken));
     }
 
     [HttpPut("session/{id:guid}/end")]

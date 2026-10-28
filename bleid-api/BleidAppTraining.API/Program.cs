@@ -1,8 +1,11 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using BleidAppTraining.API.Filters;
 using BleidAppTraining.API.Middleware;
+using BleidAppTraining.Application.Validators;
 using BleidAppTraining.Infrastructure;
 using BleidAppTraining.Infrastructure.Identity;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -10,8 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 const string FrontendCorsPolicy = "Frontend";
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<RequestValidationFilter>();
+    })
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterCommandValidator>();
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddEndpointsApiExplorer();

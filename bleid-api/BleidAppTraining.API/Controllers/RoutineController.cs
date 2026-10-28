@@ -22,6 +22,24 @@ public class RoutineController(IRoutineService routineService) : AuthenticatedCo
         return Ok(await routineService.CustomizeAsync(CurrentUserId, command, cancellationToken));
     }
 
+    [HttpPost("{id:guid}/days")]
+    public async Task<ActionResult<RoutineResult>> AddDay(
+        Guid id,
+        AddRoutineDayCommand command,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await routineService.AddDayAsync(CurrentUserId, id, command, cancellationToken));
+    }
+
+    [HttpDelete("{id:guid}/days/{dayId:guid}")]
+    public async Task<ActionResult<RoutineResult>> DeleteDay(
+        Guid id,
+        Guid dayId,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await routineService.DeleteDayAsync(CurrentUserId, id, dayId, cancellationToken));
+    }
+
     [HttpPut("{id:guid}/day/{dayId:guid}")]
     public async Task<ActionResult<RoutineResult>> UpdateDay(
         Guid id,

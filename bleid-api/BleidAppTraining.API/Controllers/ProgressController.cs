@@ -22,6 +22,16 @@ public class ProgressController(IProgressService progressService) : Authenticate
         return Ok(await progressService.GetExerciseProgressAsync(CurrentUserId, id, cancellationToken));
     }
 
+    [HttpGet("exercise/{id:guid}/latest")]
+    public async Task<ActionResult<ExerciseLatestPerformanceResult?>> LatestExercisePerformance(
+        Guid id,
+        [FromQuery] Guid? excludeSessionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await progressService.GetLatestPerformanceAsync(CurrentUserId, id, excludeSessionId, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet("streak")]
     public async Task<ActionResult<StreakResult>> Streak(CancellationToken cancellationToken)
     {

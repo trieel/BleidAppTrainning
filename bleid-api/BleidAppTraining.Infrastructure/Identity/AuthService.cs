@@ -76,4 +76,57 @@ public class AuthService(
 
         return ResultMappings.User(user);
     }
+
+    public async Task<UserProfileResult> UpdateProfileAsync(
+        Guid userId,
+        UpdateProfileCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await db.Users
+            .Include(item => item.Limitations)
+            .SingleOrDefaultAsync(item => item.Id == userId, cancellationToken)
+            ?? throw new KeyNotFoundException("The authenticated user was not found.");
+
+        if (!string.IsNullOrWhiteSpace(command.FullName))
+            user.FullName = command.FullName.Trim();
+
+        if (command.Age.HasValue)
+            user.Age = command.Age.Value;
+
+        if (command.Sex.HasValue)
+            user.Sex = command.Sex.Value;
+
+        if (command.Goal.HasValue)
+            user.Goal = command.Goal.Value;
+
+        if (command.Level.HasValue)
+            user.Level = command.Level.Value;
+
+        if (command.DaysPerWeek.HasValue)
+            user.DaysPerWeek = Math.Clamp(command.DaysPerWeek.Value, 2, 6);
+
+        if (command.SessionMin.HasValue)
+            user.SessionMin = Math.Clamp(command.SessionMin.Value, 20, 180);
+
+        if (command.Limitations is not null)
+        {
+            db.UserLimitations.RemoveRange(user.Limitations);
+            user.Limitations.Clear();
+
+            foreach (var input in command.Limitations)
+            {
+                var limitation = new UserLimitation
+                {
+                    UserId = userId,
+                    Type = input.Type,
+                    Severity = input.Severity
+                };
+                user.Limitations.Add(limitation);
+                db.UserLimitations.Add(limitation);
+            }
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return ResultMappings.User(user);
+    }
 }
