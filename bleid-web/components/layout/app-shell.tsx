@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { BarChart3, BookOpen, Dumbbell, History, House, UserRound } from "lucide-react";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { BrandMark } from "@/components/ui/brand-mark";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { getActiveSession } from "@/lib/api/workout";
 import { cn } from "@/lib/utils";
 
@@ -142,6 +143,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </div>
           </nav>
+
+          {/* PWA Mobile Installation Prompt */}
+          <InstallPrompt />
         </div>
       </div>
     </AuthGuard>

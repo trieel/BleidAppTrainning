@@ -12,11 +12,13 @@ import {
   Save,
   ShieldAlert,
   ShieldCheck,
+  Smartphone,
   UserRound,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { IOSInstallModal } from "@/components/pwa/install-prompt";
 import { getMe, updateProfile } from "@/lib/api/auth";
 import { clearToken } from "@/lib/auth";
 import { goalLabels, goalShortLabels, levelLabels, limitationLabels, severityLabels } from "@/lib/labels";
@@ -31,6 +33,8 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ message: string; isError: boolean } | null>(null);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
 
   // Form states
   const [fullName, setFullName] = useState("");
@@ -43,6 +47,13 @@ export default function ProfilePage() {
   const [limitations, setLimitations] = useState<UserLimitation[]>([]);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const standaloneMode =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        (navigator as unknown as { standalone?: boolean }).standalone === true;
+      setIsStandalone(standaloneMode);
+    }
+
     getMe().then((data) => {
       setProfile(data);
       initForm(data);
@@ -452,7 +463,51 @@ export default function ProfilePage() {
               </button>
             </div>
           </div>
+
+          {/* Mobile App & Shortcut view */}
+          <div className="card-editorial rounded-2xl border border-border bg-card p-5 shadow-soft">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
+                  <Smartphone className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-foreground">Acceso en Pantalla de Inicio</p>
+                    {isStandalone ? (
+                      <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-mono font-bold text-success border border-success/30">
+                        ✓ Instalada
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-mono font-bold text-primary border border-primary/25">
+                        PWA Móvil
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {isStandalone
+                      ? "Estás usando Bleid como aplicación instalada en este dispositivo."
+                      : "Instalá Bleid en tu teléfono para abrirla a pantalla completa sin barra del navegador."}
+                  </p>
+                </div>
+              </div>
+              {!isStandalone && (
+                <button
+                  type="button"
+                  onClick={() => setShowInstallGuide(true)}
+                  className="shrink-0 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25 px-3 py-1.5 text-xs font-bold transition tactile-press"
+                >
+                  Cómo instalar
+                </button>
+              )}
+            </div>
+          </div>
         </div>
+      )}
+
+      {/* iOS & Mobile Install Guide Modal */}
+      {showInstallGuide && (
+        <IOSInstallModal onClose={() => setShowInstallGuide(false)} />
       )}
 
       {/* Logout button */}

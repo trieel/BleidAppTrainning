@@ -14,14 +14,28 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "BleidAppTraining",
+  title: "BleidApp Training",
   description: "Entrena con una rutina pensada para vos.",
-  applicationName: "BleidAppTraining",
+  applicationName: "BleidApp Training",
   manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Bleid",
+  },
+  icons: {
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#c8ff32",
+  themeColor: "#16120E",
   width: "device-width",
   initialScale: 1,
 };
