@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: bleid-api
+    runtime: docker
+    dockerfilePath: bleid-api/Dockerfile
+    dockerContext: bleid-api
+    plan: free
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Frontend__Url
+        value: "*"
+      - key: Jwt__Secret
+        generateValue: true
+      - key: ConnectionStrings__Default
+        sync: false
