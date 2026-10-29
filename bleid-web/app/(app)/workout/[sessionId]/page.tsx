@@ -107,6 +107,21 @@ export default function ActiveWorkoutPage() {
     loadSession();
   }, [params.sessionId]);
 
+  useEffect(() => {
+    const isSessionActive = Boolean(session && !session.finishedAt && session.sets.length > 0);
+    if (!isSessionActive) return;
+
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [session]);
+
   const day = useMemo(() => {
     return routine?.days.find((item) => item.id === session?.routineDayId) ?? null;
   }, [routine, session]);
