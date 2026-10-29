@@ -8,17 +8,20 @@ namespace BleidAppTraining.Application.Services;
 
 public class BodyWeightService(IApplicationDbContext db) : IBodyWeightService
 {
-    private static readonly TimeSpan LocalTimeZoneOffset = TimeSpan.FromHours(-3);
+    private static TimeSpan GetOffset(int? timezoneOffsetMinutes) =>
+        TimeSpan.FromMinutes(timezoneOffsetMinutes ?? -180);
 
     public async Task<BodyWeightResult> LogAsync(
         Guid userId,
         LogBodyWeightCommand command,
+        int? timezoneOffsetMinutes = null,
         CancellationToken cancellationToken = default)
     {
         if (command.WeightKg <= 0 || command.WeightKg > 500)
             throw new ServiceValidationException("El peso corporal debe ser mayor a 0 kg y menor a 500 kg.");
 
-        var targetDate = command.Date ?? DateOnly.FromDateTime(DateTime.UtcNow.Add(LocalTimeZoneOffset));
+        var offset = GetOffset(timezoneOffsetMinutes);
+        var targetDate = command.Date ?? DateOnly.FromDateTime(DateTime.UtcNow.Add(offset));
 
         var existing = await db.BodyWeightEntries
             .FirstOrDefaultAsync(e => e.UserId == userId && e.Date == targetDate, cancellationToken);
@@ -71,9 +74,11 @@ public class BodyWeightService(IApplicationDbContext db) : IBodyWeightService
     public async Task<IReadOnlyCollection<BodyWeightResult>> GetHistoryAsync(
         Guid userId,
         int days = 90,
+        int? timezoneOffsetMinutes = null,
         CancellationToken cancellationToken = default)
     {
-        var cutoffDate = DateOnly.FromDateTime(DateTime.UtcNow.Add(LocalTimeZoneOffset)).AddDays(-days);
+        var offset = GetOffset(timezoneOffsetMinutes);
+        var cutoffDate = DateOnly.FromDateTime(DateTime.UtcNow.Add(offset)).AddDays(-days);
 
         var list = await db.BodyWeightEntries
             .AsNoTracking()

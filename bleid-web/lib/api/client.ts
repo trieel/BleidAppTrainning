@@ -17,6 +17,9 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}) {
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (typeof window !== "undefined") {
+    headers.set("X-Timezone-Offset", String(-new Date().getTimezoneOffset()));
+  }
 
   const response = await fetch(`${API_URL}${path}`, {
     ...options,

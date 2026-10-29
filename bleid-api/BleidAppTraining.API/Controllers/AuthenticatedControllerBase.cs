@@ -10,4 +10,17 @@ public abstract class AuthenticatedControllerBase : ControllerBase
     protected Guid CurrentUserId => Guid.Parse(
         User.FindFirstValue("userId") ??
         throw new UnauthorizedAccessException("The access token does not contain a user id."));
+
+    protected int? ClientTimezoneOffset
+    {
+        get
+        {
+            if (Request.Headers.TryGetValue("X-Timezone-Offset", out var headerValue) &&
+                int.TryParse(headerValue, out var offsetMinutes))
+            {
+                return Math.Clamp(offsetMinutes, -720, 840);
+            }
+            return null;
+        }
+    }
 }

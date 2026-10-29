@@ -13,7 +13,7 @@ public class BodyWeightController(IBodyWeightService bodyWeightService) : Authen
         [FromQuery] int days = 90,
         CancellationToken cancellationToken = default)
     {
-        var history = await bodyWeightService.GetHistoryAsync(CurrentUserId, days, cancellationToken);
+        var history = await bodyWeightService.GetHistoryAsync(CurrentUserId, days, ClientTimezoneOffset, cancellationToken);
         return Ok(history);
     }
 
@@ -29,7 +29,7 @@ public class BodyWeightController(IBodyWeightService bodyWeightService) : Authen
         [FromBody] LogBodyWeightCommand command,
         CancellationToken cancellationToken = default)
     {
-        var result = await bodyWeightService.LogAsync(CurrentUserId, command, cancellationToken);
+        var result = await bodyWeightService.LogAsync(CurrentUserId, command, ClientTimezoneOffset, cancellationToken);
         return Ok(result);
     }
 

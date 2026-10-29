@@ -11,7 +11,7 @@ public class ProgressController(IProgressService progressService) : Authenticate
     [HttpGet("volume")]
     public async Task<ActionResult<IReadOnlyCollection<VolumeProgressResult>>> Volume(CancellationToken cancellationToken)
     {
-        return Ok(await progressService.GetVolumeAsync(CurrentUserId, cancellationToken));
+        return Ok(await progressService.GetVolumeAsync(CurrentUserId, ClientTimezoneOffset, cancellationToken));
     }
 
     [HttpGet("exercise/{id:guid}")]
@@ -19,7 +19,7 @@ public class ProgressController(IProgressService progressService) : Authenticate
         Guid id,
         CancellationToken cancellationToken)
     {
-        return Ok(await progressService.GetExerciseProgressAsync(CurrentUserId, id, cancellationToken));
+        return Ok(await progressService.GetExerciseProgressAsync(CurrentUserId, id, ClientTimezoneOffset, cancellationToken));
     }
 
     [HttpGet("exercise/{id:guid}/latest")]
@@ -28,13 +28,13 @@ public class ProgressController(IProgressService progressService) : Authenticate
         [FromQuery] Guid? excludeSessionId,
         CancellationToken cancellationToken)
     {
-        var result = await progressService.GetLatestPerformanceAsync(CurrentUserId, id, excludeSessionId, cancellationToken);
+        var result = await progressService.GetLatestPerformanceAsync(CurrentUserId, id, excludeSessionId, ClientTimezoneOffset, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("streak")]
     public async Task<ActionResult<StreakResult>> Streak(CancellationToken cancellationToken)
     {
-        return Ok(await progressService.GetStreakAsync(CurrentUserId, cancellationToken));
+        return Ok(await progressService.GetStreakAsync(CurrentUserId, ClientTimezoneOffset, cancellationToken));
     }
 }

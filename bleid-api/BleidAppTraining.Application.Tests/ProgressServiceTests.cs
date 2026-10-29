@@ -198,4 +198,26 @@ public class ProgressServiceTests
         Assert.Equal(1, result.Sets.First().SetNumber);
         Assert.Equal(80m, result.Sets.First().WeightKg);
     }
+    [Fact]
+    public async Task GetStreakAsync_WithCustomTimezoneOffset_CalculatesAccordingToCallerTimezone()
+    {
+        using var db = TestDbContextFactory.Create(nameof(GetStreakAsync_WithCustomTimezoneOffset_CalculatesAccordingToCallerTimezone));
+        var userId = Guid.NewGuid();
+        var session = new WorkoutSession
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            RoutineDayId = Guid.NewGuid(),
+            StartedAt = DateTime.UtcNow,
+            FinishedAt = DateTime.UtcNow
+        };
+        db.WorkoutSessions.Add(session);
+        await db.SaveChangesAsync();
+
+        var service = new ProgressService(db);
+        var result = await service.GetStreakAsync(userId, timezoneOffsetMinutes: 540);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.CurrentDays);
+    }
 }
