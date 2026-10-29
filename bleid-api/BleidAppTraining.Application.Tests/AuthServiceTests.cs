@@ -1,3 +1,4 @@
+using BleidAppTraining.Application.Common;
 using BleidAppTraining.Application.Contracts;
 using BleidAppTraining.Domain.Entities;
 using BleidAppTraining.Domain.Enums;
@@ -34,7 +35,7 @@ public class AuthServiceTests
             Goal = GoalType.GainMuscle,
             Level = LevelType.Advanced,
             DaysPerWeek = 5,
-            SessionMin = 75,
+            SessionMin = 60,
             Limitations =
             [
                 new UserLimitationInput { Type = LimitationType.Knee, Severity = SeverityType.Moderate },
@@ -47,7 +48,37 @@ public class AuthServiceTests
         Assert.Equal(GoalType.GainMuscle, updated.Goal);
         Assert.Equal(LevelType.Advanced, updated.Level);
         Assert.Equal(5, updated.DaysPerWeek);
-        Assert.Equal(75, updated.SessionMin);
+        Assert.Equal(60, updated.SessionMin);
         Assert.Equal(2, updated.Limitations.Count);
+    }
+
+    [Theory]
+    [InlineData(20)]
+    [InlineData(50)]
+    [InlineData(75)]
+    [InlineData(90)]
+    [InlineData(120)]
+    public async Task UpdateProfileAsync_WhenSessionMinIsInvalid_ThrowsServiceValidationException(int invalidMinutes)
+    {
+        using var db = TestDbContextFactory.Create(nameof(UpdateProfileAsync_WhenSessionMinIsInvalid_ThrowsServiceValidationException) + invalidMinutes);
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Email = "test@bleid.app",
+            UserName = "test@bleid.app",
+            FullName = "Test Athlete",
+            DaysPerWeek = 3
+        };
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var service = new AuthService(null!, null!, null!, db);
+        var ex = await Assert.ThrowsAsync<ServiceValidationException>(() => service.UpdateProfileAsync(userId, new UpdateProfileCommand
+        {
+            SessionMin = invalidMinutes
+        }));
+
+        Assert.Contains("30, 45 o 60", ex.Message);
     }
 }

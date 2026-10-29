@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IOSInstallModal } from "@/components/pwa/install-prompt";
 import { getMe, updateProfile } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 import { clearToken } from "@/lib/auth";
 import { goalLabels, goalShortLabels, levelLabels, limitationLabels, severityLabels } from "@/lib/labels";
 import { LoadingScreen } from "@/components/ui/loading-screen";
@@ -54,10 +55,17 @@ export default function ProfilePage() {
       setIsStandalone(standaloneMode);
     }
 
-    getMe().then((data) => {
-      setProfile(data);
-      initForm(data);
-    });
+    getMe()
+      .then((data) => {
+        setProfile(data);
+        initForm(data);
+      })
+      .catch((err) => {
+        setFeedback({
+          message: err instanceof ApiError ? err.message : "No pudimos cargar tu perfil de atleta.",
+          isError: true,
+        });
+      });
   }, []);
 
   function initForm(data: UserProfile) {
@@ -106,8 +114,11 @@ export default function ProfilePage() {
       initForm(updated);
       setEditing(false);
       setFeedback({ message: "Perfil y adaptaciones biomecánicas actualizados con éxito.", isError: false });
-    } catch {
-      setFeedback({ message: "No pudimos guardar los cambios. Intentá de nuevo.", isError: true });
+    } catch (ex) {
+      setFeedback({
+        message: ex instanceof ApiError ? ex.message : "No pudimos guardar los cambios. Intentá de nuevo.",
+        isError: true,
+      });
     } finally {
       setSaving(false);
     }
@@ -118,7 +129,30 @@ export default function ProfilePage() {
     router.replace("/login");
   }
 
-  if (!profile) return <LoadingScreen />;
+  if (!profile) {
+    if (feedback?.isError) {
+      return (
+        <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
+          <p className="text-base font-semibold text-destructive">{feedback.message}</p>
+          <div className="mt-6 flex gap-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center gap-2 rounded-xl bg-secondary px-5 py-2.5 text-sm font-bold text-foreground border border-border"
+            >
+              Reintentar
+            </button>
+            <button
+              onClick={logout}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+            >
+              Volver a iniciar sesión
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="px-5 py-6 sm:px-8 lg:px-12 lg:py-10 max-w-7xl mx-auto">
@@ -257,18 +291,27 @@ export default function ProfilePage() {
                 </select>
               </label>
 
-              <label className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                Minutos por sesión
-                <input
-                  type="number"
-                  min="20"
-                  max="180"
-                  step="5"
-                  value={sessionMin}
-                  onChange={(e) => setSessionMin(Number(e.target.value))}
-                  className="mt-1 h-11 w-full rounded-xl border border-border bg-muted/40 px-3 text-sm font-medium text-foreground outline-none focus:bg-background focus:border-primary/60 shadow-soft"
-                />
-              </label>
+              <div>
+                <label className="block text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                  Minutos por sesión
+                </label>
+                <div className="grid grid-cols-3 gap-2 mt-1">
+                  {[30, 45, 60].map((min) => (
+                    <button
+                      type="button"
+                      key={min}
+                      onClick={() => setSessionMin(min)}
+                      className={`h-11 rounded-xl border text-center text-xs font-mono font-bold transition active:scale-[0.98] ${
+                        sessionMin === min
+                          ? "border-primary bg-primary text-primary-foreground shadow-soft"
+                          : "border-border bg-muted/40 text-muted-foreground hover:bg-muted/70"
+                      }`}
+                    >
+                      {min} min
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 

@@ -117,7 +117,12 @@ public class AuthService(
             user.DaysPerWeek = Math.Clamp(command.DaysPerWeek.Value, 2, 6);
 
         if (command.SessionMin.HasValue)
-            user.SessionMin = Math.Clamp(command.SessionMin.Value, 20, 180);
+        {
+            if (command.SessionMin.Value is not (30 or 45 or 60))
+                throw new ServiceValidationException("La duración de la sesión debe ser de 30, 45 o 60 minutos.");
+
+            user.SessionMin = command.SessionMin.Value;
+        }
 
         if (command.Limitations is not null)
         {
