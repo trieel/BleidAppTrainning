@@ -44,7 +44,26 @@ public class BodyWeightService(IApplicationDbContext db) : IBodyWeightService
         };
 
         db.BodyWeightEntries.Add(entry);
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+            var concurrent = await db.BodyWeightEntries
+                .FirstOrDefaultAsync(e => e.UserId == userId && e.Date == targetDate, cancellationToken);
+            if (concurrent is not null)
+            {
+                concurrent.WeightKg = command.WeightKg;
+                if (!string.IsNullOrWhiteSpace(command.Notes))
+                {
+                    concurrent.Notes = command.Notes.Trim();
+                }
+                await db.SaveChangesAsync(cancellationToken);
+                return Map(concurrent);
+            }
+            throw;
+        }
 
         return Map(entry);
     }

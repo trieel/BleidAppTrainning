@@ -59,6 +59,7 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                         .HasName("pk_body_weight_entries");
 
                     b.HasIndex("UserId", "Date")
+                        .IsUnique()
                         .HasDatabaseName("ix_body_weight_entries_user_id_date");
 
                     b.ToTable("body_weight_entries", (string)null);

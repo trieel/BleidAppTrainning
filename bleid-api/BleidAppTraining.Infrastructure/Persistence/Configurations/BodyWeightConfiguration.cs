@@ -13,7 +13,7 @@ public class BodyWeightEntryConfiguration : IEntityTypeConfiguration<BodyWeightE
         builder.Property(entry => entry.WeightKg).HasPrecision(6, 2);
         builder.Property(entry => entry.Notes).HasMaxLength(500);
         builder.Property(entry => entry.CreatedAt).HasDefaultValueSql("now()");
-        builder.HasIndex(entry => new { entry.UserId, entry.Date });
+        builder.HasIndex(entry => new { entry.UserId, entry.Date }).IsUnique();
         builder.HasOne(entry => entry.User)
             .WithMany()
             .HasForeignKey(entry => entry.UserId)
