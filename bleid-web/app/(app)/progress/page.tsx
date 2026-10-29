@@ -54,8 +54,8 @@ export default function ProgressPage() {
       .flatMap((day) => day.exercises)
       .filter((exercise, index, all) => all.findIndex((candidate) => candidate.exerciseId === exercise.exerciseId) === index) ?? [];
 
-  const maxVolume = Math.max(...volume.map((item) => item.totalVolumeKg), 1);
-  const maxWeight = Math.max(...exerciseProgress.map((item) => item.maxWeightKg), 1);
+  const maxVolume = volume.length > 0 ? Math.max(...volume.map((item) => item.totalVolumeKg), 1) : 0;
+  const maxWeight = exerciseProgress.length > 0 ? Math.max(...exerciseProgress.map((item) => item.maxWeightKg), 1) : 0;
 
   return (
     <div className="px-5 py-6 sm:px-8 lg:px-12 lg:py-10 max-w-7xl mx-auto">
@@ -142,12 +142,16 @@ export default function ProgressPage() {
 
         <div className="mt-8 flex h-52 items-end gap-2 sm:gap-4">
           {volume.length === 0 ? (
-            <div className="grid h-full w-full place-items-center text-sm text-muted-foreground bg-muted/20 rounded-xl">
-              Completá tu primera sesión para empezar a ver tu tendencia semanal.
+            <div className="flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-secondary/20 p-6 text-center">
+              <BarChart3 className="h-6 w-6 text-primary/70 mb-2" />
+              <p className="text-xs font-mono font-bold text-foreground">Sin series registradas</p>
+              <p className="mt-1 max-w-xs text-xs text-muted-foreground">
+                Completá tu primera sesión para empezar a registrar y comparar tu sobrecarga semanal.
+              </p>
             </div>
           ) : (
             volume.slice(-10).map((item) => {
-              const heightPercent = Math.max((item.totalVolumeKg / maxVolume) * 85, 6);
+              const heightPercent = maxVolume > 0 ? Math.max((item.totalVolumeKg / maxVolume) * 85, 6) : 6;
               return (
                 <div key={item.weekStart} className="group relative flex h-full flex-1 flex-col items-center justify-end gap-2">
                   <span className="text-[10px] font-mono font-bold text-primary opacity-0 transition group-hover:opacity-100">
@@ -198,9 +202,16 @@ export default function ProgressPage() {
 
         <div className="mt-8 space-y-3">
           {exerciseProgress.length === 0 ? (
-            <div className="flex items-center gap-3 rounded-xl bg-muted/30 border border-border/60 p-5 text-sm text-muted-foreground">
-              <Dumbbell className="h-5 w-5 text-primary" />
-              <span>Registrá series de este ejercicio en tus entrenamientos para ver la evolución de tu carga máxima.</span>
+            <div className="flex items-center gap-3.5 rounded-xl bg-secondary/30 border border-border/70 p-5 text-sm text-muted-foreground">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Dumbbell className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-mono font-bold text-foreground">Sin datos históricos para este ejercicio</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Registrá series con peso en tus sesiones para ver la progresión de tu carga máxima y 1RM estimada.
+                </p>
+              </div>
             </div>
           ) : (
             exerciseProgress.slice(-8).map((point) => (
@@ -209,7 +220,7 @@ export default function ProgressPage() {
                 <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
                   <div
                     className="h-full rounded-full bg-primary transition-all duration-300"
-                    style={{ width: `${Math.max((point.maxWeightKg / maxWeight) * 100, 5)}%` }}
+                    style={{ width: `${maxWeight > 0 ? Math.max((point.maxWeightKg / maxWeight) * 100, 5) : 5}%` }}
                   />
                 </div>
                 <span className="w-24 text-right font-mono text-xs font-bold text-foreground">

@@ -120,7 +120,7 @@ export default function DashboardPage() {
   }
 
   const firstName = profile.fullName.trim().split(" ")[0] || "Atleta";
-  const maxVolume = Math.max(...volume.map((item) => item.totalVolumeKg), 1);
+  const maxVolume = volume.length > 0 ? Math.max(...volume.map((item) => item.totalVolumeKg), 1) : 0;
   const currentWeekVolume = volume.at(-1)?.totalVolumeKg ?? 0;
 
   const todayIso = new Date().toISOString().slice(0, 10);
@@ -455,13 +455,17 @@ export default function DashboardPage() {
 
           <div className="mt-6">
             {volume.length === 0 ? (
-              <div className="grid h-36 place-items-center rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground font-mono">
-                Completá tu primer entrenamiento para visualizar la telemetría de volumen.
+              <div className="flex h-36 flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-secondary/20 p-4 text-center">
+                <Sparkles className="h-5 w-5 text-primary/70 mb-1.5" />
+                <p className="text-xs font-mono font-bold text-foreground">Sin registros de volumen todavía</p>
+                <p className="mt-1 max-w-xs text-[11px] text-muted-foreground font-sans">
+                  Completá tu primer entrenamiento para visualizar la telemetría semanal.
+                </p>
               </div>
             ) : (
               <div className="flex h-36 items-end gap-2 pt-4">
                 {volume.slice(-8).map((item) => {
-                  const percentage = Math.max((item.totalVolumeKg / maxVolume) * 100, 8);
+                  const percentage = maxVolume > 0 ? Math.max((item.totalVolumeKg / maxVolume) * 100, 8) : 8;
                   return (
                     <div key={item.weekStart} className="group relative flex flex-1 flex-col items-center gap-2 h-full justify-end">
                       {/* Tooltip on hover */}
@@ -483,7 +487,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground font-mono">
-            <span>Récord: {maxVolume.toLocaleString("es-AR")} kg</span>
+            <span>Récord: {maxVolume > 0 ? `${maxVolume.toLocaleString("es-AR")} kg` : "—"}</span>
             <Link href="/history" className="text-primary font-bold hover:underline">
               Ver sesiones →
             </Link>
