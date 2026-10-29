@@ -6,8 +6,10 @@ using BleidAppTraining.API.Middleware;
 using BleidAppTraining.Application.Validators;
 using BleidAppTraining.Infrastructure;
 using BleidAppTraining.Infrastructure.Identity;
+using BleidAppTraining.Infrastructure.Persistence;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
@@ -47,9 +49,15 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.AddPolicy(AuthRateLimitPolicy, context =>
     {
-        var remoteIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var remoteIp = context.Connection.RemoteIpAddress?.ToString();
+        if (string.IsNullOrEmpty(remoteIp) && context.Request.Headers.TryGetValue("X-Forwarded-For", out var forwarded))
+        {
+            remoteIp = forwarded.ToString().Split(',')[0].Trim();
+        }
+        var partitionKey = !string.IsNullOrEmpty(remoteIp) ? remoteIp : context.TraceIdentifier;
+
         return RateLimitPartition.GetFixedWindowLimiter(
-            remoteIp,
+            partitionKey,
             _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = 5,
@@ -58,6 +66,10 @@ builder.Services.AddRateLimiter(options =>
             });
     });
 });
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<BleidDbContext>("database");
+
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddEndpointsApiExplorer();
@@ -68,6 +80,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new InvalidOperationException("Jwt:Secret is not configured.");
+
+if (!builder.Environment.IsDevelopment() && Encoding.UTF8.GetByteCount(jwtSecret) < 32)
+{
+    throw new InvalidOperationException("Jwt:Secret must be at least 256 bits (32 bytes) in non-development environments.");
+}
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -156,7 +173,26 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var response = new
+        {
+            status = report.Status.ToString().ToLowerInvariant(),
+            checks = report.Entries.Select(e => new
+            {
+                name = e.Key,
+                status = e.Value.Status.ToString().ToLowerInvariant(),
+                description = e.Value.Description,
+                durationMs = Math.Round(e.Value.Duration.TotalMilliseconds, 2)
+            }),
+            totalDurationMs = Math.Round(report.TotalDuration.TotalMilliseconds, 2)
+        };
+        await context.Response.WriteAsJsonAsync(response);
+    }
+}).AllowAnonymous();
 
 Console.WriteLine(">>> [BleidApp] Web API is starting up and listening for incoming requests...");
 app.Run();
