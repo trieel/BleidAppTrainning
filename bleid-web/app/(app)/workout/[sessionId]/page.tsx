@@ -21,6 +21,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { getActiveRoutine, getLatestExercisePerformance } from "@/lib/api";
 import { deleteSet, endSession, getSession, registerSet } from "@/lib/api/workout";
+import { ApiError } from "@/lib/api/client";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { RestTimer } from "@/components/features/rest-timer";
 import { PlateCalculator } from "@/components/features/plate-calculator";
@@ -96,8 +97,8 @@ export default function ActiveWorkoutPage() {
           );
           setLatestPerformances(perfMap);
         }
-      } catch {
-        setError("No pudimos encontrar los datos de esta sesión.");
+      } catch (exception) {
+        setError(exception instanceof ApiError ? exception.message : "No pudimos encontrar los datos de esta sesión.");
       } finally {
         setLoading(false);
       }
@@ -141,8 +142,8 @@ export default function ActiveWorkoutPage() {
         seconds: exercise.restSeconds > 0 ? exercise.restSeconds : 90,
         exerciseName: exercise.exerciseName,
       });
-    } catch {
-      setError("No pudimos registrar la serie. Intentá nuevamente.");
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos registrar la serie. Intentá nuevamente.");
     } finally {
       setSaving(false);
     }
@@ -155,8 +156,8 @@ export default function ActiveWorkoutPage() {
     try {
       const updated = await deleteSet(session.id, setId);
       persist(updated);
-    } catch {
-      setError("No pudimos eliminar la serie.");
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos eliminar la serie.");
     } finally {
       setSaving(false);
     }
@@ -172,8 +173,8 @@ export default function ActiveWorkoutPage() {
         window.sessionStorage.removeItem("bleid-active-session");
       }
       router.replace("/dashboard");
-    } catch {
-      setError("Error al finalizar el entrenamiento.");
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "Error al finalizar el entrenamiento.");
     } finally {
       setSaving(false);
     }

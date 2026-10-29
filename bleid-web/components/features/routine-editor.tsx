@@ -3,6 +3,7 @@
 import { Check, Edit3, Loader2, Plus, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { addRoutineExercise, getExercises, removeRoutineExercise } from "@/lib/api";
+import { ApiError } from "@/lib/api/client";
 import type { Exercise, Routine, RoutineDay } from "@/types";
 
 export function RoutineEditor({
@@ -18,17 +19,24 @@ export function RoutineEditor({
   const [catalog, setCatalog] = useState<Exercise[]>([]);
   const [savingId, setSavingId] = useState("");
   const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
 
   async function openEditor() {
     setOpen(true);
+    setError("");
     if (catalog.length === 0) {
-      const all = await getExercises();
-      setCatalog(all);
+      try {
+        const all = await getExercises();
+        setCatalog(all);
+      } catch (exception) {
+        setError(exception instanceof ApiError ? exception.message : "No pudimos cargar los ejercicios disponibles.");
+      }
     }
   }
 
   async function add(exercise: Exercise) {
     setSavingId(exercise.id);
+    setError("");
     try {
       const updated = await addRoutineExercise(routine.id, day.id, {
         exerciseId: exercise.id,
@@ -38,6 +46,8 @@ export function RoutineEditor({
         restSeconds: 90,
       });
       onRoutineChange(updated);
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos agregar el ejercicio.");
     } finally {
       setSavingId("");
     }
@@ -45,9 +55,12 @@ export function RoutineEditor({
 
   async function remove(exerciseId: string) {
     setSavingId(exerciseId);
+    setError("");
     try {
       const updated = await removeRoutineExercise(routine.id, day.id, exerciseId);
       onRoutineChange(updated);
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos quitar el ejercicio.");
     } finally {
       setSavingId("");
     }
@@ -94,6 +107,11 @@ export function RoutineEditor({
 
       {open && (
         <div className="mt-4">
+          {error && (
+            <div className="mb-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-semibold text-destructive">
+              {error}
+            </div>
+          )}
           <p className="text-xs leading-5 text-muted-foreground">
             Los ejercicios disponibles ya están pre-filtrados para evitar tus zonas sensibles y lesiones.
           </p>

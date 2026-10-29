@@ -66,8 +66,8 @@ export default function WorkoutPage() {
         window.sessionStorage.setItem("bleid-active-session", JSON.stringify(session));
       }
       router.push(`/workout/${session.id}`);
-    } catch {
-      setError("No pudimos iniciar la sesión. Intentá de nuevo.");
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos iniciar la sesión. Intentá de nuevo.");
     } finally {
       setStarting(false);
     }
@@ -92,8 +92,8 @@ export default function WorkoutPage() {
       }
       setShowAddDayModal(false);
       setNewDayName("");
-    } catch {
-      setError("No pudimos agregar el día a la rutina.");
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos agregar el día a la rutina.");
     } finally {
       setSavingDay(false);
     }
@@ -108,8 +108,8 @@ export default function WorkoutPage() {
       const updated = await deleteRoutineDay(routine.id, dayId);
       setRoutine(updated);
       setSelectedDay(updated.days[0] ?? null);
-    } catch {
-      setError("No pudimos eliminar el día de la rutina.");
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos eliminar el día de la rutina.");
     } finally {
       setDeletingDay(false);
     }

@@ -36,3 +36,50 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
             .NotEmpty().WithMessage("Password is required.");
     }
 }
+
+public sealed class UpdateProfileCommandValidator : AbstractValidator<UpdateProfileCommand>
+{
+    public UpdateProfileCommandValidator()
+    {
+        RuleFor(command => command.FullName)
+            .MaximumLength(150).WithMessage("Full name cannot exceed 150 characters.")
+            .When(command => !string.IsNullOrEmpty(command.FullName));
+
+        RuleFor(command => command.Age)
+            .InclusiveBetween(13, 100).WithMessage("Age must be between 13 and 100.")
+            .When(command => command.Age.HasValue);
+
+        RuleFor(command => command.DaysPerWeek)
+            .InclusiveBetween(2, 6).WithMessage("Days per week must be between 2 and 6.")
+            .When(command => command.DaysPerWeek.HasValue);
+
+        RuleFor(command => command.SessionMin)
+            .Must(val => val is 30 or 45 or 60).WithMessage("Session length must be 30, 45 or 60 minutes.")
+            .When(command => command.SessionMin.HasValue);
+
+        RuleFor(command => command.Goal)
+            .IsInEnum().WithMessage("Invalid goal type.")
+            .When(command => command.Goal.HasValue);
+
+        RuleFor(command => command.Level)
+            .IsInEnum().WithMessage("Invalid level type.")
+            .When(command => command.Level.HasValue);
+
+        RuleFor(command => command.Sex)
+            .IsInEnum().WithMessage("Invalid sex type.")
+            .When(command => command.Sex.HasValue);
+
+        RuleForEach(command => command.Limitations)
+            .SetValidator(new UserLimitationInputValidator())
+            .When(command => command.Limitations is not null);
+    }
+}
+
+public sealed class UserLimitationInputValidator : AbstractValidator<UserLimitationInput>
+{
+    public UserLimitationInputValidator()
+    {
+        RuleFor(item => item.Type).IsInEnum();
+        RuleFor(item => item.Severity).IsInEnum();
+    }
+}

@@ -125,6 +125,7 @@ catch (Exception ex)
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
     app.UseHsts();
@@ -135,8 +136,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.MapSwagger().AllowAnonymous();
 }
-
-app.UseForwardedHeaders();
 
 app.Use(async (context, next) =>
 {
