@@ -120,9 +120,19 @@ builder.Services.AddCors(options =>
     {
         var frontendUrl = builder.Configuration["Frontend:Url"] ?? "http://localhost:3000";
 
-        policy.WithOrigins(frontendUrl)
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        if (frontendUrl.Trim() == "*")
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+        else
+        {
+            var origins = frontendUrl.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            policy.WithOrigins(origins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
     });
 });
 
