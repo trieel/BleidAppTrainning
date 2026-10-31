@@ -1,4 +1,4 @@
-using BleidAppTraining.Application.Common;
+﻿using BleidAppTraining.Application.Common;
 using BleidAppTraining.Application.Contracts;
 using BleidAppTraining.Application.Interfaces;
 using BleidAppTraining.Domain.Entities;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BleidAppTraining.Application.Services;
 
-public class RoutineService(IApplicationDbContext db) : IRoutineService
+public class RoutineService(IApplicationDbContext db, ISubscriptionService? subscriptionService = null) : IRoutineService
 {
     public async Task<RoutineResult> GetActiveAsync(Guid userId, CancellationToken cancellationToken = default)
     {
@@ -83,6 +83,15 @@ public class RoutineService(IApplicationDbContext db) : IRoutineService
                                        db.UserRoutines.Any(ur => ur.UserId == userId && ur.RoutineId == routineId), cancellationToken)
             ?? throw new KeyNotFoundException("The requested routine was not found for this user.");
 
+        var activeDaysCount = routine.Days.Count(d => d.IsActive);
+        if (activeDaysCount >= 4 && subscriptionService is not null)
+        {
+            var subStatus = await subscriptionService.GetStatusAsync(userId, cancellationToken);
+            if (!subStatus.IsProActive)
+            {
+                throw new ServiceValidationException("Se requiere una suscripci�n Pro activa para agregar m�s de 4 d�as de entrenamiento.");
+            }
+        }
         var nextDayNumber = routine.Days.Count + 1;
         var nextOrder = (routine.Days.Select(d => (int?)d.Order).Max() ?? 0) + 1;
         var dayName = string.IsNullOrWhiteSpace(command.Name) ? $"Día {nextDayNumber}" : command.Name.Trim();

@@ -1,4 +1,4 @@
-using BleidAppTraining.Application.Contracts;
+﻿using BleidAppTraining.Application.Contracts;
 using BleidAppTraining.Domain.Entities;
 
 namespace BleidAppTraining.Application.Services;
@@ -29,6 +29,7 @@ public static class ResultMappings
         routine.DaysPerWeek,
         routine.IsTemplate,
         routine.Days
+            .Where(day => day.IsActive)
             .OrderBy(day => day.Order)
             .ThenBy(day => day.DayNumber)
             .Select(day => new RoutineDayResult(

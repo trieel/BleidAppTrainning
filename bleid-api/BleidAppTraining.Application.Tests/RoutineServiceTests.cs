@@ -1,4 +1,4 @@
-using BleidAppTraining.Application.Common;
+﻿using BleidAppTraining.Application.Common;
 using BleidAppTraining.Application.Services;
 using BleidAppTraining.Domain.Entities;
 using BleidAppTraining.Domain.Enums;
@@ -259,5 +259,59 @@ public class RoutineServiceTests
             Assert.Equal(4, result.DaysPerWeek);
             Assert.Equal(4, result.Days.Count);
         }
+    }
+    private class FakeSubService(bool isPro) : BleidAppTraining.Application.Interfaces.ISubscriptionService
+    {
+        public Task<BleidAppTraining.Application.Contracts.SubscriptionStatusResult> GetStatusAsync(Guid userId, CancellationToken ct = default)
+            => Task.FromResult(new BleidAppTraining.Application.Contracts.SubscriptionStatusResult(isPro, isPro ? BleidAppTraining.Domain.Enums.SubscriptionStatus.Active : null, null));
+        public Task<BleidAppTraining.Application.Contracts.SubscriptionCheckoutResult> CreateCheckoutSessionAsync(Guid userId, CancellationToken ct = default) => throw new NotImplementedException();
+        public Task<BleidAppTraining.Application.Contracts.SubscriptionStatusResult> VerifySessionAsync(Guid userId, string preapprovalId, CancellationToken ct = default) => throw new NotImplementedException();
+        public Task<bool> CancelAsync(Guid userId, CancellationToken ct = default) => throw new NotImplementedException();
+        public Task<bool> HandleWebhookAsync(BleidAppTraining.Application.Contracts.MercadoPagoWebhookDto dto, string? signature, CancellationToken ct = default) => throw new NotImplementedException();
+        public Task EnforceDowngradeAsync(Guid userId, CancellationToken ct = default) => Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task AddDayAsync_WhenRoutineHas4DaysAndUserNotPro_ThrowsValidationException()
+    {
+        var db = TestDbContextFactory.Create(nameof(AddDayAsync_WhenRoutineHas4DaysAndUserNotPro_ThrowsValidationException));
+        var userId = Guid.NewGuid();
+        var routine = new Routine { Id = Guid.NewGuid(), DaysPerWeek = 4, Name = "Rutina 4d" };
+        for (int i = 1; i <= 4; i++)
+        {
+            routine.Days.Add(new RoutineDay { RoutineId = routine.Id, DayNumber = i, Order = i, Name = $"Día {i}", IsActive = true });
+        }
+        db.Routines.Add(routine);
+        db.UserRoutines.Add(new UserRoutine { UserId = userId, RoutineId = routine.Id, IsActive = true });
+        await db.SaveChangesAsync();
+
+        var service = new RoutineService(db, new FakeSubService(false));
+
+        var ex = await Assert.ThrowsAsync<ServiceValidationException>(() =>
+            service.AddDayAsync(userId, routine.Id, new BleidAppTraining.Application.Contracts.AddRoutineDayCommand { Name = "Día 5" }));
+
+        Assert.Contains("Pro", ex.Message);
+    }
+
+    [Fact]
+    public async Task AddDayAsync_WhenRoutineHas4DaysAndUserIsPro_Succeeds()
+    {
+        var db = TestDbContextFactory.Create(nameof(AddDayAsync_WhenRoutineHas4DaysAndUserIsPro_Succeeds));
+        var userId = Guid.NewGuid();
+        var routine = new Routine { Id = Guid.NewGuid(), DaysPerWeek = 4, Name = "Rutina 4d" };
+        for (int i = 1; i <= 4; i++)
+        {
+            routine.Days.Add(new RoutineDay { RoutineId = routine.Id, DayNumber = i, Order = i, Name = $"Día {i}", IsActive = true });
+        }
+        db.Routines.Add(routine);
+        db.UserRoutines.Add(new UserRoutine { UserId = userId, RoutineId = routine.Id, IsActive = true });
+        await db.SaveChangesAsync();
+
+        var service = new RoutineService(db, new FakeSubService(true));
+
+        var result = await service.AddDayAsync(userId, routine.Id, new BleidAppTraining.Application.Contracts.AddRoutineDayCommand { Name = "Día 5" });
+
+        Assert.Equal(5, result.DaysPerWeek);
+        Assert.Equal(5, result.Days.Count);
     }
 }

@@ -280,4 +280,19 @@ public class WorkoutServiceTests
             Assert.Equal(65, afterDelete.Sets.First().WeightKg);
         }
     }
+
+    [Fact]
+    public async Task StartSessionAsync_WhenDayIsInactive_ThrowsServiceValidationException()
+    {
+        var (db, userId, _, day1Id, _) = await SeedUserAndRoutineAsync(nameof(StartSessionAsync_WhenDayIsInactive_ThrowsServiceValidationException));
+        var day = await db.RoutineDays.FindAsync(day1Id);
+        day!.IsActive = false;
+        await db.SaveChangesAsync();
+
+        var service = new WorkoutService(db);
+        var ex = await Assert.ThrowsAsync<ServiceValidationException>(() =>
+            service.StartSessionAsync(userId, new StartSessionCommand { RoutineDayId = day1Id }));
+
+        Assert.Contains("no se encuentra activo", ex.Message);
+    }
 }

@@ -5,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BleidAppTraining.Application.Services;
 
-public class OnboardingService(IApplicationDbContext db, IRoutineService routineService) : IOnboardingService
+public class OnboardingService(
+    IApplicationDbContext db,
+    IRoutineService routineService,
+    ISubscriptionService? subscriptionService = null) : IOnboardingService
 {
     public async Task<OnboardingResult> CompleteAsync(
         Guid userId,
@@ -13,6 +16,15 @@ public class OnboardingService(IApplicationDbContext db, IRoutineService routine
         CancellationToken cancellationToken = default)
     {
         Validate(command);
+
+        if (command.DaysPerWeek > 4 && subscriptionService is not null)
+        {
+            var subStatus = await subscriptionService.GetStatusAsync(userId, cancellationToken);
+            if (!subStatus.IsProActive)
+            {
+                throw new ServiceValidationException("Se requiere una suscripción Pro activa para configurar más de 4 días de entrenamiento.");
+            }
+        }
 
         var user = await db.Users
             .Include(item => item.Limitations)

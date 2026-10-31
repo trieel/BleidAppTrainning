@@ -1,4 +1,4 @@
-using BleidAppTraining.Application.Common;
+﻿using BleidAppTraining.Application.Common;
 using BleidAppTraining.Application.Contracts;
 using BleidAppTraining.Application.Interfaces;
 using BleidAppTraining.Domain.Entities;
@@ -17,6 +17,11 @@ public class WorkoutService(IApplicationDbContext db) : IWorkoutService
             .AsNoTracking()
             .SingleOrDefaultAsync(item => item.Id == command.RoutineDayId, cancellationToken)
             ?? throw new KeyNotFoundException("The requested routine day was not found.");
+
+        if (!day.IsActive)
+        {
+            throw new ServiceValidationException("El día de entrenamiento seleccionado no se encuentra activo.");
+        }
 
         var isActiveDay = await db.UserRoutines.AnyAsync(userRoutine =>
             userRoutine.UserId == userId &&
