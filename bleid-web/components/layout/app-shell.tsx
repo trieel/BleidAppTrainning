@@ -101,10 +101,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </aside>
 
-          {/* Main Workspace */}
-          <main className="min-h-screen pb-32 lg:pb-10">{children}</main>
+          {/* Main Workspace with Notch & Island Protection */}
+          <main className="min-h-screen pt-[max(0.75rem,env(safe-area-inset-top))] pb-20 lg:pt-0 lg:pb-10">{children}</main>
 
-          {/* Mobile Monolithic Inverted Navigation Dock (Option 1) */}
+          {/* Mobile Monolithic Inverted Navigation Dock */}
           <nav className="fixed bottom-4 inset-x-3 z-50 lg:hidden pointer-events-none">
             <div className="mx-auto flex max-w-md items-center justify-around rounded-2xl border border-stone-800/80 bg-[#16120E] px-2 py-2 shadow-dock backdrop-blur-2xl pointer-events-auto">
               {navigation.map((item) => {

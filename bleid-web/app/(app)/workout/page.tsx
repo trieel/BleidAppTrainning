@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, Clock3, Dumbbell, Info, Loader2, Play, Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Clock3, Dumbbell, Loader2, Play, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { addRoutineDay, deleteRoutineDay, getActiveRoutine } from "@/lib/api";
@@ -10,6 +10,7 @@ import { ApiError } from "@/lib/api/client";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { RoutineEditor } from "@/components/features/routine-editor";
 import { ExerciseModal } from "@/components/features/exercise-modal";
+import { cn } from "@/lib/utils";
 import type { Routine, RoutineDay, WorkoutSession } from "@/types";
 
 export default function WorkoutPage() {
@@ -20,6 +21,7 @@ export default function WorkoutPage() {
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
   const [error, setError] = useState("");
 
   // Add / Delete Day state
@@ -118,184 +120,199 @@ export default function WorkoutPage() {
   if (loading) return <LoadingScreen />;
   if (!routine || !selectedDay) {
     return (
-      <div className="px-5 py-6 sm:px-8 lg:px-12 lg:py-10">
+      <div className="px-4 py-4 sm:px-8 lg:px-12">
         {error ? (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm font-bold text-destructive">
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-3.5 text-xs font-bold text-destructive">
             {error}
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground">No encontramos una rutina activa.</div>
+          <div className="text-xs text-muted-foreground">No encontramos una rutina activa.</div>
         )}
       </div>
     );
   }
 
+  const totalDaySets = selectedDay.exercises.reduce((total, exercise) => total + exercise.sets, 0);
+
   return (
-    <div className="px-5 py-6 sm:px-8 lg:px-12 lg:py-10">
+    <div className="px-4 py-3 sm:px-8 sm:py-6 lg:px-12 lg:py-10 max-w-7xl mx-auto">
+      {/* High-Density Header */}
       <header className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-primary">Tu plan / entrenar</p>
-          <h1 className="display-face mt-2 text-4xl font-black text-foreground">Listo para moverte.</h1>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary">
+            Tu plan / entrenar
+          </span>
+          <h1 className="display-face text-xl font-black text-foreground sm:text-3xl leading-tight">
+            Listo para moverte.
+          </h1>
         </div>
         <Link
           href="/dashboard"
-          className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground transition-colors shadow-soft"
+          className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground transition-colors shadow-soft tactile-press"
+          aria-label="Volver al tablero"
         >
           <ChevronLeft className="h-4 w-4" />
         </Link>
       </header>
 
-      {/* Active Session Warning */}
+      {/* Active Session Alert (if open) */}
       {activeSession && (
-        <div className="mt-6 flex flex-col justify-between gap-4 rounded-2xl border border-primary/30 bg-card p-5 sm:flex-row sm:items-center shadow-soft">
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-3 w-3 shrink-0">
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-card p-3 shadow-soft">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-primary" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
             </span>
-            <div>
-              <p className="text-xs font-mono font-bold uppercase tracking-wider text-primary">Sesión pendiente</p>
-              <p className="text-sm font-bold text-foreground">Tenés una sesión abierta: {activeSession.routineDayName}</p>
+            <div className="min-w-0">
+              <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary">En curso</p>
+              <p className="truncate text-xs font-bold text-foreground">{activeSession.routineDayName}</p>
             </div>
           </div>
           <Link
             href={`/workout/${activeSession.id}`}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-mono font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition-all tactile-press border border-primary/25"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[11px] font-mono font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition-all tactile-press shrink-0 border border-primary/25"
           >
-            <Play className="h-3.5 w-3.5 fill-current" /> Continuar sesión abierta
+            <Play className="h-3 w-3 fill-current" /> Continuar
           </Link>
         </div>
       )}
 
-      {/* Day Selector Header & Action */}
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground">Distribución Semanal</p>
-          <h2 className="text-xl font-black tracking-tight text-foreground">Días de Entrenamiento</h2>
-        </div>
+      {/* Sleek Horizontal Day Selector Tabs */}
+      <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+        {routine.days.map((day, index) => {
+          const active = selectedDay.id === day.id;
+          return (
+            <button
+              key={day.id}
+              onClick={() => setSelectedDay(day)}
+              className={cn(
+                "shrink-0 rounded-xl border px-3 py-1.5 text-left transition-all tactile-press",
+                active
+                  ? "border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
+                  : "border-border bg-card text-muted-foreground hover:bg-secondary/60 hover:text-foreground shadow-soft"
+              )}
+            >
+              <span className="block text-[9px] font-mono uppercase tracking-wider opacity-75">
+                Día 0{index + 1}
+              </span>
+              <span className="block text-xs font-bold whitespace-nowrap">{day.name}</span>
+            </button>
+          );
+        })}
 
+        {/* Quick Add Day Button */}
         <button
           type="button"
           onClick={() => {
             setNewDayName(`Día 0${routine.days.length + 1}`);
             setShowAddDayModal(true);
           }}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-mono font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition-all tactile-press border border-primary/25 shrink-0"
-        >
-          <Plus className="h-4 w-4 stroke-[2.5]" />
-          <span>Sumar día de entrenamiento</span>
-        </button>
-      </div>
-
-      {/* Day Selector Tabs + Add Day Button */}
-      <div className="mt-3 flex flex-wrap items-center gap-2 pb-2">
-        {routine.days.map((day, index) => (
-          <button
-            key={day.id}
-            onClick={() => setSelectedDay(day)}
-            className={`min-w-[130px] rounded-xl border px-4 py-3 text-left transition-all tactile-press ${
-              selectedDay.id === day.id
-                ? "border-primary bg-primary text-primary-foreground shadow-soft"
-                : "border-border bg-card text-muted-foreground hover:border-border hover:bg-secondary/40 hover:text-foreground shadow-soft"
-            }`}
-          >
-            <span className="block text-[10px] font-mono font-bold uppercase opacity-75">Día 0{index + 1}</span>
-            <span className="mt-1 block truncate text-sm font-bold">{day.name}</span>
-          </button>
-        ))}
-
-        {/* Plus Tab Button */}
-        <button
-          type="button"
-          onClick={() => {
-            setNewDayName(`Día 0${routine.days.length + 1}`);
-            setShowAddDayModal(true);
-          }}
-          className="flex min-w-[130px] h-[68px] items-center justify-center gap-2.5 rounded-xl border border-border bg-card/80 hover:bg-card hover:border-primary/40 transition-all px-4 py-3 shadow-soft group shrink-0 tactile-press"
+          className="flex h-[38px] shrink-0 items-center gap-1.5 rounded-xl border border-dashed border-primary/40 bg-card px-2.5 text-xs font-mono font-bold text-primary hover:bg-primary/5 transition-all shadow-soft tactile-press"
           title="Sumar día de entrenamiento"
         >
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200">
-            <Plus className="h-4 w-4 stroke-[2.5]" />
-          </div>
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
-            Nuevo Día
-          </span>
+          <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+          <span>Sumar día</span>
         </button>
       </div>
 
-      {/* Current Selected Day Card */}
-      <section className="mt-6 overflow-hidden rounded-[26px] card-editorial shadow-soft">
-        <div className="border-b border-border p-6 sm:p-8">
-          <div className="flex items-start justify-between gap-4">
+      {/* Selected Day Card - Immediate Primary Action Above The Fold */}
+      <section className="mt-3 overflow-hidden rounded-2xl card-editorial shadow-soft">
+        <div className="border-b border-border/80 p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Sesión 0{selectedDay.dayNumber} · {routine.name}
-              </p>
-              <h2 className="display-face mt-2 text-3xl font-black sm:text-4xl text-foreground">{selectedDay.name}</h2>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {routine.days.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => handleDeleteDay(selectedDay.id)}
-                  disabled={deletingDay}
-                  className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-secondary/50 text-muted-foreground hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive transition-all disabled:opacity-50 tactile-press"
-                  title="Eliminar este día de la rutina"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary border border-primary/20">
-                <Dumbbell className="h-5 w-5" />
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                  Sesión 0{selectedDay.dayNumber} · {routine.name}
+                </span>
+                {routine.days.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteDay(selectedDay.id)}
+                    disabled={deletingDay}
+                    className="grid h-5 w-5 place-items-center rounded text-muted-foreground hover:bg-destructive/15 hover:text-destructive transition disabled:opacity-50"
+                    title="Eliminar este día de la rutina"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                )}
               </div>
+              <h2 className="display-face mt-1 text-xl font-black text-foreground sm:text-2xl tracking-tight">
+                {selectedDay.name}
+              </h2>
+              <p className="mt-1 flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Dumbbell className="h-3 w-3 text-primary" /> {selectedDay.exercises.length} ejercicios
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <Clock3 className="h-3 w-3 text-primary" /> {totalDaySets} series objetivo
+                </span>
+              </p>
             </div>
-          </div>
 
-          <div className="mt-6 flex flex-wrap gap-4 text-xs font-mono text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <Dumbbell className="h-3.5 w-3.5 text-primary" /> {selectedDay.exercises.length} ejercicios
-            </span>
-            <span className="flex items-center gap-2">
-              <Clock3 className="h-3.5 w-3.5 text-primary" />{" "}
-              {selectedDay.exercises.reduce((total, exercise) => total + exercise.sets, 0)} series estimadas
-            </span>
+            {/* Direct Start Button Right Above The Fold */}
+            <button
+              onClick={begin}
+              disabled={starting}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition-all tactile-press disabled:opacity-60 border border-primary/25 shrink-0"
+            >
+              {starting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Play className="h-3.5 w-3.5 fill-current" />
+                  <span>Empezar sesión</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </>
+              )}
+            </button>
           </div>
         </div>
 
+        {/* Compact Exercise List */}
         {selectedDay.exercises.length === 0 ? (
-          <div className="p-8 text-center">
-            <Dumbbell className="h-8 w-8 text-muted-foreground/40 mx-auto" />
-            <p className="mt-2 text-sm font-bold text-foreground">Este día todavía no tiene ejercicios asignados</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Usá el editor de abajo &ldquo;Personalizá este día&rdquo; para agregar tus ejercicios preferidos.
-            </p>
+          <div className="p-6 text-center">
+            <Dumbbell className="h-6 w-6 text-muted-foreground/40 mx-auto" />
+            <p className="mt-2 text-xs font-bold text-foreground">Este día todavía no tiene ejercicios asignados</p>
+            <button
+              type="button"
+              onClick={() => setShowEditor(true)}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 border border-primary/30 px-3 py-1.5 text-xs font-mono font-bold text-primary"
+            >
+              <Plus className="h-3 w-3" /> Agregar ejercicios
+            </button>
           </div>
         ) : (
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border/60">
             {selectedDay.exercises.map((exercise, index) => (
-              <div key={exercise.id} className="flex items-center gap-4 p-5 sm:px-8">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-secondary text-xs font-mono font-black text-primary border border-border">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedExerciseId(exercise.exerciseId)}
-                    className="truncate text-sm font-bold text-left hover:text-primary transition-colors block w-full text-foreground"
-                  >
-                    {exercise.exerciseName}
-                  </button>
-                  <p className="mt-1 text-xs text-muted-foreground font-mono">
-                    {exercise.sets} series · {exercise.repsMin}-{exercise.repsMax} reps · {exercise.restSeconds}s descanso
-                  </p>
+              <div
+                key={exercise.id}
+                className="flex items-center justify-between gap-3 px-3.5 py-2.5 sm:px-6 hover:bg-secondary/30 transition-colors"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-secondary text-[10px] font-mono font-black text-primary border border-border">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedExerciseId(exercise.exerciseId)}
+                      className="truncate text-xs font-bold text-left hover:text-primary transition-colors block text-foreground"
+                    >
+                      {exercise.exerciseName}
+                    </button>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      {exercise.sets} series · {exercise.repsMin}-{exercise.repsMax} reps · {exercise.restSeconds}s
+                    </p>
+                  </div>
                 </div>
+
                 <button
                   type="button"
                   onClick={() => setSelectedExerciseId(exercise.exerciseId)}
-                  className="hidden rounded-xl border border-border bg-secondary/50 px-3 py-1.5 text-[10px] font-mono font-bold uppercase text-muted-foreground sm:block hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all tactile-press"
+                  className="rounded-lg border border-border bg-card px-2.5 py-1 text-[10px] font-mono font-semibold text-muted-foreground hover:text-foreground hover:border-primary/40 shrink-0 transition"
                 >
-                  Ver técnica
+                  Técnica
                 </button>
               </div>
             ))}
@@ -303,54 +320,57 @@ export default function WorkoutPage() {
         )}
       </section>
 
-      {/* Routine Customization */}
-      <RoutineEditor routine={routine} day={selectedDay} onRoutineChange={updateRoutine} />
+      {/* Collapsible Routine Editor Accordion */}
+      <div className="mt-3 rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowEditor(!showEditor)}
+          className="flex w-full items-center justify-between p-3.5 text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition tactile-press"
+        >
+          <span className="flex items-center gap-2">
+            <Plus className="h-3.5 w-3.5 text-primary" />
+            Personalizar ejercicios de este día
+          </span>
+          <ChevronRight
+            className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200", showEditor && "rotate-90")}
+          />
+        </button>
 
-      <div className="mt-6 flex items-start gap-3 rounded-2xl border border-border bg-card p-4 text-xs leading-5 text-muted-foreground shadow-soft">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-        <p>Registrá cada serie mientras entrenás. Bleid guarda tu carga histórica y te sugiere sobrecarga progresiva en vivo.</p>
+        {showEditor && (
+          <div className="border-t border-border p-4 bg-background/50">
+            <RoutineEditor routine={routine} day={selectedDay} onRoutineChange={updateRoutine} />
+          </div>
+        )}
       </div>
 
       {error && (
-        <p className="mt-4 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm font-bold text-destructive">
+        <p className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-bold text-destructive">
           {error}
         </p>
       )}
 
-      <button
-        onClick={begin}
-        disabled={starting}
-        className="mt-6 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition-all tactile-press disabled:opacity-60 sm:w-auto sm:px-8 border border-primary/25"
-      >
-        {starting ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Empezar esta sesión <ArrowRight className="h-4 w-4" /></>}
-      </button>
-
-      {/* Modal para Sumar Día de Entrenamiento */}
+      {/* Modal for adding training day */}
       {showAddDayModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-dock">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-dock">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 text-primary border border-primary/25">
-                  <Plus className="h-4 w-4 stroke-[2.5]" />
+              <div className="flex items-center gap-2">
+                <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/10 text-primary border border-primary/25">
+                  <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
                 </span>
-                <h3 className="text-lg font-bold tracking-tight text-foreground">Sumar Día de Entrenamiento</h3>
+                <h3 className="text-base font-bold tracking-tight text-foreground">Sumar Día de Entrenamiento</h3>
               </div>
               <button
                 onClick={() => setShowAddDayModal(false)}
-                className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground"
+                className="grid h-7 w-7 place-items-center rounded-lg text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Agregá un nuevo día a tu split semanal. Vas a poder asignarle ejercicios personalizados libremente.
-            </p>
-
-            <form onSubmit={handleAddDay} className="mt-5 space-y-4">
+            <form onSubmit={handleAddDay} className="mt-4 space-y-3.5">
               <div>
-                <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
                   Nombre del día
                 </label>
                 <input
@@ -360,24 +380,24 @@ export default function WorkoutPage() {
                   value={newDayName}
                   onChange={(e) => setNewDayName(e.target.value)}
                   placeholder={`Día 0${routine.days.length + 1} - Brazos / Core`}
-                  className="mt-1 h-11 w-full rounded-xl border border-border bg-muted/40 px-3.5 text-sm font-semibold text-foreground outline-none focus:border-primary focus:bg-background transition"
+                  className="mt-1 h-10 w-full rounded-xl border border-border bg-muted/40 px-3 text-xs font-semibold text-foreground outline-none focus:border-primary focus:bg-background transition"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setShowAddDayModal(false)}
-                  className="rounded-xl border border-border px-4 py-2.5 text-xs font-mono font-bold text-muted-foreground hover:bg-secondary transition tactile-press"
+                  className="rounded-xl border border-border px-3.5 py-2 text-xs font-mono font-bold text-muted-foreground hover:bg-secondary transition tactile-press"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={savingDay}
-                  className="flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-mono font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition tactile-press disabled:opacity-50 border border-primary/25"
+                  className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-mono font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition tactile-press disabled:opacity-50 border border-primary/25"
                 >
-                  {savingDay ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Plus className="h-4 w-4" /> Crear día</>}
+                  {savingDay ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Plus className="h-3.5 w-3.5" /> Crear día</>}
                 </button>
               </div>
             </form>

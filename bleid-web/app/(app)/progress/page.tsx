@@ -58,7 +58,7 @@ export default function ProgressPage() {
   const maxWeight = exerciseProgress.length > 0 ? Math.max(...exerciseProgress.map((item) => item.maxWeightKg), 1) : 0;
 
   return (
-    <div className="px-5 py-6 sm:px-8 lg:px-12 lg:py-10 max-w-7xl mx-auto">
+    <div className="px-4 py-3 sm:px-8 sm:py-6 lg:px-12 lg:py-10 max-w-7xl mx-auto">
       <header className="flex items-start justify-between">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-mono font-bold text-primary">
