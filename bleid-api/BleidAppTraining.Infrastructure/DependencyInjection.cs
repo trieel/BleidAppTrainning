@@ -1,6 +1,7 @@
 using BleidAppTraining.Application.Interfaces;
 using BleidAppTraining.Application.Services;
 using BleidAppTraining.Infrastructure.Identity;
+using BleidAppTraining.Infrastructure.Payments;
 using BleidAppTraining.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,10 @@ public static class DependencyInjection
         services.AddScoped<IWorkoutService, WorkoutService>();
         services.AddScoped<IProgressService, ProgressService>();
         services.AddScoped<IBodyWeightService, BodyWeightService>();
+
+        services.Configure<MercadoPagoSettings>(configuration.GetSection("MercadoPago"));
+        services.AddHttpClient<IMercadoPagoClient, MercadoPagoClient>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
 
         return services;
     }
