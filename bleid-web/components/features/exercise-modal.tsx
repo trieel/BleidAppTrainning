@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AlertTriangle, Dumbbell, Loader2, ShieldCheck, X } from "lucide-react";
 import { getExerciseById } from "@/lib/api";
-import { levelLabels } from "@/lib/labels";
+import { formatContraindications, formatExerciseName, levelLabels } from "@/lib/labels";
 import type { Exercise } from "@/types";
 
 interface ExerciseModalProps {
@@ -70,7 +70,7 @@ export function ExerciseModal({ exerciseId, onClose }: ExerciseModalProps) {
             </div>
 
             <h2 className="font-serif text-2xl font-bold sm:text-3xl text-foreground mt-3 tracking-tight">
-              {exercise.name}
+              {formatExerciseName(exercise.name)}
             </h2>
             <p className="mt-1 text-xs font-mono text-muted-foreground">
               Nivel: {levelLabels[exercise.level] ?? exercise.level}
@@ -88,7 +88,7 @@ export function ExerciseModal({ exerciseId, onClose }: ExerciseModalProps) {
                     <AlertTriangle className="h-4 w-4 shrink-0" /> Contraindicado para tus articulaciones
                   </div>
                   <p className="mt-1.5 text-foreground/80 leading-relaxed">
-                    Este movimiento compromete zonas declaradas: {exercise.contraindications.join(", ")}.
+                    Este movimiento compromete zonas declaradas: {formatContraindications(exercise.contraindications)}.
                   </p>
                   {exercise.modificationTip && (
                     <p className="mt-2 text-[#9B2C2C] font-semibold">Tip seguro: {exercise.modificationTip}</p>

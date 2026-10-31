@@ -54,6 +54,13 @@ public static class SeedData
         CancellationToken cancellationToken)
     {
         var existing = await db.Exercises.ToListAsync(cancellationToken);
+
+        // Normalize legacy misspellings in database (e.g. missing 'ñ')
+        var legacyArana = existing.FirstOrDefault(e => e.Name.Equals("Curl arana en banco inclinado", StringComparison.OrdinalIgnoreCase));
+        if (legacyArana != null)
+        {
+            legacyArana.Name = "Curl araña en banco inclinado";
+        }
         foreach (var definition in ExerciseDefinitions())
         {
             var group = muscleGroups[definition.MuscleGroup];
@@ -273,7 +280,7 @@ public static class SeedData
         yield return E("Curl de biceps en cable", "Biceps", EquipmentType.Cable, LevelType.Beginner);
         yield return E("Curl predicador", "Biceps", EquipmentType.Machine, LevelType.Intermediate, new[] { "Wrist" });
         yield return E("Curl de concentracion", "Biceps", EquipmentType.Dumbbell, LevelType.Beginner);
-        yield return E("Curl arana en banco inclinado", "Biceps", EquipmentType.Dumbbell, LevelType.Intermediate);
+        yield return E("Curl araña en banco inclinado", "Biceps", EquipmentType.Dumbbell, LevelType.Intermediate);
         yield return E("Curl zottman", "Biceps", EquipmentType.Dumbbell, LevelType.Beginner, new[] { "Wrist" });
 
         yield return E("Press cerrado", "Triceps", EquipmentType.Barbell, LevelType.Intermediate, new[] { "Wrist", "Shoulder" });
