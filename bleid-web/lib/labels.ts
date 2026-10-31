@@ -91,14 +91,47 @@ export function formatContraindications(items?: string[] | null): string {
 }
 
 /**
- * Normaliza nombres de ejercicios garantizando ortografía correcta en español,
- * en particular corrigiendo caracteres como la 'ñ' omitida en bases de datos o semillas
- * (ej. "Curl arana" -> "Curl araña").
+ * Tabla de normalización tipográfica en español para ejercicios:
+ * Corrige omisiones de la letra 'ñ' y faltas de tildes biomecánicas provenientes de bases de datos.
+ */
+const EXERCISE_TYPOGRAPHY_RULES: [RegExp, string][] = [
+  [/\bCurl arana\b/gi, "Curl araña"],
+  [/\bJalon\b/gi, "Jalón"],
+  [/\bExtension\b/gi, "Extensión"],
+  [/\bHiperextension\b/gi, "Hiperextensión"],
+  [/\bHiperextensiones\b/gi, "Hiperextensiones"],
+  [/\bElevacion\b/gi, "Elevación"],
+  [/\bElevaciones\b/gi, "Elevaciones"],
+  [/\bContraccion\b/gi, "Contracción"],
+  [/\bAbduccion\b/gi, "Abducción"],
+  [/\bbiceps\b/gi, "bíceps"],
+  [/\btriceps\b/gi, "tríceps"],
+  [/\bcuadriceps\b/gi, "cuadríceps"],
+  [/\bmaquina\b/gi, "máquina"],
+  [/\bRompecraneos\b/gi, "Rompecráneos"],
+  [/\bbulgara\b/gi, "búlgara"],
+  [/\bcajon\b/gi, "cajón"],
+  [/\batras\b/gi, "atrás"],
+  [/\bEliptico\b/gi, "Elíptico"],
+  [/\bergometro\b/gi, "ergómetro"],
+  [/\bmenton\b/gi, "mentón"],
+  [/\brotacion\b/gi, "rotación"],
+  [/\bdeficit\b/gi, "déficit"],
+  [/\bconcentracion\b/gi, "concentración"],
+];
+
+/**
+ * Normaliza nombres de ejercicios garantizando ortografía y acentuación en español
+ * (ej. "Curl arana" -> "Curl araña", "Jalon" -> "Jalón", "biceps" -> "bíceps").
  * 
  * @param name Nombre original del ejercicio
- * @returns Nombre corregido y tipográficamente formateado
+ * @returns Nombre formateado y tipográficamente correcto
  */
 export function formatExerciseName(name: string): string {
   if (!name) return "";
-  return name.replace(/\bCurl arana\b/gi, "Curl araña");
+  let result = name;
+  for (const [regex, replacement] of EXERCISE_TYPOGRAPHY_RULES) {
+    result = result.replace(regex, replacement);
+  }
+  return result;
 }

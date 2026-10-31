@@ -23,7 +23,7 @@ import { getActiveRoutine, getLatestBodyWeight, getStreak, getVolumeProgress } f
 import { getMe } from "@/lib/api/auth";
 import { getActiveSession, getHistory } from "@/lib/api/workout";
 import { ApiError } from "@/lib/api/client";
-import { goalShortLabels, limitationLabels } from "@/lib/labels";
+import { formatExerciseName, goalShortLabels, limitationLabels } from "@/lib/labels";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import type { BodyWeightEntry, Routine, Streak, UserProfile, VolumeProgress, WorkoutSession } from "@/types";
 
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                     key={ex.id}
                     className="rounded-lg border border-border bg-secondary/60 px-2 py-0.5 text-[11px] font-medium text-foreground"
                   >
-                    {ex.exerciseName} <span className="font-mono text-primary font-bold">({ex.sets}s)</span>
+                    {formatExerciseName(ex.exerciseName)} <span className="font-mono text-primary font-bold">({ex.sets}s)</span>
                   </span>
                 ))}
                 {activeDay.exercises.length > 4 && (

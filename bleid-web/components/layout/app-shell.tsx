@@ -102,7 +102,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </aside>
 
           {/* Main Workspace with Notch & Island Protection */}
-          <main className="min-h-screen pt-[max(0.75rem,env(safe-area-inset-top))] pb-20 lg:pt-0 lg:pb-10">{children}</main>
+          <main className="min-h-screen pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(6rem,calc(5rem+env(safe-area-inset-bottom)))] lg:pt-0 lg:pb-10">{children}</main>
 
           {/* Mobile Monolithic Inverted Navigation Dock */}
           <nav className="fixed bottom-4 inset-x-3 z-50 lg:hidden pointer-events-none">

@@ -25,6 +25,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
 import { RestTimer } from "@/components/features/rest-timer";
 import { PlateCalculator } from "@/components/features/plate-calculator";
 import { OneRepMaxModal } from "@/components/features/one-rep-max-modal";
+import { formatExerciseName } from "@/lib/labels";
 import type { ExerciseLatestPerformance, Routine, RoutineExercise, WorkoutSession } from "@/types";
 
 export default function ActiveWorkoutPage() {
@@ -283,7 +284,7 @@ export default function ActiveWorkoutPage() {
         <div className="mt-4 space-y-3">
           {distinctExercises.map((group) => (
             <div key={group.id} className="card-editorial rounded-2xl p-4 shadow-soft">
-              <h3 className="font-bold text-sm text-foreground">{group.name}</h3>
+              <h3 className="font-bold text-sm text-foreground">{formatExerciseName(group.name)}</h3>
               <div className="mt-2.5 divide-y divide-border/60">
                 {group.sets.map((set) => (
                   <div key={set.id} className="flex items-center justify-between py-1.5 text-xs font-mono">
@@ -387,7 +388,7 @@ export default function ActiveWorkoutPage() {
                     <span className="text-[10px] font-mono text-muted-foreground">· {exercise.sets} series objetivo</span>
                   </div>
                   <h2 className="mt-0.5 text-base font-black tracking-tight text-foreground truncate">
-                    {exercise.exerciseName}
+                    {formatExerciseName(exercise.exerciseName)}
                   </h2>
                   <p className="text-[11px] text-muted-foreground font-mono">
                     {exercise.repsMin}-{exercise.repsMax} reps · {exercise.restSeconds}s descanso

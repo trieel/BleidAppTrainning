@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Flame, Trophy, X } from "lucide-react";
+import { formatExerciseName } from "@/lib/labels";
 
 interface OneRepMaxModalProps {
   initialWeightKg?: number;
@@ -84,7 +85,7 @@ export function OneRepMaxModal({
           <div>
             <h2 className="text-base font-bold tracking-tight text-foreground">Calculadora de 1RM</h2>
             <p className="text-xs text-muted-foreground">
-              {exerciseName ? `Estimación para ${exerciseName}` : "Cálculo de repetición máxima y zonas de carga"}
+              {exerciseName ? `Estimación para ${formatExerciseName(exerciseName)}` : "Cálculo de repetición máxima y zonas de carga"}
             </p>
           </div>
         </div>

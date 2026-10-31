@@ -4,6 +4,7 @@ import { Check, Edit3, Loader2, Plus, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { addRoutineExercise, getExercises, removeRoutineExercise } from "@/lib/api";
 import { ApiError } from "@/lib/api/client";
+import { formatExerciseName } from "@/lib/labels";
 import type { Exercise, Routine, RoutineDay } from "@/types";
 
 export function RoutineEditor({
@@ -135,7 +136,7 @@ export function RoutineEditor({
                 className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-xs transition hover:border-primary/30"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">{exercise.name}</p>
+                  <p className="truncate text-sm font-semibold text-foreground">{formatExerciseName(exercise.name)}</p>
                   <p className="mt-0.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                     {exercise.muscleGroupName} · {exercise.equipment}
                   </p>
@@ -167,7 +168,7 @@ export function RoutineEditor({
               key={exercise.id}
               className="flex items-center gap-2 rounded-full border border-border bg-secondary/60 py-1.5 pl-3.5 pr-1.5 text-xs text-muted-foreground shadow-xs"
             >
-              <span className="max-w-[150px] truncate font-medium text-foreground">{exercise.exerciseName}</span>
+              <span className="max-w-[150px] truncate font-medium text-foreground">{formatExerciseName(exercise.exerciseName)}</span>
               <button
                 onClick={() => remove(exercise.id)}
                 disabled={Boolean(savingId)}

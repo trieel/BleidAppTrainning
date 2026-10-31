@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bell, FastForward, Plus, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
+import { formatExerciseName } from "@/lib/labels";
 
 interface RestTimerProps {
   initialSeconds: number;
@@ -160,7 +161,7 @@ export function RestTimer({ initialSeconds, exerciseName, onFinish, onClose }: R
               </span>
               {exerciseName && (
                 <span className={`text-[10px] truncate max-w-[120px] font-mono ${isDone ? "text-white/80" : "text-muted-foreground"}`}>
-                  · {exerciseName}
+                  · {formatExerciseName(exerciseName)}
                 </span>
               )}
             </div>
