@@ -29,6 +29,7 @@ public class RoutineDayConfiguration : IEntityTypeConfiguration<RoutineDay>
         builder.ToTable("routine_days");
         builder.Property(day => day.Id).HasDefaultValueSql("gen_random_uuid()");
         builder.Property(day => day.Name).HasMaxLength(100).IsRequired();
+        builder.Property(day => day.IsActive).HasDefaultValue(true);
         builder.HasIndex(day => new { day.RoutineId, day.DayNumber }).IsUnique();
         builder.HasOne(day => day.Routine)
             .WithMany(routine => routine.Days)

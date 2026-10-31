@@ -261,6 +261,12 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("day_number");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -332,6 +338,81 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_routine_exercises_routine_day_id_order");
 
                     b.ToTable("routine_exercises", (string)null);
+                });
+
+            modelBuilder.Entity("BleidAppTraining.Domain.Entities.Subscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("cancelled_at");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("CurrencyId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("ARS")
+                        .HasColumnName("currency_id");
+
+                    b.Property<DateTime?>("CurrentPeriodEnd")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("current_period_end");
+
+                    b.Property<string>("ExternalPreapprovalId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("external_preapproval_id");
+
+                    b.Property<string>("PayerEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("payer_email");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_subscriptions");
+
+                    b.HasIndex("ExternalPreapprovalId")
+                        .HasDatabaseName("ix_subscriptions_external_preapproval_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_subscriptions_user_id");
+
+                    b.ToTable("subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("BleidAppTraining.Domain.Entities.User", b =>
@@ -875,6 +956,18 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                     b.Navigation("RoutineDay");
                 });
 
+            modelBuilder.Entity("BleidAppTraining.Domain.Entities.Subscription", b =>
+                {
+                    b.HasOne("BleidAppTraining.Domain.Entities.User", "User")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_subscriptions_users_user_id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BleidAppTraining.Domain.Entities.UserLimitation", b =>
                 {
                     b.HasOne("BleidAppTraining.Domain.Entities.User", "User")
@@ -1040,6 +1133,8 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                     b.Navigation("Limitations");
 
                     b.Navigation("Routines");
+
+                    b.Navigation("Subscriptions");
 
                     b.Navigation("WorkoutSessions");
                 });
