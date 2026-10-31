@@ -7,6 +7,7 @@ public class RoutineDay
     public int DayNumber { get; set; }
     public string Name { get; set; } = string.Empty;
     public int Order { get; set; }
+    public bool IsActive { get; set; } = true;
 
     public Routine Routine { get; set; } = null!;
     public ICollection<RoutineExercise> Exercises { get; set; } = new List<RoutineExercise>();

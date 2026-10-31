@@ -19,4 +19,5 @@ public class User : IdentityUser<Guid>
     public ICollection<Routine> CreatedRoutines { get; set; } = new List<Routine>();
     public ICollection<UserRoutine> Routines { get; set; } = new List<UserRoutine>();
     public ICollection<WorkoutSession> WorkoutSessions { get; set; } = new List<WorkoutSession>();
+    public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }
