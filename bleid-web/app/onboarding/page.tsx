@@ -1,12 +1,13 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Check, Dumbbell, HeartPulse, ShieldCheck, Timer, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Dumbbell, HeartPulse, ShieldCheck, Sparkles, Timer, Trophy } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { completeOnboarding } from "@/lib/api";
 import { ApiError } from "@/lib/api/client";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { BrandMark } from "@/components/ui/brand-mark";
+import { SubscriptionModal } from "@/components/features/subscription-modal";
 import type { GoalType, LevelType, LimitationType, SeverityType, SexType } from "@/types";
 
 const goals: { value: GoalType; label: string; description: string; icon: typeof Trophy }[] = [
@@ -42,6 +43,7 @@ export default function OnboardingPage() {
   const [sex, setSex] = useState<SexType>("Male");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
 
   function toggleLimitation(type: LimitationType) {
     setSelectedLimitations((current) => current.some((item) => item.type === type)
@@ -54,10 +56,57 @@ export default function OnboardingPage() {
   }
 
   async function finish() {
+    if (days > 4) {
+      // Save pending onboarding payload for post-payment resumption
+      const draft = {
+        goal,
+        level,
+        daysPerWeek: days,
+        sessionMin,
+        age,
+        sex,
+        limitations: selectedLimitations,
+      };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("bleid-pending-onboarding", JSON.stringify(draft));
+      }
+      setShowProModal(true);
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("bleid-pending-onboarding");
+      }
       await completeOnboarding({ goal, level, daysPerWeek: days, sessionMin, age, sex, limitations: selectedLimitations });
+      router.replace("/dashboard");
+    } catch (exception) {
+      setError(exception instanceof ApiError ? exception.message : "No pudimos guardar tu perfil.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleContinueFree() {
+    setShowProModal(false);
+    setDays(4);
+    setLoading(true);
+    setError("");
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("bleid-pending-onboarding");
+      }
+      await completeOnboarding({
+        goal,
+        level,
+        daysPerWeek: 4,
+        sessionMin,
+        age,
+        sex,
+        limitations: selectedLimitations,
+      });
       router.replace("/dashboard");
     } catch (exception) {
       setError(exception instanceof ApiError ? exception.message : "No pudimos guardar tu perfil.");
@@ -101,17 +150,17 @@ export default function OnboardingPage() {
                     <button
                       key={item.value}
                       onClick={() => setGoal(item.value)}
-                      className={`group rounded-2xl border p-5 text-left transition-all duration-150 tactile-press ${
-                        selected
-                          ? "border-primary bg-primary text-primary-foreground shadow-soft"
-                          : "border-border bg-card hover:border-primary/40 hover:bg-secondary/30"
+                      className={`flex items-start gap-4 rounded-2xl border p-5 text-left transition-all tactile-press ${
+                        selected ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/40 hover:bg-secondary/30"
                       }`}
                     >
-                      <div className={`mb-6 grid h-10 w-10 place-items-center rounded-xl ${selected ? "bg-primary-foreground/15 text-primary-foreground" : "bg-secondary text-primary"}`}>
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <p className="font-bold text-base">{item.label}</p>
-                      <p className={`mt-1 text-sm ${selected ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{item.description}</p>
+                      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ${selected ? "bg-primary-foreground/15 text-primary-foreground" : "bg-secondary text-primary"}`}>
+                        <Icon className="h-6 w-6" />
+                      </span>
+                      <span>
+                        <span className="block font-bold text-base">{item.label}</span>
+                        <span className={`mt-1 block text-sm leading-relaxed ${selected ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{item.description}</span>
+                      </span>
                     </button>
                   );
                 })}
@@ -119,14 +168,14 @@ export default function OnboardingPage() {
             )}
 
             {step === 1 && (
-              <div className="space-y-3">
+              <div className="grid gap-3.5">
                 {levels.map((item) => {
                   const selected = level === item.value;
                   return (
                     <button
                       key={item.value}
                       onClick={() => setLevel(item.value)}
-                      className={`flex w-full items-center justify-between rounded-2xl border p-5 text-left transition-all duration-150 tactile-press ${
+                      className={`flex items-center justify-between rounded-2xl border p-5 text-left transition-all tactile-press ${
                         selected ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/40 hover:bg-secondary/30"
                       }`}
                     >
@@ -146,7 +195,14 @@ export default function OnboardingPage() {
             {step === 2 && (
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-                  <p className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-muted-foreground">Frecuencia semanal</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-muted-foreground">Frecuencia semanal</p>
+                    {days > 4 && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                        <Sparkles className="h-3 w-3 text-amber-500" /> PRO
+                      </span>
+                    )}
+                  </div>
                   <div className="mt-6 flex items-end gap-3">
                     <span className="display-face text-7xl font-mono font-black text-primary">{days}</span>
                     <span className="pb-3 text-sm font-semibold text-muted-foreground">días / semana</span>
@@ -161,7 +217,8 @@ export default function OnboardingPage() {
                   />
                   <div className="mt-2 flex justify-between text-[11px] font-mono text-muted-foreground">
                     <span>2 días (Mínimo)</span>
-                    <span>6 días (Avanzado)</span>
+                    <span>4 días (Gratis)</span>
+                    <span className={days > 4 ? "text-amber-600 font-bold" : "text-muted-foreground"}>6 días (Pro)</span>
                   </div>
                 </div>
 
@@ -300,6 +357,13 @@ export default function OnboardingPage() {
             </button>
           </div>
         </div>
+
+        <SubscriptionModal
+          open={showProModal}
+          onClose={() => setShowProModal(false)}
+          onContinueFree={handleContinueFree}
+          source="onboarding"
+        />
       </main>
     </AuthGuard>
   );
