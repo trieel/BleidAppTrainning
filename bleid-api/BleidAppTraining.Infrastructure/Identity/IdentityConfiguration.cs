@@ -71,11 +71,6 @@ public static class IdentityConfiguration
             connectionString += ";SSL Mode=Require;Trust Server Certificate=true";
         }
 
-        if (!connectionString.Contains("GSS Enc Mode", StringComparison.OrdinalIgnoreCase))
-        {
-            connectionString += ";GSS Enc Mode=Disable";
-        }
-
         return connectionString;
     }
 
