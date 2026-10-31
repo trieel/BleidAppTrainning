@@ -4,12 +4,13 @@ import Link from "next/link";
 import { ArrowRight, ChevronLeft, Clock3, Dumbbell, Info, Loader2, Play, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { addRoutineDay, deleteRoutineDay, getActiveRoutine } from "@/lib/api";
+import { addRoutineDay, deleteRoutineDay, getActiveRoutine, getSubscriptionStatus } from "@/lib/api";
 import { getActiveSession, startSession } from "@/lib/api/workout";
 import { ApiError } from "@/lib/api/client";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { RoutineEditor } from "@/components/features/routine-editor";
 import { ExerciseModal } from "@/components/features/exercise-modal";
+import { SubscriptionModal } from "@/components/features/subscription-modal";
 import type { Routine, RoutineDay, WorkoutSession } from "@/types";
 
 export default function WorkoutPage() {
@@ -21,6 +22,8 @@ export default function WorkoutPage() {
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
+  const [isPro, setIsPro] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
 
   // Add / Delete Day state
   const [showAddDayModal, setShowAddDayModal] = useState(false);
@@ -36,14 +39,21 @@ export default function WorkoutPage() {
     Promise.all([
       getActiveRoutine(),
       getActiveSession().catch(() => null),
+      getSubscriptionStatus().catch(() => ({ isProActive: false, status: null, currentPeriodEnd: null })),
     ])
-      .then(([result, active]) => {
+      .then(([result, active, sub]) => {
         setRoutine(result);
         setSelectedDay(result.days.find((day) => day.id === dayId) ?? result.days[0] ?? null);
         setActiveSession(active ?? null);
+        const pro = Boolean(sub?.isProActive);
+        setIsPro(pro);
         if (action === "new-day") {
-          setNewDayName(`Día 0${result.days.length + 1}`);
-          setShowAddDayModal(true);
+          if (result.days.length >= 4 && !pro) {
+            setShowProModal(true);
+          } else {
+            setNewDayName(`Día 0${result.days.length + 1}`);
+            setShowAddDayModal(true);
+          }
         }
       })
       .catch((exception) => {
@@ -76,6 +86,16 @@ export default function WorkoutPage() {
   function updateRoutine(updated: Routine) {
     setRoutine(updated);
     setSelectedDay(updated.days.find((day) => day.id === selectedDay?.id) ?? updated.days[0] ?? null);
+  }
+
+  function triggerAddDay() {
+    if (!routine) return;
+    if (routine.days.length >= 4 && !isPro) {
+      setShowProModal(true);
+      return;
+    }
+    setNewDayName(`Día 0${routine.days.length + 1}`);
+    setShowAddDayModal(true);
   }
 
   async function handleAddDay(e: React.FormEvent) {
@@ -176,10 +196,7 @@ export default function WorkoutPage() {
 
         <button
           type="button"
-          onClick={() => {
-            setNewDayName(`Día 0${routine.days.length + 1}`);
-            setShowAddDayModal(true);
-          }}
+          onClick={triggerAddDay}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-mono font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition-all tactile-press border border-primary/25 shrink-0"
         >
           <Plus className="h-4 w-4 stroke-[2.5]" />
@@ -207,10 +224,7 @@ export default function WorkoutPage() {
         {/* Plus Tab Button */}
         <button
           type="button"
-          onClick={() => {
-            setNewDayName(`Día 0${routine.days.length + 1}`);
-            setShowAddDayModal(true);
-          }}
+          onClick={triggerAddDay}
           className="flex min-w-[130px] h-[68px] items-center justify-center gap-2.5 rounded-xl border border-border bg-card/80 hover:bg-card hover:border-primary/40 transition-all px-4 py-3 shadow-soft group shrink-0 tactile-press"
           title="Sumar día de entrenamiento"
         >
@@ -389,6 +403,13 @@ export default function WorkoutPage() {
       <ExerciseModal
         exerciseId={selectedExerciseId}
         onClose={() => setSelectedExerciseId(null)}
+      />
+
+      {/* Subscription Modal for Pro Gating */}
+      <SubscriptionModal
+        open={showProModal}
+        onClose={() => setShowProModal(false)}
+        source="workout"
       />
     </div>
   );
