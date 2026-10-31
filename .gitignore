@@ -17,3 +17,6 @@ riderModule.iml
 node_modules/
 .next/
 out/
+
+# Agent ledger
+.superpowers/
