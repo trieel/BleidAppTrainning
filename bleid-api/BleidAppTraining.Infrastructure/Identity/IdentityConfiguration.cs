@@ -14,8 +14,10 @@ public static class IdentityConfiguration
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("Default")
+        var rawConnectionString = configuration.GetConnectionString("Default")
             ?? throw new InvalidOperationException("ConnectionStrings:Default is not configured.");
+
+        var connectionString = NormalizeConnectionString(rawConnectionString);
 
         services.AddDbContext<BleidDbContext>(options => options
             .UseNpgsql(connectionString, npgsql => npgsql.MigrationsAssembly(typeof(BleidDbContext).Assembly.FullName))
@@ -43,12 +45,47 @@ public static class IdentityConfiguration
         return services;
     }
 
+    public static string NormalizeConnectionString(string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString)) return connectionString;
+
+        connectionString = connectionString.Trim();
+        if (connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+            connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(connectionString, @"^postgres(?:ql)?://([^:]+):(.+)@([^:/]+)(?::(\d+))?/(.+)$");
+            if (match.Success)
+            {
+                var username = match.Groups[1].Value;
+                var password = match.Groups[2].Value;
+                var host = match.Groups[3].Value;
+                var port = match.Groups[4].Success ? match.Groups[4].Value : "5432";
+                var database = match.Groups[5].Value.Split('?')[0];
+                return $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+            }
+        }
+
+        if (!connectionString.Contains("SSL Mode", StringComparison.OrdinalIgnoreCase) &&
+            !connectionString.Contains("localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            connectionString += ";SSL Mode=Require;Trust Server Certificate=true";
+        }
+
+        return connectionString;
+    }
+
     public static async Task InitializeDatabaseAsync(this IApplicationBuilder application)
     {
+        Console.WriteLine(">>> [BleidApp] (1/4) Creating ServiceScope...");
         using var scope = application.ApplicationServices.CreateScope();
+
+        Console.WriteLine(">>> [BleidApp] (2/4) Resolving BleidDbContext...");
         var dbContext = scope.ServiceProvider.GetRequiredService<BleidDbContext>();
+
+        Console.WriteLine(">>> [BleidApp] (3/4) Applying EF Core database migrations...");
         await dbContext.Database.MigrateAsync();
 
+        Console.WriteLine(">>> [BleidApp] (4/4) Seeding default roles and exercises...");
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
         foreach (var roleName in new[] { RoleNames.User, RoleNames.Admin })
@@ -65,5 +102,6 @@ public static class IdentityConfiguration
         }
 
         await SeedData.SeedAsync(dbContext);
+        Console.WriteLine(">>> [BleidApp] InitializeDatabaseAsync completed successfully.");
     }
 }

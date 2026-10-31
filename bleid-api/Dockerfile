@@ -28,9 +28,6 @@ EXPOSE 8080 10000
 
 ENV ASPNETCORE_URLS=http://+:10000;http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV DOTNET_gcServer=0
-ENV DOTNET_EnableDiagnostics=0
 
 COPY --from=build /app/publish .
-USER $APP_UID
 ENTRYPOINT ["dotnet", "BleidAppTraining.API.dll"]
