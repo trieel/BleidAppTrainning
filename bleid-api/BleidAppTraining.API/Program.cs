@@ -183,6 +183,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+app.MapGet("/", () => Results.Ok(new
+{
+    status = "online",
+    app = "BleidApp Training API",
+    version = "1.0.0",
+    health = "/health"
+})).AllowAnonymous();
+
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = async (context, report) =>

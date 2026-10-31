@@ -61,7 +61,7 @@ public static class IdentityConfiguration
                 var host = match.Groups[3].Value;
                 var port = match.Groups[4].Success ? match.Groups[4].Value : "5432";
                 var database = match.Groups[5].Value.Split('?')[0];
-                return $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+                connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
             }
         }
 
@@ -69,6 +69,11 @@ public static class IdentityConfiguration
             !connectionString.Contains("localhost", StringComparison.OrdinalIgnoreCase))
         {
             connectionString += ";SSL Mode=Require;Trust Server Certificate=true";
+        }
+
+        if (!connectionString.Contains("GSS Enc Mode", StringComparison.OrdinalIgnoreCase))
+        {
+            connectionString += ";GSS Enc Mode=Disable";
         }
 
         return connectionString;
