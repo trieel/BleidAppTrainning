@@ -133,3 +133,17 @@ export type BodyWeightEntry = {
   notes: string | null;
   createdAt: string;
 };
+
+
+export type SubscriptionStatus = "Pending" | "Active" | "PastDue" | "Cancelled";
+
+export type SubscriptionInfo = {
+  isProActive: boolean;
+  status: SubscriptionStatus | null;
+  currentPeriodEnd: string | null;
+};
+
+export type SubscriptionCheckoutResult = {
+  initPoint: string;
+  preapprovalId: string;
+};
