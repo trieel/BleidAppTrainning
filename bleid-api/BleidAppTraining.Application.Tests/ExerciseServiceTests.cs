@@ -145,4 +145,27 @@ public class ExerciseServiceTests
         Assert.True(exercisesCount >= 60, $"Expected at least 60 exercises, found {exercisesCount}");
         Assert.True(routinesCount > 0, $"Expected template routines, found {routinesCount}");
     }
+
+    [Fact]
+    public async Task SeedAsync_WhenExercisesAlreadyExist_UpdatesLegacyNamesAndDetailedDescriptions()
+    {
+        using var db = TestDbContextFactory.Create(nameof(SeedAsync_WhenExercisesAlreadyExist_UpdatesLegacyNamesAndDetailedDescriptions));
+
+        await BleidAppTraining.Infrastructure.Persistence.SeedData.SeedAsync(db);
+
+        var curlInclinado = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Contains("Curl inclinado"));
+
+        Assert.NotNull(curlInclinado);
+        Assert.Contains("45", curlInclinado.Description);
+        Assert.Contains("cabeza larga", curlInclinado.Description.ToLower());
+
+        var pressPlano = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Equals("Press plano con barra", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(pressPlano);
+
+        var serrucho = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Contains("serrucho", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(serrucho);
+    }
 }
