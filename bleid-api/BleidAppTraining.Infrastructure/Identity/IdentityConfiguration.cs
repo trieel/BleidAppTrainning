@@ -3,6 +3,7 @@ using BleidAppTraining.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,7 +22,8 @@ public static class IdentityConfiguration
 
         services.AddDbContext<BleidDbContext>(options => options
             .UseNpgsql(connectionString, npgsql => npgsql.MigrationsAssembly(typeof(BleidDbContext).Assembly.FullName))
-            .UseSnakeCaseNamingConvention());
+            .UseSnakeCaseNamingConvention()
+            .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
         services.AddIdentityCore<User>(options =>
             {

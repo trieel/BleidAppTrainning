@@ -73,6 +73,11 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.PrimitiveCollection<List<string>>("Aliases")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("aliases");
+
                     b.PrimitiveCollection<List<string>>("Contraindications")
                         .IsRequired()
                         .HasColumnType("text[]")
