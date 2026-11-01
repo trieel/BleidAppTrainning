@@ -23,6 +23,7 @@ export default function ExercisesPage() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
+  const [hideContraindicated, setHideContraindicated] = useState(false);
   const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
 
   // Carga inicial de ejercicios desde el backend
@@ -64,11 +65,21 @@ export default function ExercisesPage() {
     );
   }, [exercises, search, isSearching]);
 
-  // Ejercicios filtrados según la píldora de grupo muscular seleccionada
+  const hasAnyContraindicated = useMemo(() => {
+    return exercises.some((e) => e.isContraindicated);
+  }, [exercises]);
+
+  // Ejercicios filtrados según la píldora de grupo muscular seleccionada y filtro articular
   const displayedByFilter = useMemo(() => {
-    if (selectedMuscleGroup === "all") return exercises;
-    return exercises.filter((ex) => (ex.muscleGroupName || "Otros") === selectedMuscleGroup);
-  }, [exercises, selectedMuscleGroup]);
+    let list = exercises;
+    if (selectedMuscleGroup !== "all") {
+      list = list.filter((ex) => (ex.muscleGroupName || "Otros") === selectedMuscleGroup);
+    }
+    if (hideContraindicated) {
+      list = list.filter((ex) => !ex.isContraindicated);
+    }
+    return list;
+  }, [exercises, selectedMuscleGroup, hideContraindicated]);
 
   // Agrupación por grupo muscular para la vista estructurada
   const groupedByMuscle = useMemo(() => {
@@ -183,6 +194,21 @@ export default function ExercisesPage() {
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+          {hasAnyContraindicated && (
+            <button
+              type="button"
+              onClick={() => setHideContraindicated((prev) => !prev)}
+              className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-mono font-medium transition shadow-soft ${
+                hideContraindicated
+                  ? "bg-[#3E6B48]/15 border-[#3E6B48]/40 text-[#3E6B48]"
+                  : "bg-card border-border text-muted-foreground hover:border-primary/40"
+              }`}
+              title={hideContraindicated ? "Mostrar todos los ejercicios" : "Ocultar ejercicios contraindicados para tus articulaciones"}
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>{hideContraindicated ? "Solo seguros" : "Todos"}</span>
+            </button>
+          )}
           <span className="rounded-xl border border-border bg-card px-3 py-1.5 shadow-soft">
             <strong className="text-primary font-bold">{exercises.length}</strong> ejercicios
           </span>
