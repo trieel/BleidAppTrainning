@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://bleid.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://bleid-app-trainning.vercel.app"),
   title: {
     default: "Bleid — Entrenamiento de Alto Rendimiento",
     template: "%s | Bleid Training",

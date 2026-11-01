@@ -44,9 +44,9 @@ public class ExerciseServiceTests
     }
 
     [Fact]
-    public async Task GetCatalogAsync_FiltersOutContraindicatedExercises()
+    public async Task GetCatalogAsync_WhenIncludeContraindicatedFalse_FiltersOutContraindicatedExercises()
     {
-        using var db = TestDbContextFactory.Create(nameof(GetCatalogAsync_FiltersOutContraindicatedExercises));
+        using var db = TestDbContextFactory.Create(nameof(GetCatalogAsync_WhenIncludeContraindicatedFalse_FiltersOutContraindicatedExercises));
         var userId = Guid.NewGuid();
         var muscleGroup = new MuscleGroup { Id = Guid.NewGuid(), Name = "Piernas", Icon = "dumbbell" };
         db.MuscleGroups.Add(muscleGroup);
@@ -86,10 +86,62 @@ public class ExerciseServiceTests
         await db.SaveChangesAsync();
 
         var service = new ExerciseService(db);
-        var catalog = await service.GetCatalogAsync(userId, null);
+        var catalog = await service.GetCatalogAsync(userId, null, includeContraindicated: false);
 
         Assert.Single(catalog);
         Assert.Equal("Puente de glúteos", catalog.First().Name);
+    }
+
+    [Fact]
+    public async Task GetCatalogAsync_WhenIncludeContraindicatedTrue_ReturnsAllExercisesWithFlag()
+    {
+        using var db = TestDbContextFactory.Create(nameof(GetCatalogAsync_WhenIncludeContraindicatedTrue_ReturnsAllExercisesWithFlag));
+        var userId = Guid.NewGuid();
+        var muscleGroup = new MuscleGroup { Id = Guid.NewGuid(), Name = "Piernas", Icon = "dumbbell" };
+        db.MuscleGroups.Add(muscleGroup);
+
+        db.UserLimitations.Add(new UserLimitation
+        {
+            UserId = userId,
+            Type = LimitationType.Knee,
+            Severity = SeverityType.Moderate
+        });
+
+        db.Exercises.AddRange(
+            new Exercise
+            {
+                Id = Guid.NewGuid(),
+                MuscleGroupId = muscleGroup.Id,
+                MuscleGroup = muscleGroup,
+                Name = "Sentadilla profunda",
+                Description = "Sentadilla con barra",
+                Equipment = EquipmentType.Barbell,
+                Level = LevelType.Intermediate,
+                Contraindications = ["Knee"]
+            },
+            new Exercise
+            {
+                Id = Guid.NewGuid(),
+                MuscleGroupId = muscleGroup.Id,
+                MuscleGroup = muscleGroup,
+                Name = "Puente de glúteos",
+                Description = "Elevación de cadera",
+                Equipment = EquipmentType.Bodyweight,
+                Level = LevelType.Beginner,
+                Contraindications = []
+            }
+        );
+
+        await db.SaveChangesAsync();
+
+        var service = new ExerciseService(db);
+        var catalog = await service.GetCatalogAsync(userId, null, includeContraindicated: true);
+
+        Assert.Equal(2, catalog.Count);
+        var squat = catalog.First(e => e.Name == "Sentadilla profunda");
+        var bridge = catalog.First(e => e.Name == "Puente de glúteos");
+        Assert.True(squat.IsContraindicated);
+        Assert.False(bridge.IsContraindicated);
     }
 
     [Fact]
@@ -144,5 +196,48 @@ public class ExerciseServiceTests
 
         Assert.True(exercisesCount >= 60, $"Expected at least 60 exercises, found {exercisesCount}");
         Assert.True(routinesCount > 0, $"Expected template routines, found {routinesCount}");
+    }
+
+    [Fact]
+    public async Task SeedAsync_WhenExercisesAlreadyExist_UpdatesLegacyNamesAndDetailedDescriptions()
+    {
+        using var db = TestDbContextFactory.Create(nameof(SeedAsync_WhenExercisesAlreadyExist_UpdatesLegacyNamesAndDetailedDescriptions));
+
+        await BleidAppTraining.Infrastructure.Persistence.SeedData.SeedAsync(db);
+
+        var curlInclinado = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Contains("Curl inclinado"));
+
+        Assert.NotNull(curlInclinado);
+        Assert.Contains("45", curlInclinado.Description);
+        Assert.Contains("cabeza larga", curlInclinado.Description.ToLower());
+
+        var pressPlano = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Equals("Press plano con barra", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(pressPlano);
+
+        var serrucho = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Contains("serrucho", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(serrucho);
+    }
+
+    [Fact]
+    public async Task SeedAsync_PopulatesMultilingualAliasesForSearch()
+    {
+        using var db = TestDbContextFactory.Create(nameof(SeedAsync_PopulatesMultilingualAliasesForSearch));
+
+        await BleidAppTraining.Infrastructure.Persistence.SeedData.SeedAsync(db);
+
+        var service = new ExerciseService(db);
+        var catalog = await service.GetCatalogAsync(Guid.NewGuid(), null);
+
+        var bench = catalog.FirstOrDefault(e => e.Name.Equals("Press plano con barra", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(bench);
+        Assert.NotNull(bench.Aliases);
+        Assert.Contains("bench press", bench.Aliases);
+
+        var rdl = catalog.FirstOrDefault(e => e.Name.Contains("rumano"));
+        Assert.NotNull(rdl);
+        Assert.Contains("rdl", rdl.Aliases);
     }
 }

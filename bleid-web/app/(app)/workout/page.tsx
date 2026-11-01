@@ -11,6 +11,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
 import { RoutineEditor } from "@/components/features/routine-editor";
 import { ExerciseModal } from "@/components/features/exercise-modal";
 import { cn } from "@/lib/utils";
+import { formatExerciseName } from "@/lib/labels";
 import type { Routine, RoutineDay, WorkoutSession } from "@/types";
 
 export default function WorkoutPage() {
@@ -299,7 +300,7 @@ export default function WorkoutPage() {
                       onClick={() => setSelectedExerciseId(exercise.exerciseId)}
                       className="truncate text-xs font-bold text-left hover:text-primary transition-colors block text-foreground"
                     >
-                      {exercise.exerciseName}
+                      {formatExerciseName(exercise.exerciseName)}
                     </button>
                     <p className="text-[11px] text-muted-foreground font-mono">
                       {exercise.sets} series · {exercise.repsMin}-{exercise.repsMax} reps · {exercise.restSeconds}s

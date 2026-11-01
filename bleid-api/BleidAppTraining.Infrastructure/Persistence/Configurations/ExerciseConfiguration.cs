@@ -27,6 +27,7 @@ public class ExerciseConfiguration : IEntityTypeConfiguration<Exercise>
         builder.Property(exercise => exercise.Equipment).HasConversion<string>().HasMaxLength(30);
         builder.Property(exercise => exercise.Level).HasConversion<string>().HasMaxLength(30);
         builder.Property(exercise => exercise.Contraindications).HasColumnType("text[]");
+        builder.Property(exercise => exercise.Aliases).HasColumnType("text[]");
         builder.Property(exercise => exercise.ModificationTip).HasMaxLength(1000);
         builder.Property(exercise => exercise.ImageUrl).HasMaxLength(500);
         builder.HasIndex(exercise => new { exercise.MuscleGroupId, exercise.Name }).IsUnique();

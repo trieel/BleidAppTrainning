@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bell, FastForward, Plus, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
+import { formatExerciseName } from "@/lib/labels";
 
 interface RestTimerProps {
   initialSeconds: number;
@@ -102,100 +103,117 @@ export function RestTimer({ initialSeconds, exerciseName, onFinish, onClose }: R
   return (
     <aside
       aria-label="Temporizador de descanso"
-      className={`fixed bottom-24 sm:bottom-6 left-4 right-4 z-50 mx-auto max-w-md overflow-hidden rounded-2xl border transition-all duration-300 ${
+      className={`fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] sm:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:w-[380px] z-50 overflow-hidden rounded-2xl border transition-all duration-300 ${
         isDone
           ? "border-[#3E6B48]/50 bg-[#3E6B48] text-white shadow-soft-lg backdrop-blur-xl animate-pulse"
           : "border-border bg-card/95 text-foreground shadow-soft-lg backdrop-blur-xl"
       }`}
     >
-      <div className="flex items-center justify-between p-3.5">
-        <div className="flex items-center gap-3">
-          {/* Circular SVG Progress Ring */}
-          <div className="relative grid h-12 w-12 shrink-0 place-items-center">
-            <svg className="h-12 w-12 -rotate-90 transform" viewBox="0 0 48 48">
-              {/* Background Track */}
-              <circle
-                cx="24"
-                cy="24"
-                r={radius}
-                className={isDone ? "stroke-white/20" : "stroke-muted"}
-                strokeWidth="3.5"
-                fill="none"
-              />
-              {/* Active Ring */}
-              <circle
-                cx="24"
-                cy="24"
-                r={radius}
-                className={`transition-all duration-1000 ease-linear ${
-                  isDone ? "stroke-white" : "stroke-primary"
-                }`}
-                strokeWidth="3.5"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                fill="none"
-              />
-            </svg>
-            <button
-              type="button"
-              onClick={() => setSoundEnabled((prev) => !prev)}
-              className="absolute inset-0 grid place-items-center rounded-full text-foreground hover:scale-105 active:scale-95 transition"
-              title={soundEnabled ? "Silenciar" : "Activar audio"}
-            >
-              {isDone ? (
-                <Bell className="h-4 w-4 text-white animate-spin" />
-              ) : soundEnabled ? (
-                <Volume2 className="h-3.5 w-3.5 text-primary" />
-              ) : (
-                <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-            </button>
+      <div className="p-3 sm:p-3.5 space-y-2.5">
+        {/* Fila Superior: Anillo + Tiempo + Info + Cerrar */}
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            {/* Anillo Circular SVG */}
+            <div className="relative grid h-10 w-10 sm:h-11 sm:w-11 shrink-0 place-items-center">
+              <svg className="h-10 w-10 sm:h-11 sm:w-11 -rotate-90 transform" viewBox="0 0 48 48">
+                {/* Background Track */}
+                <circle
+                  cx="24"
+                  cy="24"
+                  r={radius}
+                  className={isDone ? "stroke-white/20" : "stroke-muted"}
+                  strokeWidth="3.5"
+                  fill="none"
+                />
+                {/* Active Ring */}
+                <circle
+                  cx="24"
+                  cy="24"
+                  r={radius}
+                  className={`transition-all duration-1000 ease-linear ${
+                    isDone ? "stroke-white" : "stroke-primary"
+                  }`}
+                  strokeWidth="3.5"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+              <button
+                type="button"
+                onClick={() => setSoundEnabled((prev) => !prev)}
+                className="absolute inset-0 grid place-items-center rounded-full text-foreground hover:scale-105 active:scale-95 transition"
+                title={soundEnabled ? "Silenciar" : "Activar audio"}
+              >
+                {isDone ? (
+                  <Bell className="h-4 w-4 text-white animate-spin" />
+                ) : soundEnabled ? (
+                  <Volume2 className="h-3.5 w-3.5 text-primary" />
+                ) : (
+                  <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
+              </button>
+            </div>
+
+            {/* Tiempo y Nombre de Ejercicio */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-mono">
+                <span className={`font-bold uppercase tracking-wider ${isDone ? "text-white" : "text-primary"}`}>
+                  {isDone ? "¡Tiempo Cumplido!" : "Descanso Activo"}
+                </span>
+                {exerciseName && (
+                  <span className={`truncate max-w-[140px] sm:max-w-[180px] ${isDone ? "text-white/80" : "text-muted-foreground"}`}>
+                    · {formatExerciseName(exerciseName)}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                <span className="font-mono text-xl sm:text-2xl font-bold tracking-tight leading-none">
+                  {timeFormatted}
+                </span>
+                <span className={`text-[10px] font-mono ${isDone ? "text-white/80" : "text-muted-foreground"}`}>
+                  {isDone ? "Siguiente serie lista" : `de ${totalSeconds}s`}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-mono font-bold uppercase tracking-wider ${isDone ? "text-white" : "text-primary"}`}>
-                {isDone ? "¡Tiempo Cumplido!" : "Descanso Activo"}
-              </span>
-              {exerciseName && (
-                <span className={`text-[10px] truncate max-w-[120px] font-mono ${isDone ? "text-white/80" : "text-muted-foreground"}`}>
-                  · {exerciseName}
-                </span>
-              )}
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-mono text-2xl font-bold tracking-tight">{timeFormatted}</span>
-              <span className={`text-[10px] font-mono ${isDone ? "text-white/80" : "text-muted-foreground"}`}>
-                {isDone ? "Siguiente serie" : `de ${totalSeconds}s`}
-              </span>
-            </div>
-          </div>
+          {/* Botón Cerrar */}
+          <button
+            type="button"
+            onClick={onClose}
+            className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl transition ${
+              isDone ? "text-white/80 hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+            title="Cerrar temporizador"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          {!isDone && (
+        {/* Fila Inferior: Botones de Acción Ergonómicos (Touch Targets 42-44px) */}
+        <div className="flex items-center gap-2 pt-1 border-t border-border/40">
+          {!isDone ? (
             <>
               <button
                 type="button"
                 onClick={() => addSeconds(30)}
-                className="flex items-center gap-1 rounded-xl border border-border bg-muted/40 px-2.5 py-1.5 text-xs font-mono font-bold text-foreground hover:bg-muted active:scale-[0.98] transition shadow-soft"
+                className="flex-1 flex h-10 items-center justify-center gap-1.5 rounded-xl border border-border/80 bg-muted/40 text-xs font-mono font-bold text-foreground hover:bg-muted active:scale-[0.98] transition shadow-xs"
                 title="Agregar 30 segundos"
               >
-                <Plus className="h-3 w-3 text-primary" /> 30s
+                <Plus className="h-3.5 w-3.5 text-primary" /> +30s
               </button>
               <button
                 type="button"
                 onClick={() => setSecondsLeft(0)}
-                className="flex items-center gap-1 rounded-xl bg-primary px-3 py-1.5 text-xs font-mono font-bold text-primary-foreground shadow-soft hover:bg-primary/90 active:scale-[0.98] transition"
-                title="Saltar descanso"
+                className="flex-2 flex h-10 items-center justify-center gap-1.5 rounded-xl bg-primary px-4 text-xs font-mono font-bold text-primary-foreground shadow-soft hover:bg-primary/90 active:scale-[0.98] transition"
+                title="Listo / Iniciar siguiente serie"
               >
-                <FastForward className="h-3 w-3 fill-current" /> Listo
+                <FastForward className="h-3.5 w-3.5 fill-current" /> Siguiente serie
               </button>
             </>
-          )}
-
-          {isDone && (
+          ) : (
             <button
               type="button"
               onClick={() => {
@@ -203,22 +221,11 @@ export function RestTimer({ initialSeconds, exerciseName, onFinish, onClose }: R
                 setTotalSeconds(60);
                 setIsDone(false);
               }}
-              className="flex items-center gap-1.5 rounded-xl border border-white/30 bg-white/20 px-3 py-1.5 text-xs font-mono font-bold text-white hover:bg-white/30 active:scale-[0.98] transition shadow-soft"
+              className="w-full flex h-10 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/20 text-xs font-mono font-bold text-white hover:bg-white/30 active:scale-[0.98] transition shadow-soft"
             >
-              <RotateCcw className="h-3 w-3" /> +1 min
+              <RotateCcw className="h-3.5 w-3.5" /> +1 minuto de descanso
             </button>
           )}
-
-          <button
-            type="button"
-            onClick={onClose}
-            className={`grid h-8 w-8 place-items-center rounded-lg transition ml-1 ${
-              isDone ? "text-white/80 hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
-            title="Cerrar temporizador"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
       </div>
     </aside>

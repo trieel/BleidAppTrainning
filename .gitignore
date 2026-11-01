@@ -5,6 +5,7 @@ riderModule.iml
 /_ReSharper.Caches/
 
 # Local tooling and secrets
+.superpowers/
 .idea/
 .env
 .env.*

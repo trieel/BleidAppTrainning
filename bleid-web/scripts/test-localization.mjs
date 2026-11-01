@@ -1,9 +1,18 @@
 // Unit verification for formatContraindications and formatExerciseName
 import assert from "node:assert";
-import { formatContraindications, formatExerciseName, contraindicationMap } from "../lib/labels.ts";
+import { formatContraindications, formatEquipment, formatExerciseName } from "../lib/labels.ts";
 
 assert.strictEqual(typeof formatContraindications, "function");
 assert.strictEqual(typeof formatExerciseName, "function");
+assert.strictEqual(typeof formatEquipment, "function");
+
+// Test equipment localization
+assert.strictEqual(formatEquipment("Barbell"), "Barra");
+assert.strictEqual(formatEquipment("Dumbbell"), "Mancuerna");
+assert.strictEqual(formatEquipment("Machine"), "Máquina");
+assert.strictEqual(formatEquipment("Cable"), "Polea");
+assert.strictEqual(formatEquipment("Bodyweight"), "Corporal");
+assert.strictEqual(formatEquipment(null), "");
 
 // Test single values
 assert.strictEqual(formatContraindications(["wrist"]), "Muñeca");
@@ -19,8 +28,13 @@ assert.strictEqual(formatContraindications(["knee", "shoulder"]), "Rodilla, Homb
 assert.strictEqual(formatContraindications([]), "");
 assert.strictEqual(formatContraindications(null), "");
 
-// Test Spanish typography and 'ñ'
+// Test Spanish typography, 'ñ' and accents
 assert.strictEqual(formatExerciseName("Curl arana en banco inclinado"), "Curl araña en banco inclinado");
 assert.strictEqual(formatExerciseName("Press banca con barra"), "Press banca con barra");
+assert.strictEqual(formatExerciseName("Jalon al pecho"), "Jalón al pecho");
+assert.strictEqual(formatExerciseName("Curl de biceps con barra"), "Curl de bíceps con barra");
+assert.strictEqual(formatExerciseName("Press de pecho en maquina"), "Press de pecho en máquina");
+assert.strictEqual(formatExerciseName("Sentadilla bulgara"), "Sentadilla búlgara");
+assert.strictEqual(formatExerciseName("Rompecraneos"), "Rompecráneos");
 
-console.log("✓ ALL LOCALIZATION TESTS PASSED!");
+console.log("✓ ALL LOCALIZATION & TYPOGRAPHY TESTS PASSED!");

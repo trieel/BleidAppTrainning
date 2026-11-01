@@ -130,6 +130,101 @@ public class RoutineServiceTests
     }
 
     [Fact]
+    public async Task AssignForProfileAsync_PrefersCompatibleEquipmentOverAlphabetical()
+    {
+        var db = TestDbContextFactory.Create(nameof(AssignForProfileAsync_PrefersCompatibleEquipmentOverAlphabetical));
+        var userId = Guid.NewGuid();
+        var muscleGroup = new MuscleGroup { Id = Guid.NewGuid(), Name = "Pecho", Icon = "chest" };
+        db.MuscleGroups.Add(muscleGroup);
+
+        // Risky barbell exercise
+        var riskyExercise = new Exercise
+        {
+            Id = Guid.NewGuid(),
+            MuscleGroupId = muscleGroup.Id,
+            MuscleGroup = muscleGroup,
+            Name = "Press inclinado con barra",
+            Equipment = EquipmentType.Barbell,
+            Level = LevelType.Intermediate,
+            Contraindications = ["Shoulder"]
+        };
+
+        // Candidate A: Alphabetically first ("Aperturas..."), but Machine isolation
+        var candidateA = new Exercise
+        {
+            Id = Guid.NewGuid(),
+            MuscleGroupId = muscleGroup.Id,
+            MuscleGroup = muscleGroup,
+            Name = "Aperturas en maquina",
+            Equipment = EquipmentType.Machine,
+            Level = LevelType.Beginner,
+            Contraindications = []
+        };
+
+        // Candidate B: Alphabetically later ("Press..."), but Dumbbell free weight (compatible with Barbell) and matching Intermediate level
+        var candidateB = new Exercise
+        {
+            Id = Guid.NewGuid(),
+            MuscleGroupId = muscleGroup.Id,
+            MuscleGroup = muscleGroup,
+            Name = "Press plano con mancuernas",
+            Equipment = EquipmentType.Dumbbell,
+            Level = LevelType.Intermediate,
+            Contraindications = []
+        };
+
+        db.Exercises.AddRange(riskyExercise, candidateA, candidateB);
+
+        var template = new Routine
+        {
+            Id = Guid.NewGuid(),
+            Name = "Template Hipertrofia Test",
+            Goal = GoalType.GainMuscle,
+            Level = LevelType.Intermediate,
+            DaysPerWeek = 3,
+            IsTemplate = true
+        };
+
+        var day = new RoutineDay
+        {
+            Id = Guid.NewGuid(),
+            DayNumber = 1,
+            Name = "Día 1",
+            Order = 1
+        };
+
+        day.Exercises.Add(new RoutineExercise
+        {
+            ExerciseId = riskyExercise.Id,
+            Exercise = riskyExercise,
+            Sets = 3,
+            RepsMin = 8,
+            RepsMax = 12,
+            RestSeconds = 90,
+            Order = 1
+        });
+
+        template.Days.Add(day);
+        db.Routines.Add(template);
+
+        db.UserLimitations.Add(new UserLimitation
+        {
+            UserId = userId,
+            Type = LimitationType.Shoulder,
+            Severity = SeverityType.Moderate
+        });
+
+        await db.SaveChangesAsync();
+
+        var service = new RoutineService(db);
+        var result = await service.AssignForProfileAsync(userId, GoalType.GainMuscle, LevelType.Intermediate, 3);
+
+        var assignedExercise = result.Days.First().Exercises.First();
+        // Candidate B should be picked due to equipment compatibility heuristic, not Candidate A purely for alphabetical "A"
+        Assert.Equal("Press plano con mancuernas", assignedExercise.ExerciseName);
+    }
+
+    [Fact]
     public async Task AddDayAsync_ValidCommand_AppendsNewDayAndIncreasesDaysPerWeek()
     {
         var (db, userId, _) = await SeedTemplatesAsync(nameof(AddDayAsync_ValidCommand_AppendsNewDayAndIncreasesDaysPerWeek));

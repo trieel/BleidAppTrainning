@@ -27,7 +27,7 @@ const limitations: { value: LimitationType; label: string }[] = [
   { value: "Knee", label: "Rodilla" },
   { value: "Shoulder", label: "Hombro" },
   { value: "Wrist", label: "Muñeca" },
-  { value: "Neck", label: "Cuello" },
+  { value: "Neck", label: "Cuello / Cervicales" },
 ];
 
 export default function OnboardingPage() {
