@@ -205,7 +205,7 @@ UPDATE public.exercises SET aliases = ARRAY['rope pushdown', 'tricep rope pushdo
 UPDATE public.exercises SET aliases = ARRAY['plank', 'abdominal plank', 'plancha frontal', 'plancha'] WHERE name ILIKE 'Plancha frontal';
 UPDATE public.exercises SET aliases = ARRAY['ab wheel', 'ab roller', 'rueda abdominal'] WHERE name ILIKE 'Rueda abdominal (Ab Roller)';
 
-DO $
+DO $$
 DECLARE
     chest_id uuid;
     back_id uuid;
