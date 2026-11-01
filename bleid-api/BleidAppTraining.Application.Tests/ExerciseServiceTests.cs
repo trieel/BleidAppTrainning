@@ -215,10 +215,50 @@ public class ExerciseServiceTests
         var pressPlano = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
             .FirstOrDefaultAsync(db.Exercises, e => e.Name.Equals("Press plano con barra", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(pressPlano);
-
         var serrucho = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
             .FirstOrDefaultAsync(db.Exercises, e => e.Name.Contains("serrucho", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(serrucho);
+
+        // Verificación de ejercicios renombrados por el usuario
+        var peckDeck = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Peck Deck");
+        Assert.NotNull(peckDeck);
+
+        var flexiones = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Flexiones de brazos");
+        Assert.NotNull(flexiones);
+
+        var camillaFemoral = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Camilla femoral");
+        Assert.NotNull(camillaFemoral);
+
+        var sillonFemoral = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Sillón femoral");
+        Assert.NotNull(sillonFemoral);
+
+        var sillonCuad = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Sillón de cuadríceps");
+        Assert.NotNull(sillonCuad);
+
+        var sentadillaHack = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Sentadilla Hack");
+        Assert.NotNull(sentadillaHack);
+
+        var curlManc = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Curl con mancuernas");
+        Assert.NotNull(curlManc);
+
+        var curlScottBarra = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Curl Scott con barra");
+        Assert.NotNull(curlScottBarra);
+
+        var curlScottManc = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Curl Scott con mancuernas");
+        Assert.NotNull(curlScottManc);
+
+        var curlPolea = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name == "Curl de bíceps en polea");
+        Assert.NotNull(curlPolea);
     }
 
     [Fact]
