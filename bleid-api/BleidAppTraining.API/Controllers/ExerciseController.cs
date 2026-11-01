@@ -11,9 +11,10 @@ public class ExerciseController(IExerciseService exerciseService) : Authenticate
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ExerciseResult>>> GetAll(
         [FromQuery] Guid? muscleGroupId,
-        CancellationToken cancellationToken)
+        [FromQuery] bool includeContraindicated = true,
+        CancellationToken cancellationToken = default)
     {
-        return Ok(await exerciseService.GetCatalogAsync(CurrentUserId, muscleGroupId, cancellationToken));
+        return Ok(await exerciseService.GetCatalogAsync(CurrentUserId, muscleGroupId, includeContraindicated, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]

@@ -10,6 +10,7 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
     public async Task<IReadOnlyCollection<ExerciseResult>> GetCatalogAsync(
         Guid userId,
         Guid? muscleGroupId,
+        bool includeContraindicated = true,
         CancellationToken cancellationToken = default)
     {
         var limitations = await GetLimitationsAsync(userId, cancellationToken);
@@ -23,8 +24,12 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
 
         var exercises = await query.OrderBy(exercise => exercise.Name).ToListAsync(cancellationToken);
 
+        if (!includeContraindicated)
+        {
+            exercises = exercises.Where(exercise => !IsContraindicated(exercise.Contraindications, limitations)).ToList();
+        }
+
         return exercises
-            .Where(exercise => !IsContraindicated(exercise.Contraindications, limitations))
             .Select(exercise => new ExerciseResult(
                 exercise.Id,
                 exercise.MuscleGroupId,
@@ -36,7 +41,7 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
                 exercise.Contraindications,
                 exercise.ModificationTip,
                 exercise.ImageUrl,
-                false))
+                IsContraindicated(exercise.Contraindications, limitations)))
             .ToArray();
     }
 
@@ -44,7 +49,7 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
         Guid userId,
         Guid muscleGroupId,
         CancellationToken cancellationToken = default) =>
-        GetCatalogAsync(userId, muscleGroupId, cancellationToken);
+        GetCatalogAsync(userId, muscleGroupId, true, cancellationToken);
 
     public async Task<ExerciseResult> GetByIdAsync(
         Guid userId,

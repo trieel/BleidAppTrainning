@@ -44,9 +44,9 @@ public class ExerciseServiceTests
     }
 
     [Fact]
-    public async Task GetCatalogAsync_FiltersOutContraindicatedExercises()
+    public async Task GetCatalogAsync_WhenIncludeContraindicatedFalse_FiltersOutContraindicatedExercises()
     {
-        using var db = TestDbContextFactory.Create(nameof(GetCatalogAsync_FiltersOutContraindicatedExercises));
+        using var db = TestDbContextFactory.Create(nameof(GetCatalogAsync_WhenIncludeContraindicatedFalse_FiltersOutContraindicatedExercises));
         var userId = Guid.NewGuid();
         var muscleGroup = new MuscleGroup { Id = Guid.NewGuid(), Name = "Piernas", Icon = "dumbbell" };
         db.MuscleGroups.Add(muscleGroup);
@@ -86,10 +86,62 @@ public class ExerciseServiceTests
         await db.SaveChangesAsync();
 
         var service = new ExerciseService(db);
-        var catalog = await service.GetCatalogAsync(userId, null);
+        var catalog = await service.GetCatalogAsync(userId, null, includeContraindicated: false);
 
         Assert.Single(catalog);
         Assert.Equal("Puente de glúteos", catalog.First().Name);
+    }
+
+    [Fact]
+    public async Task GetCatalogAsync_WhenIncludeContraindicatedTrue_ReturnsAllExercisesWithFlag()
+    {
+        using var db = TestDbContextFactory.Create(nameof(GetCatalogAsync_WhenIncludeContraindicatedTrue_ReturnsAllExercisesWithFlag));
+        var userId = Guid.NewGuid();
+        var muscleGroup = new MuscleGroup { Id = Guid.NewGuid(), Name = "Piernas", Icon = "dumbbell" };
+        db.MuscleGroups.Add(muscleGroup);
+
+        db.UserLimitations.Add(new UserLimitation
+        {
+            UserId = userId,
+            Type = LimitationType.Knee,
+            Severity = SeverityType.Moderate
+        });
+
+        db.Exercises.AddRange(
+            new Exercise
+            {
+                Id = Guid.NewGuid(),
+                MuscleGroupId = muscleGroup.Id,
+                MuscleGroup = muscleGroup,
+                Name = "Sentadilla profunda",
+                Description = "Sentadilla con barra",
+                Equipment = EquipmentType.Barbell,
+                Level = LevelType.Intermediate,
+                Contraindications = ["Knee"]
+            },
+            new Exercise
+            {
+                Id = Guid.NewGuid(),
+                MuscleGroupId = muscleGroup.Id,
+                MuscleGroup = muscleGroup,
+                Name = "Puente de glúteos",
+                Description = "Elevación de cadera",
+                Equipment = EquipmentType.Bodyweight,
+                Level = LevelType.Beginner,
+                Contraindications = []
+            }
+        );
+
+        await db.SaveChangesAsync();
+
+        var service = new ExerciseService(db);
+        var catalog = await service.GetCatalogAsync(userId, null, includeContraindicated: true);
+
+        Assert.Equal(2, catalog.Count);
+        var squat = catalog.First(e => e.Name == "Sentadilla profunda");
+        var bridge = catalog.First(e => e.Name == "Puente de glúteos");
+        Assert.True(squat.IsContraindicated);
+        Assert.False(bridge.IsContraindicated);
     }
 
     [Fact]
