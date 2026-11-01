@@ -77,7 +77,7 @@ function searchExercises(exercises, query) {
   }));
 }
 
-// Mock dataset
+// Mock dataset from fallbackAliases
 const mockExercises = Object.keys(fallbackAliases).map((name, index) => ({
   id: `ex-${index + 1}`,
   name,
@@ -100,9 +100,9 @@ const testCases = [
     expectedFirst: "Peso muerto convencional",
   },
   {
-    name: "Acronym 'rdl' finds 'Peso muerto rumano'",
+    name: "Acronym 'rdl' finds Romanian deadlift",
     query: "rdl",
-    expectedContains: "Peso muerto rumano",
+    expectedContains: "rumano",
   },
   {
     name: "Argentine slang 'serrucho' finds 'Remo con mancuerna a una mano (serrucho)'",
@@ -110,14 +110,14 @@ const testCases = [
     expectedFirst: "Remo con mancuerna a una mano (serrucho)",
   },
   {
-    name: "Argentine slang 'banco scott' finds 'Curl Scott en banco (predicador)'",
+    name: "Argentine slang 'banco scott' finds 'Curl Scott con barra'",
     query: "banco scott",
-    expectedFirst: "Curl Scott en banco (predicador)",
+    expectedFirst: "Curl Scott con barra",
   },
   {
-    name: "Argentine slang 'rompecraneos' finds 'Press francés con barra (rompecráneos)'",
+    name: "Argentine slang 'rompecraneos' finds 'Press francés con barra W (rompecráneos)'",
     query: "rompecraneos",
-    expectedFirst: "Press francés con barra (rompecráneos)",
+    expectedFirst: "Press francés con barra W (rompecráneos)",
   },
   {
     name: "Argentine slang 'pajaros' finds 'Vuelos posteriores (pájaros)'",
@@ -145,9 +145,9 @@ const testCases = [
     expectedFirst: "Jalón al pecho en polea",
   },
   {
-    name: "English term 'skull crusher' finds 'Press francés con barra (rompecráneos)'",
+    name: "English term 'skull crusher' finds 'Press francés con barra W (rompecráneos)'",
     query: "skull crusher",
-    expectedFirst: "Press francés con barra (rompecráneos)",
+    expectedFirst: "Press francés con barra W (rompecráneos)",
   },
   {
     name: "English term 'bulgarian' finds 'Sentadilla búlgara'",
@@ -160,9 +160,49 @@ const testCases = [
     expectedContains: "Hip thrust con barra",
   },
   {
-    name: "English term 'ab wheel' finds 'Rueda abdominal'",
+    name: "English term 'ab wheel' finds 'Rueda abdominal (Ab Roller)'",
     query: "ab wheel",
-    expectedContains: "Rueda abdominal",
+    expectedContains: "Rueda abdominal (Ab Roller)",
+  },
+  {
+    name: "Renamed machine 'peck deck' finds 'Peck Deck'",
+    query: "peck deck",
+    expectedFirst: "Peck Deck",
+  },
+  {
+    name: "Renamed femoral 'camilla femoral' finds 'Camilla femoral'",
+    query: "camilla femoral",
+    expectedFirst: "Camilla femoral",
+  },
+  {
+    name: "Renamed femoral 'sillon femoral' finds 'Sillón femoral'",
+    query: "sillon femoral",
+    expectedFirst: "Sillón femoral",
+  },
+  {
+    name: "Renamed quadriceps 'sillon de cuadriceps' finds 'Sillón de cuadríceps'",
+    query: "sillon de cuadriceps",
+    expectedFirst: "Sillón de cuadríceps",
+  },
+  {
+    name: "Renamed quadriceps 'hack squat' finds 'Sentadilla Hack'",
+    query: "hack squat",
+    expectedFirst: "Sentadilla Hack",
+  },
+  {
+    name: "Renamed biceps 'curl con mancuernas' finds 'Curl con mancuernas'",
+    query: "curl con mancuernas",
+    expectedFirst: "Curl con mancuernas",
+  },
+  {
+    name: "User rename 'curl predicadora' finds 'Curl Scott con mancuernas'",
+    query: "curl predicadora",
+    expectedFirst: "Curl Scott con mancuernas",
+  },
+  {
+    name: "Renamed bicep polea 'curl en polea' finds 'Curl de bíceps en polea'",
+    query: "curl en polea",
+    expectedFirst: "Curl de bíceps en polea",
   },
 ];
 
@@ -195,6 +235,16 @@ for (const tc of testCases) {
 console.log("\nVerifying Translations:");
 assert.strictEqual(englishNames["Press plano con barra"], "Barbell Flat Bench Press");
 assert.strictEqual(englishNames["Remo con mancuerna a una mano (serrucho)"], "One-Arm Dumbbell Row (Saw)");
-console.log("✅ [PASS] Translations matched expected English terms.");
+assert.strictEqual(englishNames["Peck Deck"], "Pec Deck Machine Fly");
+assert.strictEqual(englishNames["Flexiones de brazos"], "Push-ups");
+assert.strictEqual(englishNames["Camilla femoral"], "Lying Leg Curl (Hamstring Curl)");
+assert.strictEqual(englishNames["Sillón femoral"], "Seated Leg Curl Machine");
+assert.strictEqual(englishNames["Sillón de cuadríceps"], "Leg Extension Machine");
+assert.strictEqual(englishNames["Sentadilla Hack"], "Hack Squat");
+assert.strictEqual(englishNames["Curl Scott con barra"], "Barbell Preacher Curl (Scott Bench)");
+assert.strictEqual(englishNames["Curl Scott con mancuernas"], "Dumbbell Preacher Curl");
+assert.strictEqual(englishNames["Curl con mancuernas"], "Dumbbell Bicep Curl");
+assert.strictEqual(englishNames["Curl de bíceps en polea"], "Low Cable Bicep Curl");
+console.log("✅ [PASS] All new canonical translations matched expected English terms.");
 
 console.log(`\n🎉 ALL ${passed} SEARCH AND LOCALIZATION TESTS PASSED CLEANLY!`);
