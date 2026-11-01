@@ -205,32 +205,33 @@ public static class SeedData
             { "Escaladora", "Escaladora" }
         };
 
-        // Migración en caliente de nombres en registros existentes evitando duplicados de clave
-        foreach (var (oldName, newName) in legacyRenames)
-        {
-            var match = existing.FirstOrDefault(e => e.Name.Equals(oldName, StringComparison.OrdinalIgnoreCase));
-            if (match != null)
-            {
-                var alreadyCanonical = existing.FirstOrDefault(e => e.Name.Equals(newName, StringComparison.OrdinalIgnoreCase) && e.Id != match.Id);
-                if (alreadyCanonical == null)
-                {
-                    match.Name = newName;
-                }
-            }
-        }
-
         foreach (var definition in ExerciseDefinitions())
         {
             var group = muscleGroups[definition.MuscleGroup];
+
+            // 1. Prioridad: Buscar coincidencia exacta por nombre canónico en este grupo muscular
             var existingExercise = existing.FirstOrDefault(exercise =>
                 exercise.MuscleGroupId == group.Id &&
-                (exercise.Name.Equals(definition.Name, StringComparison.OrdinalIgnoreCase) ||
-                 (legacyRenames.TryGetValue(exercise.Name, out var targetName) && targetName.Equals(definition.Name, StringComparison.OrdinalIgnoreCase))));
+                exercise.Name.Equals(definition.Name, StringComparison.OrdinalIgnoreCase));
+
+            // 2. Si no existe canónico, buscar por nombre legacy que apunte a esta definición
+            if (existingExercise == null)
+            {
+                existingExercise = existing.FirstOrDefault(exercise =>
+                    exercise.MuscleGroupId == group.Id &&
+                    legacyRenames.TryGetValue(exercise.Name, out var targetName) &&
+                    targetName.Equals(definition.Name, StringComparison.OrdinalIgnoreCase));
+
+                // Si encontramos un registro legacy y NO hay colisión con otro en el mismo grupo, lo renombramos
+                if (existingExercise != null)
+                {
+                    existingExercise.Name = definition.Name;
+                }
+            }
 
             if (existingExercise != null)
             {
-                // Sincronizar y enriquecer descripciones y tips de ejercicios existentes
-                existingExercise.Name = definition.Name;
+                // Sincronizar atributos sin renombrar si ya se llamaba igual
                 existingExercise.Description = definition.Description;
                 existingExercise.Equipment = definition.Equipment;
                 existingExercise.Level = definition.Level;
