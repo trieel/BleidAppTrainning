@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AlertTriangle, Dumbbell, Loader2, ShieldCheck, X } from "lucide-react";
 import { getExerciseById } from "@/lib/api";
-import { formatContraindications, formatExerciseName, levelLabels } from "@/lib/labels";
+import { formatContraindications, formatEquipment, formatExerciseName, levelLabels } from "@/lib/labels";
 import type { Exercise } from "@/types";
 
 interface ExerciseModalProps {
@@ -65,7 +65,7 @@ export function ExerciseModal({ exerciseId, onClose }: ExerciseModalProps) {
                 <Dumbbell className="h-3 w-3" /> {exercise.muscleGroupName}
               </span>
               <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-mono font-medium text-muted-foreground">
-                {exercise.equipment}
+                {formatEquipment(exercise.equipment)}
               </span>
             </div>
 
@@ -76,8 +76,13 @@ export function ExerciseModal({ exerciseId, onClose }: ExerciseModalProps) {
               Nivel: {levelLabels[exercise.level] ?? exercise.level}
             </p>
 
-            <div className="mt-5 rounded-2xl bg-muted/40 border border-border/70 p-4 text-sm leading-relaxed text-foreground">
-              {exercise.description || "Ejercicio diseñado para desarrollo muscular y fuerza funcional."}
+            <div className="mt-5 rounded-2xl bg-muted/40 border border-border/70 p-4">
+              <span className="inline-block text-[10px] font-mono uppercase tracking-wider font-bold text-primary mb-1.5">
+                Guía rápida de técnica y biomecánica
+              </span>
+              <p className="text-sm leading-relaxed text-foreground">
+                {exercise.description || "Ejercicio diseñado para desarrollo muscular y fuerza funcional."}
+              </p>
             </div>
 
             {/* Contraindications & Safety Info */}

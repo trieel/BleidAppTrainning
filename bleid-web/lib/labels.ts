@@ -74,6 +74,29 @@ export const severityLabels: Record<SeverityType, string> = {
 };
 
 /**
+ * Diccionario de equipamiento en español para visualización compacta y modales.
+ */
+export const equipmentLabels: Record<string, string> = {
+  Barbell: "Barra",
+  Dumbbell: "Mancuerna",
+  Machine: "Máquina",
+  Cable: "Polea",
+  Bodyweight: "Corporal",
+};
+
+/**
+ * Traduce un valor de equipamiento al español.
+ * 
+ * @example
+ * formatEquipment("Barbell") // "Barra"
+ * formatEquipment("Dumbbell") // "Mancuerna"
+ */
+export function formatEquipment(equipment?: string | null): string {
+  if (!equipment) return "";
+  return equipmentLabels[equipment] || equipment;
+}
+
+/**
  * Traduce y formatea un array de contraindicaciones articulares a una cadena legible en español.
  * 
  * @example

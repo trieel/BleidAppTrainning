@@ -4,7 +4,7 @@ import { Check, Edit3, Loader2, Plus, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { addRoutineExercise, getExercises, removeRoutineExercise } from "@/lib/api";
 import { ApiError } from "@/lib/api/client";
-import { formatExerciseName } from "@/lib/labels";
+import { formatEquipment, formatExerciseName } from "@/lib/labels";
 import type { Exercise, Routine, RoutineDay } from "@/types";
 
 export function RoutineEditor({
@@ -138,7 +138,7 @@ export function RoutineEditor({
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-foreground">{formatExerciseName(exercise.name)}</p>
                   <p className="mt-0.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-                    {exercise.muscleGroupName} · {exercise.equipment}
+                    {exercise.muscleGroupName} · {formatEquipment(exercise.equipment)}
                   </p>
                 </div>
                 <button

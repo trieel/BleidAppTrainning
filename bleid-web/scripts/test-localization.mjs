@@ -1,9 +1,18 @@
 // Unit verification for formatContraindications and formatExerciseName
 import assert from "node:assert";
-import { formatContraindications, formatExerciseName } from "../lib/labels.ts";
+import { formatContraindications, formatEquipment, formatExerciseName } from "../lib/labels.ts";
 
 assert.strictEqual(typeof formatContraindications, "function");
 assert.strictEqual(typeof formatExerciseName, "function");
+assert.strictEqual(typeof formatEquipment, "function");
+
+// Test equipment localization
+assert.strictEqual(formatEquipment("Barbell"), "Barra");
+assert.strictEqual(formatEquipment("Dumbbell"), "Mancuerna");
+assert.strictEqual(formatEquipment("Machine"), "Máquina");
+assert.strictEqual(formatEquipment("Cable"), "Polea");
+assert.strictEqual(formatEquipment("Bodyweight"), "Corporal");
+assert.strictEqual(formatEquipment(null), "");
 
 // Test single values
 assert.strictEqual(formatContraindications(["wrist"]), "Muñeca");

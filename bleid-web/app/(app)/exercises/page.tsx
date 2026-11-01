@@ -14,19 +14,8 @@ import {
 } from "lucide-react";
 import { getExercises } from "@/lib/api";
 import { ExerciseModal } from "@/components/features/exercise-modal";
-import { formatContraindications, formatExerciseName, levelLabels } from "@/lib/labels";
+import { formatContraindications, formatEquipment, formatExerciseName, levelLabels } from "@/lib/labels";
 import type { Exercise } from "@/types";
-
-/**
- * Mapeo de equipamiento en español para visualización compacta.
- */
-const EQUIPMENT_LABELS: Record<string, string> = {
-  Barbell: "Barra",
-  Dumbbell: "Mancuerna",
-  Machine: "Máquina",
-  Cable: "Polea",
-  Bodyweight: "Corporal",
-};
 
 export default function ExercisesPage() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -117,7 +106,7 @@ export default function ExercisesPage() {
               <Dumbbell className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {exercise.muscleGroupName}
             </span>
             <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-medium text-muted-foreground">
-              {EQUIPMENT_LABELS[exercise.equipment] || exercise.equipment}
+              {formatEquipment(exercise.equipment)}
             </span>
           </div>
 
