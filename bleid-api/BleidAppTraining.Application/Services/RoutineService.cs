@@ -312,11 +312,41 @@ public class RoutineService(IApplicationDbContext db) : IRoutineService
         var candidates = await db.Exercises
             .AsNoTracking()
             .Where(exercise => exercise.MuscleGroupId == source.MuscleGroupId && exercise.Id != source.Id)
-            .OrderBy(exercise => exercise.Name)
             .ToListAsync(cancellationToken);
 
-        return candidates.FirstOrDefault(exercise =>
-            !ExerciseService.IsContraindicated(exercise.Contraindications, limitations));
+        var safeCandidates = candidates
+            .Where(exercise => !ExerciseService.IsContraindicated(exercise.Contraindications, limitations))
+            .ToList();
+
+        if (safeCandidates.Count == 0) return null;
+
+        int Score(Exercise target)
+        {
+            var score = 0;
+            if (target.Equipment == source.Equipment)
+            {
+                score += 3;
+            }
+            else if ((target.Equipment == EquipmentType.Barbell && source.Equipment == EquipmentType.Dumbbell) ||
+                     (target.Equipment == EquipmentType.Dumbbell && source.Equipment == EquipmentType.Barbell) ||
+                     (target.Equipment == EquipmentType.Cable && source.Equipment == EquipmentType.Machine) ||
+                     (target.Equipment == EquipmentType.Machine && source.Equipment == EquipmentType.Cable))
+            {
+                score += 2;
+            }
+
+            if (target.Level == source.Level)
+            {
+                score += 1;
+            }
+
+            return score;
+        }
+
+        return safeCandidates
+            .OrderByDescending(Score)
+            .ThenBy(exercise => exercise.Name)
+            .FirstOrDefault();
     }
 
     private async Task<RoutineDay> GetOwnedDayAsync(
