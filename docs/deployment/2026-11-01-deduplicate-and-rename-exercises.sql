@@ -117,15 +117,15 @@ SELECT pg_temp.merge_and_cleanup_exercise('Cruces en polea para pecho', ARRAY['C
 SELECT pg_temp.merge_and_cleanup_exercise('Peck Deck', ARRAY['Aperturas en máquina (Pec Deck)', 'Aperturas en maquina (Pec Deck)', 'Pec Deck']);
 SELECT pg_temp.merge_and_cleanup_exercise('Flexiones de brazos', ARRAY['Flexiones de pecho (lagartijas)', 'Flexiones con deficit', 'Flexiones con déficit']);
 SELECT pg_temp.merge_and_cleanup_exercise('Jalón al pecho en polea', ARRAY['Jalon al pecho', 'Jalón al pecho']);
-SELECT pg_temp.merge_and_cleanup_exercise('Remo en polea baja (Remo Gironda)', ARRAY['Remo sentado en cable', 'Remo en polea baja con agarre estrecho (Remo Gironda)', 'Remo en polea baja agarre neutro', 'Remo en polea baja con agarre neutro', 'Remo Gironda']);
+SELECT pg_temp.merge_and_cleanup_exercise('Remo en polea baja', ARRAY['Remo en polea baja (Remo Gironda)', 'Remo sentado en cable', 'Remo en polea baja con agarre estrecho (Remo Gironda)', 'Remo en polea baja agarre neutro', 'Remo en polea baja con agarre neutro', 'Remo Gironda']);
 SELECT pg_temp.merge_and_cleanup_exercise('Pullover en polea alta con soga', ARRAY['Jalón con brazos rectos', 'Jalon con brazos rectos', 'Pullover en polea alta']);
 SELECT pg_temp.merge_and_cleanup_exercise('Face pull en polea alta', ARRAY['Face pull', 'Face pull con rotacion externa', 'Face pull con rotación externa']);
-SELECT pg_temp.merge_and_cleanup_exercise('Remo con mancuerna a una mano (serrucho)', ARRAY['Remo a una mano']);
-SELECT pg_temp.merge_and_cleanup_exercise('Dominadas libres (peso corporal)', ARRAY['Dominadas']);
+SELECT pg_temp.merge_and_cleanup_exercise('Remo con mancuerna a una mano', ARRAY['Remo con mancuerna a una mano (serrucho)', 'Remo a una mano']);
+SELECT pg_temp.merge_and_cleanup_exercise('Dominadas libres', ARRAY['Dominadas libres (peso corporal)', 'Dominadas']);
 SELECT pg_temp.merge_and_cleanup_exercise('Sillón de cuadríceps', ARRAY['Contracción de cuadríceps', 'Contraccion de cuadriceps', 'Extension de piernas', 'Extensión de piernas', 'Sillón de cuadríceps (extensiones)', 'Sillon de cuadriceps (extensiones)', 'Sillon de cuadriceps']);
 SELECT pg_temp.merge_and_cleanup_exercise('Sentadilla Hack', ARRAY['Hack squat']);
 SELECT pg_temp.merge_and_cleanup_exercise('Prensa a 45°', ARRAY['Prensa de piernas', 'Prensa 45 grados']);
-SELECT pg_temp.merge_and_cleanup_exercise('Sentadilla con cinturón (Belt Squat)', ARRAY['Sentadilla con cinturon (Belt squat)']);
+SELECT pg_temp.merge_and_cleanup_exercise('Sentadilla con cinturón', ARRAY['Sentadilla con cinturón (Belt Squat)', 'Sentadilla con cinturon (Belt squat)']);
 SELECT pg_temp.merge_and_cleanup_exercise('Subidas al cajón', ARRAY['Subida al cajon', 'Subida al cajón']);
 SELECT pg_temp.merge_and_cleanup_exercise('Estocadas hacia atrás con mancuernas', ARRAY['Zancada hacia atras', 'Zancadas hacia atras']);
 SELECT pg_temp.merge_and_cleanup_exercise('Estocadas caminando con mancuernas', ARRAY['Zancadas caminando']);
@@ -137,37 +137,37 @@ SELECT pg_temp.merge_and_cleanup_exercise('Sillón femoral', ARRAY['Sillón de i
 SELECT pg_temp.merge_and_cleanup_exercise('Peso muerto rumano con barra', ARRAY['Peso muerto rumano']);
 SELECT pg_temp.merge_and_cleanup_exercise('Buenos días con barra', ARRAY['Buenos días', 'Buenos dias']);
 SELECT pg_temp.merge_and_cleanup_exercise('Gemelos de pie en máquina', ARRAY['Elevacion de pantorrillas', 'Elevación de pantorrillas']);
-SELECT pg_temp.merge_and_cleanup_exercise('Gemelos sentado en máquina (sóleo)', ARRAY['Elevacion de pantorrillas sentado', 'Elevación de pantorrillas sentado']);
+SELECT pg_temp.merge_and_cleanup_exercise('Gemelos sentado en máquina', ARRAY['Gemelos sentado en máquina (sóleo)', 'Elevacion de pantorrillas sentado', 'Elevación de pantorrillas sentado']);
 SELECT pg_temp.merge_and_cleanup_exercise('Gemelos en prensa', ARRAY['Elevacion de talones en prensa', 'Elevación de talones en prensa']);
 SELECT pg_temp.merge_and_cleanup_exercise('Gemelos a una pierna con peso corporal', ARRAY['Elevacion de talones a una pierna', 'Elevación de talones a una pierna']);
 SELECT pg_temp.merge_and_cleanup_exercise('Press de hombros con mancuernas sentado', ARRAY['Press de hombros con mancuernas', 'Press militar sentado con mancuernas']);
 SELECT pg_temp.merge_and_cleanup_exercise('Press militar en máquina Smith', ARRAY['Press militar en maquina Smith']);
 SELECT pg_temp.merge_and_cleanup_exercise('Vuelos laterales con mancuernas', ARRAY['Elevaciones laterales']);
 SELECT pg_temp.merge_and_cleanup_exercise('Vuelos laterales en polea', ARRAY['Elevacion lateral en cable']);
-SELECT pg_temp.merge_and_cleanup_exercise('Vuelos posteriores (pájaros)', ARRAY['Vuelo posterior']);
+SELECT pg_temp.merge_and_cleanup_exercise('Vuelos posteriores', ARRAY['Vuelos posteriores (pájaros)', 'Vuelo posterior']);
 SELECT pg_temp.merge_and_cleanup_exercise('Vuelos frontales con mancuernas', ARRAY['Elevacion frontal', 'Elevación frontal']);
 SELECT pg_temp.merge_and_cleanup_exercise('Remo al mentón con barra', ARRAY['Remo al mentón', 'Remo al menton']);
 SELECT pg_temp.merge_and_cleanup_exercise('Curl con mancuernas', ARRAY['Curl de concentración', 'Curl de concentracion', 'Curl de bíceps con mancuernas', 'Curl de biceps con mancuernas']);
 SELECT pg_temp.merge_and_cleanup_exercise('Curl Scott con barra', ARRAY['Curl Scott en banco (predicador)', 'Curl predicador']);
 SELECT pg_temp.merge_and_cleanup_exercise('Curl Scott con mancuernas', ARRAY['Curl Predicadora', 'Curl predicadora']);
 SELECT pg_temp.merge_and_cleanup_exercise('Curl de bíceps en polea', ARRAY['Curl de bíceps en cable', 'Curl de biceps en cable', 'Curl en polea baja']);
-SELECT pg_temp.merge_and_cleanup_exercise('Press francés con barra W (rompecráneos)', ARRAY['Rompecraneos', 'Rompecráneos', 'Press francés con barra (rompecráneos)', 'Press frances con barra (rompecraneos)', 'Press francés en banco plano con barra W']);
-SELECT pg_temp.merge_and_cleanup_exercise('Extensiones de tríceps en polea alta (barra)', ARRAY['Extensiones de tríceps en polea alta', 'Extensiones de triceps en polea alta', 'Jalon de triceps en polea']);
+SELECT pg_temp.merge_and_cleanup_exercise('Press francés con barra W', ARRAY['Press francés con barra W (rompecráneos)', 'Rompecraneos', 'Rompecráneos', 'Press francés con barra (rompecráneos)', 'Press frances con barra (rompecraneos)', 'Press francés en banco plano con barra W']);
+SELECT pg_temp.merge_and_cleanup_exercise('Extensiones de tríceps en polea alta', ARRAY['Extensiones de tríceps en polea alta (barra)', 'Extensiones de tríceps en polea alta', 'Extensiones de triceps en polea alta', 'Jalon de triceps en polea']);
 SELECT pg_temp.merge_and_cleanup_exercise('Extensiones de tríceps en polea con soga', ARRAY['Extension de triceps en polea con cuerda']);
 SELECT pg_temp.merge_and_cleanup_exercise('Extensiones tras nuca en polea con soga', ARRAY['Extension de triceps sobre la cabeza']);
-SELECT pg_temp.merge_and_cleanup_exercise('Extensiones tras nuca con mancuerna (copa)', ARRAY['Extension francesa con mancuerna sentado']);
+SELECT pg_temp.merge_and_cleanup_exercise('Extensiones tras nuca con mancuerna', ARRAY['Extensiones tras nuca con mancuerna (copa)', 'Extension francesa con mancuerna sentado']);
 SELECT pg_temp.merge_and_cleanup_exercise('Press cerrado con barra', ARRAY['Press cerrado']);
 SELECT pg_temp.merge_and_cleanup_exercise('Fondos en paralelas para tríceps', ARRAY['Fondos en paralelas para triceps']);
 SELECT pg_temp.merge_and_cleanup_exercise('Fondos asistidos en máquina', ARRAY['Fondos asistidos']);
 SELECT pg_temp.merge_and_cleanup_exercise('Patada de tríceps con mancuerna', ARRAY['Patada de triceps']);
 SELECT pg_temp.merge_and_cleanup_exercise('Crunch en polea con soga', ARRAY['Crunch en cable', 'Crunch abdominal en polea alta']);
 SELECT pg_temp.merge_and_cleanup_exercise('Press Pallof en polea', ARRAY['Pallof press']);
-SELECT pg_temp.merge_and_cleanup_exercise('Rueda abdominal (Ab Roller)', ARRAY['Rueda abdominal (Ab wheel)']);
+SELECT pg_temp.merge_and_cleanup_exercise('Rueda abdominal', ARRAY['Rueda abdominal (Ab Roller)', 'Rueda abdominal (Ab wheel)']);
 SELECT pg_temp.merge_and_cleanup_exercise('Elevación de rodillas colgado en barra', ARRAY['Elevacion de rodillas colgado']);
 SELECT pg_temp.merge_and_cleanup_exercise('Elevación de piernas en paralelas', ARRAY['Elevacion de piernas en paralelas']);
 SELECT pg_temp.merge_and_cleanup_exercise('Caminata inclinada en cinta', ARRAY['Caminata en cinta']);
-SELECT pg_temp.merge_and_cleanup_exercise('Remoergómetro (Concept 2)', ARRAY['Remo ergometro', 'Remo ergómetro']);
-SELECT pg_temp.merge_and_cleanup_exercise('Escaladora (StairMaster)', ARRAY['Escaladora']);
+SELECT pg_temp.merge_and_cleanup_exercise('Remoergómetro', ARRAY['Remoergómetro (Concept 2)', 'Remo ergometro', 'Remo ergómetro']);
+SELECT pg_temp.merge_and_cleanup_exercise('Escaladora', ARRAY['Escaladora (StairMaster)', 'Escaladora']);
 
 -- 3. Actualizar alias multilingües enriquecidos para búsqueda
 UPDATE public.exercises SET aliases = '["bench press","barbell bench press","press banca","banca plana","pecho plano","pecho"]'::jsonb WHERE name = 'Press plano con barra';
@@ -179,7 +179,7 @@ UPDATE public.exercises SET aliases = '["cable crossover","cable flyes","cruce d
 UPDATE public.exercises SET aliases = '["dumbbell flyes","db flyes","aperturas","aperturas de pecho"]'::jsonb WHERE name = 'Aperturas con mancuernas';
 UPDATE public.exercises SET aliases = '["pec deck","peck deck","machine fly","contractora de pecho","mariposa","aperturas en maquina"]'::jsonb WHERE name = 'Peck Deck';
 UPDATE public.exercises SET aliases = '["push ups","pushups","lagartijas","flexiones de pecho","flexiones"]'::jsonb WHERE name = 'Flexiones de brazos';
-UPDATE public.exercises SET aliases = '["chest dips","dips","fondos en paralelas","paralelas"]'::jsonb WHERE name = 'Fondos en paralelas (pecho)';
+UPDATE public.exercises SET aliases = '["chest dips","dips","fondos en paralelas","paralelas"]'::jsonb WHERE name = 'Fondos en paralelas';
 UPDATE public.exercises SET aliases = '["dumbbell pullover","pullover","db pullover"]'::jsonb WHERE name = 'Pullover con mancuerna';
 UPDATE public.exercises SET aliases = '["deadlift","conventional deadlift","peso muerto","pmo"]'::jsonb WHERE name = 'Peso muerto convencional';
 UPDATE public.exercises SET aliases = '["pull ups","pullups","chin ups","dominadas","traccion vertical"]'::jsonb WHERE name = 'Dominadas libres (peso corporal)';
@@ -275,13 +275,13 @@ UPDATE public.exercises SET aliases = '["hollow body","hollow body hold"]'::json
 UPDATE public.exercises SET aliases = '["treadmill walking","incline treadmill","cinta caminadora","caminata en cinta"]'::jsonb WHERE name = 'Caminata inclinada en cinta';
 UPDATE public.exercises SET aliases = '["stationary bike","cycling","bici fija"]'::jsonb WHERE name = 'Bicicleta fija';
 UPDATE public.exercises SET aliases = '["elliptical","eliptico","eliptica"]'::jsonb WHERE name = 'Eliptico';
-UPDATE public.exercises SET aliases = '["air bike","assault bike","echo bike","bici de aire"]'::jsonb WHERE name = 'Bicicleta de aire (Air Bike / Assault Bike)';
+UPDATE public.exercises SET aliases = '["air bike","assault bike","echo bike","bici de aire"]'::jsonb WHERE name = 'Bicicleta de aire';
 UPDATE public.exercises SET aliases = '["rower","rowing machine","concept 2","remo ergometro"]'::jsonb WHERE name = 'Remoergómetro (Concept 2)';
 UPDATE public.exercises SET aliases = '["stairmaster","stair climber","escaladora"]'::jsonb WHERE name = 'Escaladora (StairMaster)';
 UPDATE public.exercises SET aliases = '["jump rope","skipping rope","cuerda de saltar","soga saltar"]'::jsonb WHERE name = 'Cuerda de saltar';
 UPDATE public.exercises SET aliases = '["burpees","burpee"]'::jsonb WHERE name = 'Burpees';
 UPDATE public.exercises SET aliases = '["mountain climbers","escaladores"]'::jsonb WHERE name = 'Mountain climbers';
-UPDATE public.exercises SET aliases = '["sled push","empuje de trineo"]'::jsonb WHERE name = 'Empuje de trineo (Sled push)';
+UPDATE public.exercises SET aliases = '["sled push","empuje de trineo"]'::jsonb WHERE name = 'Empuje de trineo';
 
 -- 4. Verificación de integridad: comprobar que no existan nombres duplicados por grupo muscular
 DO $check$

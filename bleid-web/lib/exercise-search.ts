@@ -36,18 +36,18 @@ export const EXERCISE_FALLBACK_ALIASES: Record<string, string[]> = {
   "Aperturas con mancuernas": ["dumbbell flyes", "db flyes", "aperturas", "aperturas de pecho"],
   "Peck Deck": ["pec deck", "peck deck", "machine fly", "contractora de pecho", "mariposa", "aperturas en maquina"],
   "Flexiones de brazos": ["push ups", "pushups", "lagartijas", "flexiones de pecho", "flexiones"],
-  "Fondos en paralelas (pecho)": ["chest dips", "dips", "fondos en paralelas", "paralelas"],
+  "Fondos en paralelas": ["fondos en paralelas (pecho)", "chest dips", "dips", "fondos en paralelas", "fondos pecho", "paralelas"],
   "Pullover con mancuerna": ["dumbbell pullover", "pullover", "db pullover"],
 
   // Espalda
   "Peso muerto convencional": ["deadlift", "conventional deadlift", "peso muerto", "pmo"],
-  "Dominadas libres (peso corporal)": ["pull ups", "pullups", "chin ups", "dominadas", "traccion vertical"],
+  "Dominadas libres": ["dominadas libres (peso corporal)", "pull ups", "pullups", "chin ups", "dominadas", "peso corporal", "traccion vertical"],
   "Dominadas asistidas": ["assisted pull ups", "assisted chin ups", "dominadas en maquina"],
   "Jalón al pecho en polea": ["lat pulldown", "pulldown", "jalon al pecho", "dorsalera", "jalon"],
   "Jalón al pecho agarre supino": ["reverse grip lat pulldown", "underhand pulldown", "jalon supino"],
-  "Remo en polea baja (Remo Gironda)": ["gironda row", "close grip cable row", "remo gironda", "remo sentado en cable", "remo polea baja"],
+  "Remo en polea baja": ["remo en polea baja (remo gironda)", "gironda row", "close grip cable row", "remo gironda", "gironda", "remo sentado en cable", "remo polea baja"],
   "Remo con barra": ["barbell row", "bent over row", "remo barra"],
-  "Remo con mancuerna a una mano (serrucho)": ["serrucho", "one arm dumbbell row", "single arm db row", "remo mancuerna"],
+  "Remo con mancuerna a una mano": ["remo con mancuerna a una mano (serrucho)", "serrucho", "remo serrucho", "one arm dumbbell row", "single arm db row", "remo mancuerna"],
   "Remo con apoyo de pecho": ["chest supported row", "machine row", "remo con apoyo"],
   "Remo en barra T": ["t bar row", "t-bar row", "remo t"],
   "Pullover en polea alta con soga": ["cable pullover", "straight arm pulldown", "overhead cable pullover", "pullover polea", "jalon con brazos rectos"],
@@ -68,7 +68,7 @@ export const EXERCISE_FALLBACK_ALIASES: Record<string, string[]> = {
   "Estocadas hacia atrás con mancuernas": ["reverse lunges", "dumbbell reverse lunge", "estocadas atras", "zancada hacia atras", "zancadas"],
   "Estocadas caminando con mancuernas": ["walking lunges", "dumbbell walking lunges", "estocadas caminando", "zancadas caminando"],
   "Sentadilla sissy": ["sissy squat", "sentadilla sissy"],
-  "Sentadilla con cinturón (Belt Squat)": ["belt squat", "sentadilla con cinturon"],
+  "Sentadilla con cinturón": ["sentadilla con cinturón (belt squat)", "belt squat", "sentadilla con cinturon", "sentadilla belt"],
   "Sentadilla cosaca": ["cossack squat", "sentadilla cosaca"],
 
   // Gluteos
@@ -93,7 +93,7 @@ export const EXERCISE_FALLBACK_ALIASES: Record<string, string[]> = {
 
   // Pantorrillas
   "Gemelos de pie en máquina": ["standing calf raise", "calf raises", "gemelos de pie", "pantorrillas de pie", "elevacion de pantorrillas"],
-  "Gemelos sentado en máquina (sóleo)": ["seated calf raise", "soleus raise", "soleo", "gemelos sentado"],
+  "Gemelos sentado en máquina": ["gemelos sentado en máquina (sóleo)", "seated calf raise", "soleus raise", "soleo", "sóleo", "gemelos sentado"],
   "Gemelos en prensa": ["leg press calf raise", "talones en prensa", "elevacion de talones en prensa"],
   "Gemelos a una pierna con peso corporal": ["single leg calf raise", "talones a una pierna"],
 
@@ -104,7 +104,7 @@ export const EXERCISE_FALLBACK_ALIASES: Record<string, string[]> = {
   "Press Arnold": ["arnold press", "dumbbell arnold press", "press arnold"],
   "Vuelos laterales con mancuernas": ["dumbbell lateral raise", "lateral raises", "vuelos laterales", "elevaciones laterales"],
   "Vuelos laterales en polea": ["cable lateral raise", "side lateral cable", "vuelos en polea", "elevacion lateral en cable"],
-  "Vuelos posteriores (pájaros)": ["rear delt fly", "rear delt flyes", "pajaros", "vuelos posteriores", "vuelo posterior"],
+  "Vuelos posteriores": ["vuelos posteriores (pájaros)", "rear delt fly", "rear delt flyes", "pajaros", "pájaros", "vuelos posteriores", "vuelo posterior"],
   "Vuelos frontales con mancuernas": ["front raise", "dumbbell front raise", "elevacion frontal", "vuelos frontales"],
   "Remo al mentón con barra": ["upright row", "barbell upright row", "remo al menton"],
   "Vuelos laterales en banco inclinado": ["incline lateral raise", "vuelos en banco inclinado"],
@@ -124,11 +124,11 @@ export const EXERCISE_FALLBACK_ALIASES: Record<string, string[]> = {
   "Curl 21 con barra": ["21s curl", "barbell 21 curl", "curl 21"],
 
   // Triceps
-  "Press francés con barra W (rompecráneos)": ["skull crusher", "skullcrusher", "lying triceps extension", "french press", "rompecraneos", "press frances barra w"],
-  "Extensiones de tríceps en polea alta (barra)": ["tricep pushdown", "cable tricep extension", "extension triceps polea", "jalon de triceps en polea"],
+  "Press francés con barra W": ["press francés con barra w (rompecráneos)", "skull crusher", "skullcrusher", "lying triceps extension", "french press", "rompecraneos", "rompecráneos", "press frances barra w"],
+  "Extensiones de tríceps en polea alta": ["extensiones de tríceps en polea alta (barra)", "tricep pushdown", "cable tricep extension", "extension triceps polea", "jalon de triceps en polea", "triceps barra"],
   "Extensiones de tríceps en polea con soga": ["rope pushdown", "tricep rope pushdown", "extension triceps soga"],
   "Extensiones tras nuca en polea con soga": ["overhead cable tricep extension", "overhead rope extension", "triceps tras nuca", "extension de triceps sobre la cabeza"],
-  "Extensiones tras nuca con mancuerna (copa)": ["seated overhead dumbbell extension", "extension francesa sentado", "copa triceps"],
+  "Extensiones tras nuca con mancuerna": ["extensiones tras nuca con mancuerna (copa)", "seated overhead dumbbell extension", "extension francesa sentado", "copa triceps", "copa", "extension copa"],
   "Press cerrado con barra": ["close grip bench press", "close grip press", "press cerrado"],
   "Fondos en paralelas para tríceps": ["parallel bar tricep dips", "fondos en paralelas triceps"],
   "Fondos asistidos en máquina": ["assisted dips", "fondos asistidos"],
@@ -139,7 +139,7 @@ export const EXERCISE_FALLBACK_ALIASES: Record<string, string[]> = {
   "Plancha lateral": ["side plank", "plancha lateral"],
   "Abdominales crunch en colchoneta": ["crunches", "ab crunch", "abdominales crunch"],
   "Crunch en polea con soga": ["cable crunch", "kneeling cable crunch", "crunch polea", "crunch en cable"],
-  "Rueda abdominal (Ab Roller)": ["ab wheel", "ab roller", "rueda abdominal"],
+  "Rueda abdominal": ["rueda abdominal (ab roller)", "ab wheel", "ab roller", "rueda abdominal"],
   "Elevación de rodillas colgado en barra": ["hanging knee raise", "elevacion de rodillas colgado"],
   "Elevación de piernas en paralelas": ["captain chair leg raise", "elevacion piernas paralelas"],
   "Dead bug": ["dead bug", "bicho muerto"],
@@ -152,13 +152,13 @@ export const EXERCISE_FALLBACK_ALIASES: Record<string, string[]> = {
   "Caminata inclinada en cinta": ["treadmill walking", "incline treadmill", "cinta caminadora", "caminata en cinta"],
   "Bicicleta fija": ["stationary bike", "cycling", "bici fija"],
   "Eliptico": ["elliptical", "eliptico", "eliptica"],
-  "Bicicleta de aire (Air Bike / Assault Bike)": ["air bike", "assault bike", "echo bike", "bici de aire"],
-  "Remoergómetro (Concept 2)": ["rower", "rowing machine", "concept 2", "remo ergometro"],
-  "Escaladora (StairMaster)": ["stairmaster", "stair climber", "escaladora"],
+  "Bicicleta de aire": ["bicicleta de aire (air bike / assault bike)", "air bike", "assault bike", "echo bike", "bici de aire"],
+  "Remoergómetro": ["remoergómetro (concept 2)", "rower", "rowing machine", "concept 2", "concept2", "remo ergometro"],
+  "Escaladora": ["escaladora (stairmaster)", "stairmaster", "stair climber", "escaladora"],
   "Cuerda de saltar": ["jump rope", "skipping rope", "cuerda de saltar", "soga saltar"],
   "Burpees": ["burpees", "burpee"],
   "Mountain climbers": ["mountain climbers", "escaladores"],
-  "Empuje de trineo (Sled push)": ["sled push", "empuje de trineo"]
+  "Empuje de trineo": ["empuje de trineo (sled push)", "sled push", "empuje de trineo", "trineo"]
 };
 
 export type SearchResultItem = {

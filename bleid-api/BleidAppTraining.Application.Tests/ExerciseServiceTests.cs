@@ -216,7 +216,7 @@ public class ExerciseServiceTests
             .FirstOrDefaultAsync(db.Exercises, e => e.Name.Equals("Press plano con barra", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(pressPlano);
         var serrucho = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
-            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Contains("serrucho", StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefaultAsync(db.Exercises, e => e.Name.Equals("Remo con mancuerna a una mano", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(serrucho);
 
         // Verificación de ejercicios renombrados por el usuario

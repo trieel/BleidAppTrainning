@@ -57,6 +57,36 @@ public static class SeedData
         // Mapeo exhaustivo de nombres previos a terminología estándar y rioplatense de gimnasio
         var legacyRenames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            { "Empuje de trineo (Sled push)", "Empuje de trineo" },
+
+            { "Escaladora (StairMaster)", "Escaladora" },
+
+            { "Remoergómetro (Concept 2)", "Remoergómetro" },
+
+            { "Bicicleta de aire (Air Bike / Assault Bike)", "Bicicleta de aire" },
+
+            { "Rueda abdominal (Ab Roller)", "Rueda abdominal" },
+
+            { "Extensiones tras nuca con mancuerna (copa)", "Extensiones tras nuca con mancuerna" },
+
+            { "Extensiones de tríceps en polea alta (barra)", "Extensiones de tríceps en polea alta" },
+
+            { "Press francés con barra W (rompecráneos)", "Press francés con barra W" },
+
+            { "Vuelos posteriores (pájaros)", "Vuelos posteriores" },
+
+            { "Gemelos sentado en máquina (sóleo)", "Gemelos sentado en máquina" },
+
+            { "Sentadilla con cinturón (Belt Squat)", "Sentadilla con cinturón" },
+
+            { "Remo con mancuerna a una mano (serrucho)", "Remo con mancuerna a una mano" },
+
+            { "Remo en polea baja (Remo Gironda)", "Remo en polea baja" },
+
+            { "Dominadas libres (peso corporal)", "Dominadas libres" },
+
+            { "Fondos en paralelas (pecho)", "Fondos en paralelas" },
+
             { "Press banca con barra", "Press plano con barra" },
             { "Press banca plano", "Press plano con barra" },
             { "Press declinado con barra", "Press plano con barra" },
@@ -73,17 +103,17 @@ public static class SeedData
             { "Aperturas en maquina (Pec Deck)", "Peck Deck" },
             { "Pec Deck", "Peck Deck" },
             { "Jalon al pecho", "Jalón al pecho en polea" },
-            { "Remo sentado en cable", "Remo en polea baja (Remo Gironda)" },
-            { "Remo en polea baja con agarre estrecho (Remo Gironda)", "Remo en polea baja (Remo Gironda)" },
-            { "Remo en polea baja agarre neutro", "Remo en polea baja (Remo Gironda)" },
-            { "Remo en polea baja con agarre neutro", "Remo en polea baja (Remo Gironda)" },
-            { "Remo Gironda", "Remo en polea baja (Remo Gironda)" },
+            { "Remo sentado en cable", "Remo en polea baja" },
+            { "Remo en polea baja con agarre estrecho (Remo Gironda)", "Remo en polea baja" },
+            { "Remo en polea baja agarre neutro", "Remo en polea baja" },
+            { "Remo en polea baja con agarre neutro", "Remo en polea baja" },
+            { "Remo Gironda", "Remo en polea baja" },
             { "Jalón con brazos rectos", "Pullover en polea alta con soga" },
             { "Jalon con brazos rectos", "Pullover en polea alta con soga" },
             { "Pullover en polea alta", "Pullover en polea alta con soga" },
             { "Face pull", "Face pull en polea alta" },
-            { "Remo a una mano", "Remo con mancuerna a una mano (serrucho)" },
-            { "Dominadas", "Dominadas libres (peso corporal)" },
+            { "Remo a una mano", "Remo con mancuerna a una mano" },
+            { "Dominadas", "Dominadas libres" },
             { "Contracción de cuadríceps", "Sillón de cuadríceps" },
             { "Contraccion de cuadriceps", "Sillón de cuadríceps" },
             { "Extension de piernas", "Sillón de cuadríceps" },
@@ -94,7 +124,7 @@ public static class SeedData
             { "Hack squat", "Sentadilla Hack" },
             { "Prensa de piernas", "Prensa a 45°" },
             { "Prensa 45 grados", "Prensa a 45°" },
-            { "Sentadilla con cinturon (Belt squat)", "Sentadilla con cinturón (Belt Squat)" },
+            { "Sentadilla con cinturon (Belt squat)", "Sentadilla con cinturón" },
             { "Subida al cajon", "Subidas al cajón" },
             { "Subida al cajón", "Subidas al cajón" },
             { "Zancada hacia atras", "Estocadas hacia atrás con mancuernas" },
@@ -120,8 +150,8 @@ public static class SeedData
             { "Deslizamiento de isquiotibiales", "Camilla femoral" },
             { "Elevacion de pantorrillas", "Gemelos de pie en máquina" },
             { "Elevación de pantorrillas", "Gemelos de pie en máquina" },
-            { "Elevacion de pantorrillas sentado", "Gemelos sentado en máquina (sóleo)" },
-            { "Elevación de pantorrillas sentado", "Gemelos sentado en máquina (sóleo)" },
+            { "Elevacion de pantorrillas sentado", "Gemelos sentado en máquina" },
+            { "Elevación de pantorrillas sentado", "Gemelos sentado en máquina" },
             { "Elevacion de talones en prensa", "Gemelos en prensa" },
             { "Elevación de talones en prensa", "Gemelos en prensa" },
             { "Elevacion de talones a una pierna", "Gemelos a una pierna con peso corporal" },
@@ -131,7 +161,7 @@ public static class SeedData
             { "Press militar en maquina Smith", "Press militar en máquina Smith" },
             { "Elevaciones laterales", "Vuelos laterales con mancuernas" },
             { "Elevacion lateral en cable", "Vuelos laterales en polea" },
-            { "Vuelo posterior", "Vuelos posteriores (pájaros)" },
+            { "Vuelo posterior", "Vuelos posteriores" },
             { "Elevacion frontal", "Vuelos frontales con mancuernas" },
             { "Elevación frontal", "Vuelos frontales con mancuernas" },
             { "Remo al mentón", "Remo al mentón con barra" },
@@ -148,17 +178,17 @@ public static class SeedData
             { "Curl de bíceps en cable", "Curl de bíceps en polea" },
             { "Curl de biceps en cable", "Curl de bíceps en polea" },
             { "Curl arana en banco inclinado", "Curl araña en banco inclinado" },
-            { "Rompecraneos", "Press francés con barra W (rompecráneos)" },
-            { "Rompecráneos", "Press francés con barra W (rompecráneos)" },
-            { "Press francés con barra (rompecráneos)", "Press francés con barra W (rompecráneos)" },
-            { "Press frances con barra (rompecraneos)", "Press francés con barra W (rompecráneos)" },
-            { "Press francés en banco plano con barra W", "Press francés con barra W (rompecráneos)" },
-            { "Extensiones de tríceps en polea alta", "Extensiones de tríceps en polea alta (barra)" },
-            { "Extensiones de triceps en polea alta", "Extensiones de tríceps en polea alta (barra)" },
-            { "Jalon de triceps en polea", "Extensiones de tríceps en polea alta (barra)" },
+            { "Rompecraneos", "Press francés con barra W" },
+            { "Rompecráneos", "Press francés con barra W" },
+            { "Press francés con barra (rompecráneos)", "Press francés con barra W" },
+            { "Press frances con barra (rompecraneos)", "Press francés con barra W" },
+            { "Press francés en banco plano con barra W", "Press francés con barra W" },
+            { "Extensiones de tríceps en polea alta", "Extensiones de tríceps en polea alta" },
+            { "Extensiones de triceps en polea alta", "Extensiones de tríceps en polea alta" },
+            { "Jalon de triceps en polea", "Extensiones de tríceps en polea alta" },
             { "Extension de triceps en polea con cuerda", "Extensiones de tríceps en polea con soga" },
             { "Extension de triceps sobre la cabeza", "Extensiones tras nuca en polea con soga" },
-            { "Extension francesa con mancuerna sentado", "Extensiones tras nuca con mancuerna (copa)" },
+            { "Extension francesa con mancuerna sentado", "Extensiones tras nuca con mancuerna" },
             { "Press cerrado", "Press cerrado con barra" },
             { "Fondos asistidos", "Fondos asistidos en máquina" },
             { "Patada de triceps", "Patada de tríceps con mancuerna" },
@@ -166,13 +196,13 @@ public static class SeedData
             { "Crunch en cable", "Crunch en polea con soga" },
             { "Crunch abdominal en polea alta", "Crunch en polea con soga" },
             { "Pallof press", "Press Pallof en polea" },
-            { "Rueda abdominal (Ab wheel)", "Rueda abdominal (Ab Roller)" },
+            { "Rueda abdominal (Ab wheel)", "Rueda abdominal" },
             { "Elevacion de rodillas colgado", "Elevación de rodillas colgado en barra" },
             { "Elevacion de piernas en paralelas", "Elevación de piernas en paralelas" },
             { "Caminata en cinta", "Caminata inclinada en cinta" },
-            { "Remo ergometro", "Remoergómetro (Concept 2)" },
-            { "Remo ergómetro", "Remoergómetro (Concept 2)" },
-            { "Escaladora", "Escaladora (StairMaster)" }
+            { "Remo ergometro", "Remoergómetro" },
+            { "Remo ergómetro", "Remoergómetro" },
+            { "Escaladora", "Escaladora" }
         };
 
         // Migración en caliente de nombres en registros existentes evitando duplicados de clave
@@ -398,7 +428,7 @@ public static class SeedData
         yield return E("Flexiones de brazos", "Pecho", EquipmentType.Bodyweight, LevelType.Beginner,
             "Cuerpo en línea recta de talones a cabeza y abdomen tenso. Baja hasta que el pecho roce el suelo y empuja con potencia.",
             new[] { "Wrist" }, "Usa apoyos para flexiones o mancuernas hexagonales si te molestan las muñecas.");
-        yield return E("Fondos en paralelas (pecho)", "Pecho", EquipmentType.Bodyweight, LevelType.Intermediate,
+        yield return E("Fondos en paralelas", "Pecho", EquipmentType.Bodyweight, LevelType.Intermediate,
             "Inclina el torso 30° hacia adelante con codos apuntando hacia afuera para concentrar la carga en las fibras inferiores del pectoral.",
             new[] { "Shoulder" }, "Inclina el torso hacia adelante; si notas molestia en hombros, reduce la profundidad a 90°.");
         yield return E("Pullover con mancuerna", "Pecho", EquipmentType.Dumbbell, LevelType.Intermediate,
@@ -409,7 +439,7 @@ public static class SeedData
         yield return E("Peso muerto convencional", "Espalda", EquipmentType.Barbell, LevelType.Advanced,
             "Pies al ancho de caderas y barra pegada a las espinillas. Empuja el piso con las piernas manteniendo la columna neutra y traba la cadera arriba.",
             new[] { "Lumbar" }, "Usa remo con apoyo de pecho o peso muerto rumano como alternativa si tienes fatiga lumbar.");
-        yield return E("Dominadas libres (peso corporal)", "Espalda", EquipmentType.Bodyweight, LevelType.Advanced,
+        yield return E("Dominadas libres", "Espalda", EquipmentType.Bodyweight, LevelType.Advanced,
             "Agarre prono ligeramente más ancho que los hombros. Tracciona llevando el pecho hacia la barra contrayendo dorsales y baja controlado.",
             new[] { "Shoulder" }, "Si no completas las repeticiones, usa banda elástica o la máquina de dominadas asistidas.");
         yield return E("Dominadas asistidas", "Espalda", EquipmentType.Machine, LevelType.Intermediate,
@@ -419,12 +449,12 @@ public static class SeedData
             "Sentado en la dorsalera con muslos fijados. Tracciona la barra hacia la clavícula sacando pecho y apretando los dorsales sin balancear el torso.");
         yield return E("Jalón al pecho agarre supino", "Espalda", EquipmentType.Cable, LevelType.Beginner,
             "Palmas mirando hacia ti al ancho de hombros. Mayor énfasis en las fibras inferiores del dorsal y participación del bíceps.");
-        yield return E("Remo en polea baja (Remo Gironda)", "Espalda", EquipmentType.Cable, LevelType.Beginner,
+        yield return E("Remo en polea baja", "Espalda", EquipmentType.Cable, LevelType.Beginner,
             "Piernas semi-flexionadas y torso erguido. Tracciona el manillar al abdomen bajo juntando las escápulas en la contracción máxima.");
         yield return E("Remo con barra", "Espalda", EquipmentType.Barbell, LevelType.Advanced,
             "Torso inclinado a 45° con columna lumbar neutra. Tracciona la barra al ombligo pegando los codos al cuerpo.",
             new[] { "Lumbar" }, "Usa remo con apoyo de pecho si tienes molestias en la zona baja de la espalda.");
-        yield return E("Remo con mancuerna a una mano (serrucho)", "Espalda", EquipmentType.Dumbbell, LevelType.Intermediate,
+        yield return E("Remo con mancuerna a una mano", "Espalda", EquipmentType.Dumbbell, LevelType.Intermediate,
             "Rodilla y mano apoyadas en banco. Tracciona la mancuerna hacia la cadera en arco llevando el codo hacia atrás sin rotar el torso.");
         yield return E("Remo con apoyo de pecho", "Espalda", EquipmentType.Machine, LevelType.Beginner,
             "Pecho apoyado en el acolchado para descargar por completo la zona lumbar. Tira de los manillares juntando escápulas.");
@@ -481,7 +511,7 @@ public static class SeedData
         yield return E("Sentadilla sissy", "Cuadriceps", EquipmentType.Bodyweight, LevelType.Advanced,
             "Flexiona las rodillas desplazándolas hacia adelante con el torso inclinado hacia atrás para sobrecargar el recto femoral.",
             new[] { "Knee" });
-        yield return E("Sentadilla con cinturón (Belt Squat)", "Cuadriceps", EquipmentType.Machine, LevelType.Beginner,
+        yield return E("Sentadilla con cinturón", "Cuadriceps", EquipmentType.Machine, LevelType.Beginner,
             "Carga anclada a la cadera mediante cinturón. Elimina al 100% la carga axial sobre la columna vertebral.",
             modificationTip: "Descarga completamente la columna vertebral.");
         yield return E("Sentadilla cosaca", "Cuadriceps", EquipmentType.Bodyweight, LevelType.Intermediate,
@@ -538,7 +568,7 @@ public static class SeedData
         yield return E("Gemelos de pie en máquina", "Pantorrillas", EquipmentType.Machine, LevelType.Beginner,
             "Apoyo en metatarsos con rodillas extendidas. Desciende los talones para estiramiento completo y elévate sobre las puntas de pie.",
             new[] { "Knee" });
-        yield return E("Gemelos sentado en máquina (sóleo)", "Pantorrillas", EquipmentType.Machine, LevelType.Beginner,
+        yield return E("Gemelos sentado en máquina", "Pantorrillas", EquipmentType.Machine, LevelType.Beginner,
             "Rodillas a 90° bajo la almohadilla. Al tener la rodilla flexionada, aísla el músculo sóleo de la parte inferior de la pantorrilla.");
         yield return E("Gemelos en prensa", "Pantorrillas", EquipmentType.Machine, LevelType.Beginner,
             "En la plataforma de la prensa, empuja con los metatarsos manteniendo las rodillas casi bloqueadas.");
@@ -563,7 +593,7 @@ public static class SeedData
             modificationTip: "Inclina el torso 5° hacia adelante para alinear el deltoides lateral con la gravedad.");
         yield return E("Vuelos laterales en polea", "Hombros", EquipmentType.Cable, LevelType.Intermediate,
             "Polea baja a la altura de la rodilla. Otorga tensión continua desde el primer centímetro del movimiento.");
-        yield return E("Vuelos posteriores (pájaros)", "Hombros", EquipmentType.Dumbbell, LevelType.Beginner,
+        yield return E("Vuelos posteriores", "Hombros", EquipmentType.Dumbbell, LevelType.Beginner,
             "Torso inclinado a 45°-90° con mancuernas. Abre los brazos hacia los lados apretando la parte trasera del hombro.",
             new[] { "Shoulder" });
         yield return E("Vuelos frontales con mancuernas", "Hombros", EquipmentType.Dumbbell, LevelType.Beginner,
@@ -609,10 +639,10 @@ public static class SeedData
             new[] { "Wrist" });
 
         // ==================== TRICEPS ====================
-        yield return E("Press francés con barra W (rompecráneos)", "Triceps", EquipmentType.Barbell, LevelType.Advanced,
+        yield return E("Press francés con barra W", "Triceps", EquipmentType.Barbell, LevelType.Advanced,
             "Acostado en banco con barra W. Flexiona los codos llevando la barra hacia la frente o coronilla manteniendo los codos cerrados y muñecas neutras.",
             new[] { "Wrist" }, "Usa barra W para reducir el estrés articular en las muñecas y codos.");
-        yield return E("Extensiones de tríceps en polea alta (barra)", "Triceps", EquipmentType.Cable, LevelType.Beginner,
+        yield return E("Extensiones de tríceps en polea alta", "Triceps", EquipmentType.Cable, LevelType.Beginner,
             "De pie frente a la polea alta con barra recta o V. Empuja hacia abajo bloqueando los codos a los costados del cuerpo.");
         yield return E("Extensiones de tríceps en polea con soga", "Triceps", EquipmentType.Cable, LevelType.Beginner,
             "Tracciona la soga hacia abajo y separa los extremos al final del movimiento para activar con intensidad la cabeza lateral del tríceps.",
@@ -620,7 +650,7 @@ public static class SeedData
         yield return E("Extensiones tras nuca en polea con soga", "Triceps", EquipmentType.Cable, LevelType.Intermediate,
             "De espaldas a la polea en posición de estocada. Extiende los brazos hacia adelante colocando la cabeza larga del tríceps en estiramiento.",
             new[] { "Shoulder" });
-        yield return E("Extensiones tras nuca con mancuerna (copa)", "Triceps", EquipmentType.Dumbbell, LevelType.Intermediate,
+        yield return E("Extensiones tras nuca con mancuerna", "Triceps", EquipmentType.Dumbbell, LevelType.Intermediate,
             "Mancuerna tomada con ambas manos por detrás de la cabeza en banco con respaldo corto para estirar la porción larga del tríceps.",
             new[] { "Shoulder", "Wrist" });
         yield return E("Press cerrado con barra", "Triceps", EquipmentType.Barbell, LevelType.Intermediate,
@@ -645,7 +675,7 @@ public static class SeedData
             "Rodillas flexionadas y lumbares apoyadas. Eleva los omóplatos flexionando la columna torácica sin forzar el cuello.");
         yield return E("Crunch en polea con soga", "Core", EquipmentType.Cable, LevelType.Intermediate,
             "De rodillas frente a la polea con soga tras la cabeza. Flexiona el torso hacia las rodillas apretando los abdominales.");
-        yield return E("Rueda abdominal (Ab Roller)", "Core", EquipmentType.Bodyweight, LevelType.Advanced,
+        yield return E("Rueda abdominal", "Core", EquipmentType.Bodyweight, LevelType.Advanced,
             "De rodillas rodando la rueda al frente. Mantén la pelvis en retroversión sin arquear la zona lumbar y regresa con el core.",
             new[] { "Lumbar", "Shoulder" }, "Evita hiperextender la zona lumbar.");
         yield return E("Elevación de rodillas colgado en barra", "Core", EquipmentType.Bodyweight, LevelType.Advanced,
@@ -677,12 +707,12 @@ public static class SeedData
         yield return E("Eliptico", "Cardio", EquipmentType.Machine, LevelType.Beginner,
             "Movimiento fluido sincronizado de brazos y piernas sin fase de impacto contra el suelo, ideal para atletas con limitaciones.",
             new[] { "Knee" });
-        yield return E("Bicicleta de aire (Air Bike / Assault Bike)", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
+        yield return E("Bicicleta de aire", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
             "Cardio de alta intensidad de cuerpo entero donde la resistencia por viento aumenta exponencialmente con el esfuerzo del atleta.");
-        yield return E("Remoergómetro (Concept 2)", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
+        yield return E("Remoergómetro", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
             "Tracción fluida de piernas, cadera y brazos. Desarrolla capacidad aeróbica y resistencia en toda la cadena posterior.",
             new[] { "Lumbar" });
-        yield return E("Escaladora (StairMaster)", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
+        yield return E("Escaladora", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
             "Subida continua de escalones demandando trabajo cardiovascular intenso y activación de glúteos y pantorrillas.",
             new[] { "Knee" });
         yield return E("Cuerda de saltar", "Cardio", EquipmentType.Bodyweight, LevelType.Intermediate,
@@ -694,7 +724,7 @@ public static class SeedData
         yield return E("Mountain climbers", "Cardio", EquipmentType.Bodyweight, LevelType.Beginner,
             "En posición de plancha alta, lleva las rodillas alternadas al pecho a ritmo rápido manteniendo el core firme.",
             new[] { "Wrist" });
-        yield return E("Empuje de trineo (Sled push)", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
+        yield return E("Empuje de trineo", "Cardio", EquipmentType.Machine, LevelType.Intermediate,
             "Empuje de carga pesada sobre pista con torso inclinado. Fuerza de empuje de piernas sin sobrecarga excéntrica.",
             new[] { "Knee" });
     }
@@ -703,38 +733,38 @@ public static class SeedData
         yield return R("Hipertrofia inicial", GoalType.GainMuscle, LevelType.Beginner, 3,
             D("Tren superior", X("Press de pecho en máquina"), X("Jalón al pecho en polea"), X("Vuelos laterales con mancuernas"), X("Plancha frontal")),
             D("Piernas y gluteos", X("Prensa a 45°"), X("Puente de glúteos en colchoneta"), X("Camilla femoral"), X("Press Pallof en polea")),
-            D("Fuerza general", X("Press inclinado con mancuernas"), X("Remo en polea baja (Remo Gironda)"), X("Estocadas hacia atrás con mancuernas"), X("Extensiones de tríceps en polea alta (barra)")));
+            D("Fuerza general", X("Press inclinado con mancuernas"), X("Remo en polea baja"), X("Estocadas hacia atrás con mancuernas"), X("Extensiones de tríceps en polea alta")));
 
         yield return R("Hipertrofia intermedia", GoalType.GainMuscle, LevelType.Intermediate, 4,
-            D("Pecho y triceps", X("Press plano con barra"), X("Press inclinado con mancuernas"), X("Cruces en polea para pecho"), X("Extensiones de tríceps en polea alta (barra)")),
-            D("Espalda y biceps", X("Jalón al pecho en polea"), X("Remo en polea baja (Remo Gironda)"), X("Remo con mancuerna a una mano (serrucho)"), X("Curl martillo")),
+            D("Pecho y triceps", X("Press plano con barra"), X("Press inclinado con mancuernas"), X("Cruces en polea para pecho"), X("Extensiones de tríceps en polea alta")),
+            D("Espalda y biceps", X("Jalón al pecho en polea"), X("Remo en polea baja"), X("Remo con mancuerna a una mano"), X("Curl martillo")),
             D("Piernas", X("Sentadilla Hack"), X("Hip thrust con barra"), X("Sillón femoral"), X("Gemelos de pie en máquina")),
-            D("Hombros y core", X("Press de hombros con mancuernas sentado"), X("Vuelos laterales con mancuernas"), X("Vuelos posteriores (pájaros)"), X("Crunch en polea con soga")));
+            D("Hombros y core", X("Press de hombros con mancuernas sentado"), X("Vuelos laterales con mancuernas"), X("Vuelos posteriores"), X("Crunch en polea con soga")));
 
         yield return R("Hipertrofia avanzada", GoalType.GainMuscle, LevelType.Advanced, 5,
             D("Pecho", X("Press plano con barra", 4, 6, 10), X("Press inclinado con mancuernas"), X("Aperturas con mancuernas")),
             D("Espalda", X("Remo con barra", 4, 6, 10), X("Dominadas asistidas"), X("Pullover en polea alta con soga")),
             D("Piernas anterior", X("Sentadilla trasera", 4, 6, 10), X("Prensa a 45°"), X("Sillón de cuadríceps")),
             D("Piernas posterior", X("Peso muerto rumano con barra", 4, 6, 10), X("Hip thrust con barra"), X("Camilla femoral")),
-            D("Brazos y hombros", X("Press militar con barra"), X("Curl de bíceps con barra"), X("Press francés con barra W (rompecráneos)"), X("Press Pallof en polea")));
+            D("Brazos y hombros", X("Press militar con barra"), X("Curl de bíceps con barra"), X("Press francés con barra W"), X("Press Pallof en polea")));
 
         yield return R("Definicion inicial", GoalType.LoseWeight, LevelType.Beginner, 3,
-            D("Circuito superior", X("Press de pecho en máquina", 3, 10, 15, 45), X("Remo en polea baja (Remo Gironda)", 3, 10, 15, 45), X("Vuelos laterales con mancuernas", 3, 12, 15, 45), X("Bicicleta fija", 3, 10, 15, 30)),
+            D("Circuito superior", X("Press de pecho en máquina", 3, 10, 15, 45), X("Remo en polea baja", 3, 10, 15, 45), X("Vuelos laterales con mancuernas", 3, 12, 15, 45), X("Bicicleta fija", 3, 10, 15, 30)),
             D("Circuito inferior", X("Prensa a 45°", 3, 10, 15, 45), X("Puente de glúteos en colchoneta", 3, 12, 15, 45), X("Camilla femoral", 3, 10, 15, 45), X("Caminata inclinada en cinta", 3, 15, 20, 30)),
             D("Cuerpo completo", X("Flexiones de brazos", 3, 8, 15, 45), X("Jalón al pecho en polea", 3, 10, 15, 45), X("Estocadas hacia atrás con mancuernas", 3, 8, 12, 45), X("Plancha frontal", 3, 20, 40, 30)));
 
         yield return R("Definicion intermedia", GoalType.LoseWeight, LevelType.Intermediate, 4,
-            D("Empuje", X("Press plano con barra"), X("Press de hombros con mancuernas sentado"), X("Extensiones de tríceps en polea alta (barra)"), X("Eliptico", 3, 12, 18, 30)),
-            D("Traccion", X("Jalón al pecho en polea"), X("Remo en polea baja (Remo Gironda)"), X("Curl martillo"), X("Caminata inclinada en cinta", 3, 15, 20, 30)),
+            D("Empuje", X("Press plano con barra"), X("Press de hombros con mancuernas sentado"), X("Extensiones de tríceps en polea alta"), X("Eliptico", 3, 12, 18, 30)),
+            D("Traccion", X("Jalón al pecho en polea"), X("Remo en polea baja"), X("Curl martillo"), X("Caminata inclinada en cinta", 3, 15, 20, 30)),
             D("Piernas", X("Sentadilla Hack"), X("Hip thrust con barra"), X("Sillón femoral"), X("Bicicleta fija", 3, 12, 18, 30)),
-            D("Metabolico", X("Flexiones de brazos", 3, 10, 15, 30), X("Remo con mancuerna a una mano (serrucho)", 3, 10, 12, 30), X("Press Pallof en polea", 3, 10, 15, 30), X("Escaladora (StairMaster)", 3, 10, 15, 30)));
+            D("Metabolico", X("Flexiones de brazos", 3, 10, 15, 30), X("Remo con mancuerna a una mano", 3, 10, 12, 30), X("Press Pallof en polea", 3, 10, 15, 30), X("Escaladora", 3, 10, 15, 30)));
 
         yield return R("Definicion avanzada", GoalType.LoseWeight, LevelType.Advanced, 5,
             D("Pecho y core", X("Press plano con barra", 4, 6, 10), X("Cruces en polea para pecho"), X("Crunch en polea con soga"), X("Cuerda de saltar", 3, 20, 30, 30)),
-            D("Espalda", X("Remo con barra", 4, 6, 10), X("Dominadas asistidas"), X("Pullover en polea alta con soga"), X("Remoergómetro (Concept 2)", 3, 10, 15, 30)),
+            D("Espalda", X("Remo con barra", 4, 6, 10), X("Dominadas asistidas"), X("Pullover en polea alta con soga"), X("Remoergómetro", 3, 10, 15, 30)),
             D("Cuadriceps", X("Sentadilla frontal", 4, 6, 10), X("Prensa a 45°"), X("Subidas al cajón"), X("Bicicleta fija", 3, 12, 18, 30)),
             D("Gluteos e isquios", X("Peso muerto rumano con barra", 4, 6, 10), X("Hip thrust con barra"), X("Sillón femoral"), X("Eliptico", 3, 12, 18, 30)),
-            D("Acondicionamiento", X("Press de hombros con mancuernas sentado"), X("Curl martillo"), X("Extensiones de tríceps en polea alta (barra)"), X("Escaladora (StairMaster)", 4, 10, 15, 30)));
+            D("Acondicionamiento", X("Press de hombros con mancuernas sentado"), X("Curl martillo"), X("Extensiones de tríceps en polea alta"), X("Escaladora", 4, 10, 15, 30)));
 
         yield return R("Resistencia inicial", GoalType.Endurance, LevelType.Beginner, 2,
             D("Cardio base", X("Bicicleta fija", 3, 15, 25, 45), X("Caminata inclinada en cinta", 3, 15, 25, 45), X("Plancha frontal", 3, 20, 30, 30)),
@@ -742,26 +772,26 @@ public static class SeedData
 
         yield return R("Resistencia intermedia", GoalType.Endurance, LevelType.Intermediate, 3,
             D("Aerobico", X("Eliptico", 4, 12, 20, 30), X("Caminata inclinada en cinta", 4, 15, 25, 30), X("Press Pallof en polea", 3, 12, 15, 30)),
-            D("Fuerza resistente", X("Press inclinado con mancuernas", 3, 12, 15, 45), X("Remo en polea baja (Remo Gironda)", 3, 12, 15, 45), X("Estocadas hacia atrás con mancuernas", 3, 10, 14, 45), X("Bicicleta fija", 3, 15, 25, 30)),
-            D("Intervalos", X("Remoergómetro (Concept 2)", 5, 8, 12, 30), X("Subidas al cajón", 3, 10, 14, 30), X("Flexiones de brazos", 3, 10, 15, 30), X("Plancha lateral", 3, 20, 35, 30)));
+            D("Fuerza resistente", X("Press inclinado con mancuernas", 3, 12, 15, 45), X("Remo en polea baja", 3, 12, 15, 45), X("Estocadas hacia atrás con mancuernas", 3, 10, 14, 45), X("Bicicleta fija", 3, 15, 25, 30)),
+            D("Intervalos", X("Remoergómetro", 5, 8, 12, 30), X("Subidas al cajón", 3, 10, 14, 30), X("Flexiones de brazos", 3, 10, 15, 30), X("Plancha lateral", 3, 20, 35, 30)));
 
         yield return R("Resistencia avanzada", GoalType.Endurance, LevelType.Advanced, 4,
-            D("Cardio continuo", X("Remoergómetro (Concept 2)", 5, 10, 15, 30), X("Eliptico", 4, 15, 25, 30), X("Plancha frontal", 4, 30, 45, 30)),
+            D("Cardio continuo", X("Remoergómetro", 5, 10, 15, 30), X("Eliptico", 4, 15, 25, 30), X("Plancha frontal", 4, 30, 45, 30)),
             D("Circuito superior", X("Press plano con barra", 4, 10, 15, 30), X("Jalón al pecho en polea", 4, 10, 15, 30), X("Press de hombros con mancuernas sentado", 3, 12, 15, 30), X("Cuerda de saltar", 4, 20, 30, 30)),
-            D("Circuito inferior", X("Prensa a 45°", 4, 12, 15, 30), X("Hip thrust con barra", 4, 10, 15, 30), X("Sillón femoral", 3, 12, 15, 30), X("Escaladora (StairMaster)", 4, 10, 15, 30)),
+            D("Circuito inferior", X("Prensa a 45°", 4, 12, 15, 30), X("Hip thrust con barra", 4, 10, 15, 30), X("Sillón femoral", 3, 12, 15, 30), X("Escaladora", 4, 10, 15, 30)),
             D("Potencia y core", X("Swing con kettlebell", 4, 12, 20, 30), X("Subidas al cajón", 4, 10, 15, 30), X("Press Pallof en polea", 4, 12, 15, 30), X("Bicicleta fija", 4, 15, 25, 30)));
 
         yield return R("Mantenimiento inicial", GoalType.Maintain, LevelType.Beginner, 2,
             D("Cuerpo completo A", X("Press de pecho en máquina"), X("Jalón al pecho en polea"), X("Prensa a 45°"), X("Plancha frontal")),
-            D("Cuerpo completo B", X("Press inclinado con mancuernas"), X("Remo en polea baja (Remo Gironda)"), X("Puente de glúteos en colchoneta"), X("Bicicleta fija", 3, 12, 20, 45)));
+            D("Cuerpo completo B", X("Press inclinado con mancuernas"), X("Remo en polea baja"), X("Puente de glúteos en colchoneta"), X("Bicicleta fija", 3, 12, 20, 45)));
 
         yield return R("Mantenimiento intermedio", GoalType.Maintain, LevelType.Intermediate, 3,
-            D("Superior", X("Press plano con barra"), X("Remo en polea baja (Remo Gironda)"), X("Press de hombros con mancuernas sentado"), X("Curl martillo")),
+            D("Superior", X("Press plano con barra"), X("Remo en polea baja"), X("Press de hombros con mancuernas sentado"), X("Curl martillo")),
             D("Inferior", X("Sentadilla Hack"), X("Hip thrust con barra"), X("Sillón femoral"), X("Press Pallof en polea")),
-            D("Mixto", X("Press inclinado con mancuernas"), X("Jalón al pecho en polea"), X("Estocadas hacia atrás con mancuernas"), X("Extensiones de tríceps en polea alta (barra)")));
+            D("Mixto", X("Press inclinado con mancuernas"), X("Jalón al pecho en polea"), X("Estocadas hacia atrás con mancuernas"), X("Extensiones de tríceps en polea alta")));
 
         yield return R("Mantenimiento advanced", GoalType.Maintain, LevelType.Advanced, 4,
-            D("Pecho y hombros", X("Press plano con barra", 4, 6, 10), X("Press inclinado con mancuernas"), X("Vuelos laterales con mancuernas"), X("Extensiones de tríceps en polea alta (barra)")),
+            D("Pecho y hombros", X("Press plano con barra", 4, 6, 10), X("Press inclinado con mancuernas"), X("Vuelos laterales con mancuernas"), X("Extensiones de tríceps en polea alta")),
             D("Espalda y brazos", X("Remo con barra", 4, 6, 10), X("Dominadas asistidas"), X("Curl de bíceps con barra"), X("Curl martillo")),
             D("Piernas", X("Sentadilla trasera", 4, 6, 10), X("Peso muerto rumano con barra", 4, 6, 10), X("Hip thrust con barra"), X("Camilla femoral")),
             D("Core y cardio", X("Crunch en polea con soga"), X("Press Pallof en polea"), X("Eliptico", 4, 15, 25, 45), X("Plancha lateral")));
@@ -778,18 +808,18 @@ public static class SeedData
         ["Aperturas con mancuernas"] = new[] { "dumbbell flyes", "db flyes", "aperturas", "aperturas de pecho" },
         ["Peck Deck"] = new[] { "pec deck", "peck deck", "machine fly", "contractora de pecho", "mariposa", "aperturas en maquina" },
         ["Flexiones de brazos"] = new[] { "push ups", "pushups", "lagartijas", "flexiones de pecho", "flexiones" },
-        ["Fondos en paralelas (pecho)"] = new[] { "chest dips", "dips", "fondos en paralelas", "paralelas" },
+        ["Fondos en paralelas"] = new[] { "chest dips", "dips", "fondos en paralelas", "paralelas", "fondos en paralelas (pecho)", "fondos pecho", "dips pecho", "paralelas pecho" },
         ["Pullover con mancuerna"] = new[] { "dumbbell pullover", "pullover", "db pullover" },
 
         // Espalda
         ["Peso muerto convencional"] = new[] { "deadlift", "conventional deadlift", "peso muerto", "pmo" },
-        ["Dominadas libres (peso corporal)"] = new[] { "pull ups", "pullups", "chin ups", "dominadas", "traccion vertical" },
+        ["Dominadas libres"] = new[] { "pull ups", "pullups", "chin ups", "dominadas", "traccion vertical", "dominadas libres (peso corporal)", "peso corporal", "bodyweight pull ups" },
         ["Dominadas asistidas"] = new[] { "assisted pull ups", "assisted chin ups", "dominadas en maquina" },
         ["Jalón al pecho en polea"] = new[] { "lat pulldown", "pulldown", "jalon al pecho", "dorsalera", "jalon" },
         ["Jalón al pecho agarre supino"] = new[] { "reverse grip lat pulldown", "underhand pulldown", "jalon supino" },
-        ["Remo en polea baja (Remo Gironda)"] = new[] { "gironda row", "close grip cable row", "remo gironda", "remo sentado en cable", "remo polea baja" },
+        ["Remo en polea baja"] = new[] { "gironda row", "close grip cable row", "remo gironda", "remo sentado en cable", "remo polea baja", "remo en polea baja (remo gironda)", "gironda" },
         ["Remo con barra"] = new[] { "barbell row", "bent over row", "remo barra" },
-        ["Remo con mancuerna a una mano (serrucho)"] = new[] { "serrucho", "one arm dumbbell row", "single arm db row", "remo mancuerna" },
+        ["Remo con mancuerna a una mano"] = new[] { "serrucho", "one arm dumbbell row", "single arm db row", "remo mancuerna", "remo con mancuerna a una mano (serrucho)", "remo serrucho" },
         ["Remo con apoyo de pecho"] = new[] { "chest supported row", "machine row", "remo con apoyo" },
         ["Remo en barra T"] = new[] { "t bar row", "t-bar row", "remo t" },
         ["Pullover en polea alta con soga"] = new[] { "cable pullover", "straight arm pulldown", "overhead cable pullover", "pullover polea", "jalon con brazos rectos" },
@@ -810,7 +840,7 @@ public static class SeedData
         ["Estocadas hacia atrás con mancuernas"] = new[] { "reverse lunges", "dumbbell reverse lunge", "estocadas atras", "zancada hacia atras", "zancadas" },
         ["Estocadas caminando con mancuernas"] = new[] { "walking lunges", "dumbbell walking lunges", "estocadas caminando", "zancadas caminando" },
         ["Sentadilla sissy"] = new[] { "sissy squat", "sentadilla sissy" },
-        ["Sentadilla con cinturón (Belt Squat)"] = new[] { "belt squat", "sentadilla con cinturon" },
+        ["Sentadilla con cinturón"] = new[] { "belt squat", "sentadilla con cinturon", "sentadilla con cinturón (belt squat)", "sentadilla belt" },
         ["Sentadilla cosaca"] = new[] { "cossack squat", "sentadilla cosaca" },
 
         // Gluteos
@@ -835,7 +865,7 @@ public static class SeedData
 
         // Pantorrillas
         ["Gemelos de pie en máquina"] = new[] { "standing calf raise", "calf raises", "gemelos de pie", "pantorrillas de pie", "elevacion de pantorrillas" },
-        ["Gemelos sentado en máquina (sóleo)"] = new[] { "seated calf raise", "soleus raise", "soleo", "gemelos sentado" },
+        ["Gemelos sentado en máquina"] = new[] { "seated calf raise", "soleus raise", "soleo", "gemelos sentado", "gemelos sentado en máquina (sóleo)", "sóleo" },
         ["Gemelos en prensa"] = new[] { "leg press calf raise", "talones en prensa", "elevacion de talones en prensa" },
         ["Gemelos a una pierna con peso corporal"] = new[] { "single leg calf raise", "talones a una pierna" },
 
@@ -846,7 +876,7 @@ public static class SeedData
         ["Press Arnold"] = new[] { "arnold press", "dumbbell arnold press", "press arnold" },
         ["Vuelos laterales con mancuernas"] = new[] { "dumbbell lateral raise", "lateral raises", "vuelos laterales", "elevaciones laterales" },
         ["Vuelos laterales en polea"] = new[] { "cable lateral raise", "side lateral cable", "vuelos en polea", "elevacion lateral en cable" },
-        ["Vuelos posteriores (pájaros)"] = new[] { "rear delt fly", "rear delt flyes", "pajaros", "vuelos posteriores", "vuelo posterior" },
+        ["Vuelos posteriores"] = new[] { "rear delt fly", "rear delt flyes", "pajaros", "vuelos posteriores", "vuelo posterior", "vuelos posteriores (pájaros)", "pájaros", "deltoides posterior" },
         ["Vuelos frontales con mancuernas"] = new[] { "front raise", "dumbbell front raise", "elevacion frontal", "vuelos frontales" },
         ["Remo al mentón con barra"] = new[] { "upright row", "barbell upright row", "remo al menton" },
         ["Vuelos laterales en banco inclinado"] = new[] { "incline lateral raise", "vuelos en banco inclinado" },
@@ -866,11 +896,11 @@ public static class SeedData
         ["Curl 21 con barra"] = new[] { "21s curl", "barbell 21 curl", "curl 21" },
 
         // Triceps
-        ["Press francés con barra W (rompecráneos)"] = new[] { "skull crusher", "skullcrusher", "lying triceps extension", "french press", "rompecraneos", "press frances barra w" },
-        ["Extensiones de tríceps en polea alta (barra)"] = new[] { "tricep pushdown", "cable tricep extension", "extension triceps polea", "jalon de triceps en polea" },
+        ["Press francés con barra W"] = new[] { "skull crusher", "skullcrusher", "lying triceps extension", "french press", "rompecraneos", "press frances barra w", "press francés con barra w (rompecráneos)", "rompecráneos" },
+        ["Extensiones de tríceps en polea alta"] = new[] { "tricep pushdown", "cable tricep extension", "extension triceps polea", "jalon de triceps en polea", "extensiones de tríceps en polea alta (barra)", "triceps barra", "polea alta barra" },
         ["Extensiones de tríceps en polea con soga"] = new[] { "rope pushdown", "tricep rope pushdown", "extension triceps soga" },
         ["Extensiones tras nuca en polea con soga"] = new[] { "overhead cable tricep extension", "overhead rope extension", "triceps tras nuca", "extension de triceps sobre la cabeza" },
-        ["Extensiones tras nuca con mancuerna (copa)"] = new[] { "seated overhead dumbbell extension", "extension francesa sentado", "copa triceps" },
+        ["Extensiones tras nuca con mancuerna"] = new[] { "seated overhead dumbbell extension", "extension francesa sentado", "copa triceps", "extensiones tras nuca con mancuerna (copa)", "copa", "extension copa" },
         ["Press cerrado con barra"] = new[] { "close grip bench press", "close grip press", "press cerrado" },
         ["Fondos en paralelas para tríceps"] = new[] { "parallel bar tricep dips", "fondos en paralelas triceps" },
         ["Fondos asistidos en máquina"] = new[] { "assisted dips", "fondos asistidos" },
@@ -881,7 +911,7 @@ public static class SeedData
         ["Plancha lateral"] = new[] { "side plank", "plancha lateral" },
         ["Abdominales crunch en colchoneta"] = new[] { "crunches", "ab crunch", "abdominales crunch" },
         ["Crunch en polea con soga"] = new[] { "cable crunch", "kneeling cable crunch", "crunch polea", "crunch en cable" },
-        ["Rueda abdominal (Ab Roller)"] = new[] { "ab wheel", "ab roller", "rueda abdominal" },
+        ["Rueda abdominal"] = new[] { "ab wheel", "ab roller", "rueda abdominal", "rueda abdominal (ab roller)" },
         ["Elevación de rodillas colgado en barra"] = new[] { "hanging knee raise", "elevacion de rodillas colgado" },
         ["Elevación de piernas en paralelas"] = new[] { "captain chair leg raise", "elevacion piernas paralelas" },
         ["Dead bug"] = new[] { "dead bug", "bicho muerto" },
@@ -894,13 +924,13 @@ public static class SeedData
         ["Caminata inclinada en cinta"] = new[] { "treadmill walking", "incline treadmill", "cinta caminadora", "caminata en cinta" },
         ["Bicicleta fija"] = new[] { "stationary bike", "cycling", "bici fija" },
         ["Eliptico"] = new[] { "elliptical", "eliptico", "eliptica" },
-        ["Bicicleta de aire (Air Bike / Assault Bike)"] = new[] { "air bike", "assault bike", "echo bike", "bici de aire" },
-        ["Remoergómetro (Concept 2)"] = new[] { "rower", "rowing machine", "concept 2", "remo ergometro" },
-        ["Escaladora (StairMaster)"] = new[] { "stairmaster", "stair climber", "escaladora" },
+        ["Bicicleta de aire"] = new[] { "air bike", "assault bike", "echo bike", "bici de aire", "bicicleta de aire (air bike / assault bike)" },
+        ["Remoergómetro"] = new[] { "rower", "rowing machine", "concept 2", "remo ergometro", "remoergómetro (concept 2)", "concept2" },
+        ["Escaladora"] = new[] { "stairmaster", "stair climber", "escaladora", "escaladora (stairmaster)" },
         ["Cuerda de saltar"] = new[] { "jump rope", "skipping rope", "cuerda de saltar", "soga saltar" },
         ["Burpees"] = new[] { "burpees", "burpee" },
         ["Mountain climbers"] = new[] { "mountain climbers", "escaladores" },
-        ["Empuje de trineo (Sled push)"] = new[] { "sled push", "empuje de trineo" }
+        ["Empuje de trineo"] = new[] { "sled push", "empuje de trineo", "empuje de trineo (sled push)", "trineo" }
     };
 
     private static string[] ResolveAliases(string name, string[]? explicitAliases)
