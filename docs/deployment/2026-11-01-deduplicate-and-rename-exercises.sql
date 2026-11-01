@@ -182,13 +182,13 @@ UPDATE public.exercises SET aliases = '["push ups","pushups","lagartijas","flexi
 UPDATE public.exercises SET aliases = '["chest dips","dips","fondos en paralelas","paralelas"]'::jsonb WHERE name = 'Fondos en paralelas';
 UPDATE public.exercises SET aliases = '["dumbbell pullover","pullover","db pullover"]'::jsonb WHERE name = 'Pullover con mancuerna';
 UPDATE public.exercises SET aliases = '["deadlift","conventional deadlift","peso muerto","pmo"]'::jsonb WHERE name = 'Peso muerto convencional';
-UPDATE public.exercises SET aliases = '["pull ups","pullups","chin ups","dominadas","traccion vertical"]'::jsonb WHERE name = 'Dominadas libres (peso corporal)';
+UPDATE public.exercises SET aliases = '["pull ups","pullups","chin ups","dominadas","traccion vertical"]'::jsonb WHERE name = 'Dominadas libres';
 UPDATE public.exercises SET aliases = '["assisted pull ups","assisted chin ups","dominadas en maquina"]'::jsonb WHERE name = 'Dominadas asistidas';
 UPDATE public.exercises SET aliases = '["lat pulldown","pulldown","jalon al pecho","dorsalera","jalon"]'::jsonb WHERE name = 'Jalón al pecho en polea';
 UPDATE public.exercises SET aliases = '["reverse grip lat pulldown","underhand pulldown","jalon supino"]'::jsonb WHERE name = 'Jalón al pecho agarre supino';
-UPDATE public.exercises SET aliases = '["gironda row","close grip cable row","remo gironda","remo sentado en cable","remo polea baja"]'::jsonb WHERE name = 'Remo en polea baja (Remo Gironda)';
+UPDATE public.exercises SET aliases = '["gironda row","close grip cable row","remo gironda","remo sentado en cable","remo polea baja"]'::jsonb WHERE name = 'Remo en polea baja';
 UPDATE public.exercises SET aliases = '["barbell row","bent over row","remo barra"]'::jsonb WHERE name = 'Remo con barra';
-UPDATE public.exercises SET aliases = '["serrucho","one arm dumbbell row","single arm db row","remo mancuerna"]'::jsonb WHERE name = 'Remo con mancuerna a una mano (serrucho)';
+UPDATE public.exercises SET aliases = '["serrucho","one arm dumbbell row","single arm db row","remo mancuerna"]'::jsonb WHERE name = 'Remo con mancuerna a una mano';
 UPDATE public.exercises SET aliases = '["chest supported row","machine row","remo con apoyo"]'::jsonb WHERE name = 'Remo con apoyo de pecho';
 UPDATE public.exercises SET aliases = '["t bar row","t-bar row","remo t"]'::jsonb WHERE name = 'Remo en barra T';
 UPDATE public.exercises SET aliases = '["cable pullover","straight arm pulldown","overhead cable pullover","pullover polea","jalon con brazos rectos"]'::jsonb WHERE name = 'Pullover en polea alta con soga';
@@ -207,7 +207,7 @@ UPDATE public.exercises SET aliases = '["step ups","box step ups","subidas al ca
 UPDATE public.exercises SET aliases = '["reverse lunges","dumbbell reverse lunge","estocadas atras","zancada hacia atras","zancadas"]'::jsonb WHERE name = 'Estocadas hacia atrás con mancuernas';
 UPDATE public.exercises SET aliases = '["walking lunges","dumbbell walking lunges","estocadas caminando","zancadas caminando"]'::jsonb WHERE name = 'Estocadas caminando con mancuernas';
 UPDATE public.exercises SET aliases = '["sissy squat","sentadilla sissy"]'::jsonb WHERE name = 'Sentadilla sissy';
-UPDATE public.exercises SET aliases = '["belt squat","sentadilla con cinturon"]'::jsonb WHERE name = 'Sentadilla con cinturón (Belt Squat)';
+UPDATE public.exercises SET aliases = '["belt squat","sentadilla con cinturon"]'::jsonb WHERE name = 'Sentadilla con cinturón';
 UPDATE public.exercises SET aliases = '["cossack squat","sentadilla cosaca"]'::jsonb WHERE name = 'Sentadilla cosaca';
 UPDATE public.exercises SET aliases = '["hip thrust","barbell hip thrust","puente de gluteo con barra","empuje de cadera"]'::jsonb WHERE name = 'Hip thrust con barra';
 UPDATE public.exercises SET aliases = '["machine hip thrust","hip thrust machine","hip thrust en maquina"]'::jsonb WHERE name = 'Hip thrust en máquina';
@@ -226,7 +226,7 @@ UPDATE public.exercises SET aliases = '["single leg rdl","rdl","peso muerto a un
 UPDATE public.exercises SET aliases = '["nordic curl","nordic hamstring curl","curl nordico"]'::jsonb WHERE name = 'Curl nórdico';
 UPDATE public.exercises SET aliases = '["good mornings","good morning","buenos dias"]'::jsonb WHERE name = 'Buenos días con barra';
 UPDATE public.exercises SET aliases = '["standing calf raise","calf raises","gemelos de pie","pantorrillas de pie","elevacion de pantorrillas"]'::jsonb WHERE name = 'Gemelos de pie en máquina';
-UPDATE public.exercises SET aliases = '["seated calf raise","soleus raise","soleo","gemelos sentado"]'::jsonb WHERE name = 'Gemelos sentado en máquina (sóleo)';
+UPDATE public.exercises SET aliases = '["seated calf raise","soleus raise","soleo","gemelos sentado"]'::jsonb WHERE name = 'Gemelos sentado en máquina';
 UPDATE public.exercises SET aliases = '["leg press calf raise","talones en prensa","elevacion de talones en prensa"]'::jsonb WHERE name = 'Gemelos en prensa';
 UPDATE public.exercises SET aliases = '["single leg calf raise","talones a una pierna"]'::jsonb WHERE name = 'Gemelos a una pierna con peso corporal';
 UPDATE public.exercises SET aliases = '["overhead press","ohp","barbell military press","press militar"]'::jsonb WHERE name = 'Press militar con barra';
@@ -235,7 +235,7 @@ UPDATE public.exercises SET aliases = '["smith machine shoulder press","smith oh
 UPDATE public.exercises SET aliases = '["arnold press","dumbbell arnold press","press arnold"]'::jsonb WHERE name = 'Press Arnold';
 UPDATE public.exercises SET aliases = '["dumbbell lateral raise","lateral raises","vuelos laterales","elevaciones laterales"]'::jsonb WHERE name = 'Vuelos laterales con mancuernas';
 UPDATE public.exercises SET aliases = '["cable lateral raise","side lateral cable","vuelos en polea","elevacion lateral en cable"]'::jsonb WHERE name = 'Vuelos laterales en polea';
-UPDATE public.exercises SET aliases = '["rear delt fly","rear delt flyes","pajaros","vuelos posteriores","vuelo posterior"]'::jsonb WHERE name = 'Vuelos posteriores (pájaros)';
+UPDATE public.exercises SET aliases = '["rear delt fly","rear delt flyes","pajaros","vuelos posteriores","vuelo posterior"]'::jsonb WHERE name = 'Vuelos posteriores';
 UPDATE public.exercises SET aliases = '["front raise","dumbbell front raise","elevacion frontal","vuelos frontales"]'::jsonb WHERE name = 'Vuelos frontales con mancuernas';
 UPDATE public.exercises SET aliases = '["upright row","barbell upright row","remo al menton"]'::jsonb WHERE name = 'Remo al mentón con barra';
 UPDATE public.exercises SET aliases = '["incline lateral raise","vuelos en banco inclinado"]'::jsonb WHERE name = 'Vuelos laterales en banco inclinado';
@@ -251,11 +251,11 @@ UPDATE public.exercises SET aliases = '["incline dumbbell curl","incline curl","
 UPDATE public.exercises SET aliases = '["spider curl","spider bicep curl","curl arana"]'::jsonb WHERE name = 'Curl araña en banco inclinado';
 UPDATE public.exercises SET aliases = '["zottman curl","curl zottman"]'::jsonb WHERE name = 'Curl zottman';
 UPDATE public.exercises SET aliases = '["21s curl","barbell 21 curl","curl 21"]'::jsonb WHERE name = 'Curl 21 con barra';
-UPDATE public.exercises SET aliases = '["skull crusher","skullcrusher","lying triceps extension","french press","rompecraneos","press frances barra w"]'::jsonb WHERE name = 'Press francés con barra W (rompecráneos)';
-UPDATE public.exercises SET aliases = '["tricep pushdown","cable tricep extension","extension triceps polea","jalon de triceps en polea"]'::jsonb WHERE name = 'Extensiones de tríceps en polea alta (barra)';
+UPDATE public.exercises SET aliases = '["skull crusher","skullcrusher","lying triceps extension","french press","rompecraneos","press frances barra w"]'::jsonb WHERE name = 'Press francés con barra W';
+UPDATE public.exercises SET aliases = '["tricep pushdown","cable tricep extension","extension triceps polea","jalon de triceps en polea"]'::jsonb WHERE name = 'Extensiones de tríceps en polea alta';
 UPDATE public.exercises SET aliases = '["rope pushdown","tricep rope pushdown","extension triceps soga"]'::jsonb WHERE name = 'Extensiones de tríceps en polea con soga';
 UPDATE public.exercises SET aliases = '["overhead cable tricep extension","overhead rope extension","triceps tras nuca","extension de triceps sobre la cabeza"]'::jsonb WHERE name = 'Extensiones tras nuca en polea con soga';
-UPDATE public.exercises SET aliases = '["seated overhead dumbbell extension","extension francesa sentado","copa triceps"]'::jsonb WHERE name = 'Extensiones tras nuca con mancuerna (copa)';
+UPDATE public.exercises SET aliases = '["seated overhead dumbbell extension","extension francesa sentado","copa triceps"]'::jsonb WHERE name = 'Extensiones tras nuca con mancuerna';
 UPDATE public.exercises SET aliases = '["close grip bench press","close grip press","press cerrado"]'::jsonb WHERE name = 'Press cerrado con barra';
 UPDATE public.exercises SET aliases = '["parallel bar tricep dips","fondos en paralelas triceps"]'::jsonb WHERE name = 'Fondos en paralelas para tríceps';
 UPDATE public.exercises SET aliases = '["assisted dips","fondos asistidos"]'::jsonb WHERE name = 'Fondos asistidos en máquina';
@@ -264,7 +264,7 @@ UPDATE public.exercises SET aliases = '["plank","abdominal plank","plancha front
 UPDATE public.exercises SET aliases = '["side plank","plancha lateral"]'::jsonb WHERE name = 'Plancha lateral';
 UPDATE public.exercises SET aliases = '["crunches","ab crunch","abdominales crunch"]'::jsonb WHERE name = 'Abdominales crunch en colchoneta';
 UPDATE public.exercises SET aliases = '["cable crunch","kneeling cable crunch","crunch polea","crunch en cable"]'::jsonb WHERE name = 'Crunch en polea con soga';
-UPDATE public.exercises SET aliases = '["ab wheel","ab roller","rueda abdominal"]'::jsonb WHERE name = 'Rueda abdominal (Ab Roller)';
+UPDATE public.exercises SET aliases = '["ab wheel","ab roller","rueda abdominal"]'::jsonb WHERE name = 'Rueda abdominal';
 UPDATE public.exercises SET aliases = '["hanging knee raise","elevacion de rodillas colgado"]'::jsonb WHERE name = 'Elevación de rodillas colgado en barra';
 UPDATE public.exercises SET aliases = '["captain chair leg raise","elevacion piernas paralelas"]'::jsonb WHERE name = 'Elevación de piernas en paralelas';
 UPDATE public.exercises SET aliases = '["dead bug","bicho muerto"]'::jsonb WHERE name = 'Dead bug';
@@ -276,8 +276,8 @@ UPDATE public.exercises SET aliases = '["treadmill walking","incline treadmill",
 UPDATE public.exercises SET aliases = '["stationary bike","cycling","bici fija"]'::jsonb WHERE name = 'Bicicleta fija';
 UPDATE public.exercises SET aliases = '["elliptical","eliptico","eliptica"]'::jsonb WHERE name = 'Eliptico';
 UPDATE public.exercises SET aliases = '["air bike","assault bike","echo bike","bici de aire"]'::jsonb WHERE name = 'Bicicleta de aire';
-UPDATE public.exercises SET aliases = '["rower","rowing machine","concept 2","remo ergometro"]'::jsonb WHERE name = 'Remoergómetro (Concept 2)';
-UPDATE public.exercises SET aliases = '["stairmaster","stair climber","escaladora"]'::jsonb WHERE name = 'Escaladora (StairMaster)';
+UPDATE public.exercises SET aliases = '["rower","rowing machine","concept 2","remo ergometro"]'::jsonb WHERE name = 'Remoergómetro';
+UPDATE public.exercises SET aliases = '["stairmaster","stair climber","escaladora"]'::jsonb WHERE name = 'Escaladora';
 UPDATE public.exercises SET aliases = '["jump rope","skipping rope","cuerda de saltar","soga saltar"]'::jsonb WHERE name = 'Cuerda de saltar';
 UPDATE public.exercises SET aliases = '["burpees","burpee"]'::jsonb WHERE name = 'Burpees';
 UPDATE public.exercises SET aliases = '["mountain climbers","escaladores"]'::jsonb WHERE name = 'Mountain climbers';
