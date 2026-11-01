@@ -103,7 +103,18 @@ public static class IdentityConfiguration
             }
         }
 
-        await SeedData.SeedAsync(dbContext);
+        try
+        {
+            await SeedData.SeedAsync(dbContext);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($">>> [BleidApp] WARNING: Catalog seed encountered non-fatal error: {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($">>> [BleidApp] Inner error: {ex.InnerException.Message}");
+            }
+        }
         Console.WriteLine(">>> [BleidApp] InitializeDatabaseAsync completed successfully.");
     }
 }
