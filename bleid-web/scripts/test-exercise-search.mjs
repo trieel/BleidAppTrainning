@@ -107,7 +107,7 @@ const testCases = [
   {
     name: "Argentine slang 'serrucho' finds 'Remo con mancuerna a una mano (serrucho)'",
     query: "serrucho",
-    expectedFirst: "Remo con mancuerna a una mano (serrucho)",
+    expectedFirst: "Remo con mancuerna a una mano",
   },
   {
     name: "Argentine slang 'banco scott' finds 'Curl Scott con barra'",
@@ -117,12 +117,12 @@ const testCases = [
   {
     name: "Argentine slang 'rompecraneos' finds 'Press francés con barra W (rompecráneos)'",
     query: "rompecraneos",
-    expectedFirst: "Press francés con barra W (rompecráneos)",
+    expectedFirst: "Press francés con barra W",
   },
   {
     name: "Argentine slang 'pajaros' finds 'Vuelos posteriores (pájaros)'",
     query: "pajaros",
-    expectedFirst: "Vuelos posteriores (pájaros)",
+    expectedFirst: "Vuelos posteriores",
   },
   {
     name: "Diacritic desensitization: 'jalon' finds 'Jalón al pecho en polea'",
@@ -147,7 +147,7 @@ const testCases = [
   {
     name: "English term 'skull crusher' finds 'Press francés con barra W (rompecráneos)'",
     query: "skull crusher",
-    expectedFirst: "Press francés con barra W (rompecráneos)",
+    expectedFirst: "Press francés con barra W",
   },
   {
     name: "English term 'bulgarian' finds 'Sentadilla búlgara'",
@@ -162,7 +162,7 @@ const testCases = [
   {
     name: "English term 'ab wheel' finds 'Rueda abdominal (Ab Roller)'",
     query: "ab wheel",
-    expectedContains: "Rueda abdominal (Ab Roller)",
+    expectedContains: "Rueda abdominal",
   },
   {
     name: "Renamed machine 'peck deck' finds 'Peck Deck'",
@@ -234,7 +234,7 @@ for (const tc of testCases) {
 
 console.log("\nVerifying Translations:");
 assert.strictEqual(englishNames["Press plano con barra"], "Barbell Flat Bench Press");
-assert.strictEqual(englishNames["Remo con mancuerna a una mano (serrucho)"], "One-Arm Dumbbell Row (Saw)");
+assert.strictEqual(englishNames["Remo con mancuerna a una mano"], "One-Arm Dumbbell Row (Saw)");
 assert.strictEqual(englishNames["Peck Deck"], "Pec Deck Machine Fly");
 assert.strictEqual(englishNames["Flexiones de brazos"], "Push-ups");
 assert.strictEqual(englishNames["Camilla femoral"], "Lying Leg Curl (Hamstring Curl)");
