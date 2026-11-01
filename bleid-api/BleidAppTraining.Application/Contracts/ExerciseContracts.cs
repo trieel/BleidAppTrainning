@@ -13,6 +13,7 @@ public sealed record ExerciseResult(
     IReadOnlyCollection<string> Contraindications,
     string? ModificationTip,
     string? ImageUrl,
-    bool IsContraindicated);
+    bool IsContraindicated,
+    IReadOnlyCollection<string>? Aliases = null);
 
 public sealed record MuscleGroupResult(Guid Id, string Name, string? Icon);

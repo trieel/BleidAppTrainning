@@ -40,6 +40,7 @@ export type Exercise = {
   modificationTip: string | null;
   imageUrl: string | null;
   isContraindicated: boolean;
+  aliases?: string[];
 };
 
 export type RoutineExercise = {

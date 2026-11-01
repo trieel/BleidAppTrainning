@@ -1,10 +1,17 @@
 "use client";
 
-import { Check, Edit3, Loader2, Plus, Search, Trash2, X } from "lucide-react";
+import { Check, Edit3, Loader2, Plus, Search, Sparkles, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { addRoutineExercise, getExercises, removeRoutineExercise } from "@/lib/api";
 import { ApiError } from "@/lib/api/client";
 import { formatEquipment, formatExerciseName } from "@/lib/labels";
+import {
+  getEquipmentDisplayName,
+  getExerciseName,
+  getMuscleGroupName,
+  useLanguage,
+} from "@/lib/exercise-i18n";
+import { useExerciseSearch } from "@/lib/exercise-search";
 import type { Exercise, Routine, RoutineDay } from "@/types";
 
 export function RoutineEditor({
@@ -21,6 +28,8 @@ export function RoutineEditor({
   const [savingId, setSavingId] = useState("");
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
+
+  const { language, isEnglish } = useLanguage();
 
   async function openEditor() {
     setOpen(true);
@@ -69,25 +78,23 @@ export function RoutineEditor({
 
   const existingIds = useMemo(() => new Set(day.exercises.map((exercise) => exercise.exerciseId)), [day.exercises]);
 
+  // Búsqueda inteligente con Fuse.js, normalización de acentos y tolerancia a typos
+  const searchResults = useExerciseSearch(catalog, search, language);
+
   const available = useMemo(() => {
-    return catalog.filter((exercise) => {
-      if (existingIds.has(exercise.id)) return false;
-      if (!search.trim()) return true;
-      const term = search.toLowerCase();
-      return (
-        exercise.name.toLowerCase().includes(term) ||
-        exercise.muscleGroupName.toLowerCase().includes(term) ||
-        exercise.equipment.toLowerCase().includes(term)
-      );
-    });
-  }, [catalog, existingIds, search]);
+    return searchResults.filter((item) => !existingIds.has(item.exercise.id));
+  }, [searchResults, existingIds]);
 
   return (
     <section className="mt-6 rounded-2xl border border-border bg-card p-5 shadow-soft">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-muted-foreground">Tu rutina, tus reglas</p>
-          <h2 className="mt-1 text-lg font-bold text-foreground">Personalizá este día</h2>
+          <p className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            {isEnglish ? "Your routine, your rules" : "Tu rutina, tus reglas"}
+          </p>
+          <h2 className="mt-1 text-lg font-bold text-foreground">
+            {isEnglish ? "Customize this workout day" : "Personalizá este día"}
+          </h2>
         </div>
         {open ? (
           <button
@@ -101,7 +108,7 @@ export function RoutineEditor({
             onClick={openEditor}
             className="flex items-center gap-2 rounded-xl border border-border bg-secondary/40 px-3.5 py-2 text-xs font-bold text-primary transition hover:border-primary/40 hover:bg-secondary tactile-press"
           >
-            <Edit3 className="h-3.5 w-3.5" /> Editar ejercicios
+            <Edit3 className="h-3.5 w-3.5" /> {isEnglish ? "Edit exercises" : "Editar ejercicios"}
           </button>
         )}
       </div>
@@ -114,7 +121,9 @@ export function RoutineEditor({
             </div>
           )}
           <p className="text-xs leading-5 text-muted-foreground">
-            Los ejercicios disponibles ya están pre-filtrados para evitar tus zonas sensibles y lesiones.
+            {isEnglish
+              ? "Available movements are pre-filtered based on your joint safety limitations."
+              : "Los ejercicios disponibles ya están pre-filtrados para evitar tus zonas sensibles y lesiones."}
           </p>
 
           {/* Search box */}
@@ -124,37 +133,70 @@ export function RoutineEditor({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por ejercicio, grupo muscular o equipo..."
+              placeholder={
+                isEnglish
+                  ? "Search by exercise name, slang, English term or machine..."
+                  : "Buscar por ejercicio, término en inglés, jerga o implemento..."
+              }
               className="h-10 w-full rounded-xl border border-border bg-muted/40 pl-9 pr-4 text-xs font-medium text-foreground outline-none focus:border-primary focus:bg-background transition"
             />
           </div>
 
           <div className="mt-4 max-h-72 overflow-y-auto space-y-2 pr-1">
-            {available.map((exercise) => (
-              <div
-                key={exercise.id}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-xs transition hover:border-primary/30"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">{formatExerciseName(exercise.name)}</p>
-                  <p className="mt-0.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-                    {exercise.muscleGroupName} · {formatEquipment(exercise.equipment)}
-                  </p>
-                </div>
-                <button
-                  onClick={() => add(exercise)}
-                  disabled={Boolean(savingId)}
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground disabled:opacity-50 transition tactile-press border border-primary/20 shadow-xs"
-                  title="Agregar a este día"
+            {available.map((item) => {
+              const exercise = item.exercise;
+              const displayName = getExerciseName(exercise, language);
+              const displayMuscle = getMuscleGroupName(exercise.muscleGroupName, language);
+              const displayEquipment = isEnglish
+                ? getEquipmentDisplayName(exercise.equipment, "en")
+                : formatEquipment(exercise.equipment);
+
+              return (
+                <div
+                  key={exercise.id}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-xs transition hover:border-primary/30"
                 >
-                  {savingId === exercise.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
-                </button>
-              </div>
-            ))}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {formatExerciseName(displayName)}
+                    </p>
+                    {item.matchedAlias && (
+                      <p className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-mono font-medium text-primary">
+                        <Sparkles className="h-2.5 w-2.5" />
+                        <span>
+                          {isEnglish ? "Matched" : "Coincide"}: &ldquo;{item.matchedAlias}&rdquo;
+                        </span>
+                      </p>
+                    )}
+                    <p className="mt-0.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                      {displayMuscle} · {displayEquipment}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => add(exercise)}
+                    disabled={Boolean(savingId)}
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground disabled:opacity-50 transition tactile-press border border-primary/20 shadow-xs"
+                    title={isEnglish ? "Add to this day" : "Agregar a este día"}
+                  >
+                    {savingId === exercise.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Plus className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                </div>
+              );
+            })}
 
             {available.length === 0 && (
               <p className="rounded-xl bg-secondary/50 p-4 text-center text-xs text-muted-foreground">
-                {search.trim() ? "No encontramos ejercicios que coincidan con tu búsqueda." : "No hay más ejercicios disponibles para agregar."}
+                {search.trim()
+                  ? isEnglish
+                    ? "No exercises matched your search."
+                    : "No encontramos ejercicios que coincidan con tu búsqueda."
+                  : isEnglish
+                  ? "No more exercises available to add."
+                  : "No hay más ejercicios disponibles para agregar."}
               </p>
             )}
           </div>
@@ -168,19 +210,21 @@ export function RoutineEditor({
               key={exercise.id}
               className="flex items-center gap-2 rounded-full border border-border bg-secondary/60 py-1.5 pl-3.5 pr-1.5 text-xs text-muted-foreground shadow-xs"
             >
-              <span className="max-w-[150px] truncate font-medium text-foreground">{formatExerciseName(exercise.exerciseName)}</span>
+              <span className="max-w-[150px] truncate font-medium text-foreground">
+                {formatExerciseName(exercise.exerciseName)}
+              </span>
               <button
                 onClick={() => remove(exercise.id)}
                 disabled={Boolean(savingId)}
                 className="grid h-5 w-5 place-items-center rounded-full text-muted-foreground hover:bg-destructive/20 hover:text-destructive disabled:opacity-50 transition-colors"
-                title="Quitar ejercicio"
+                title={isEnglish ? "Remove exercise" : "Quitar ejercicio"}
               >
                 <Trash2 className="h-3 w-3" />
               </button>
             </span>
           ))}
           <span className="flex items-center gap-1.5 rounded-full border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground font-mono">
-            <Check className="h-3.5 w-3.5 text-primary" /> Día personalizado
+            <Check className="h-3.5 w-3.5 text-primary" /> {isEnglish ? "Customized day" : "Día personalizado"}
           </span>
         </div>
       )}

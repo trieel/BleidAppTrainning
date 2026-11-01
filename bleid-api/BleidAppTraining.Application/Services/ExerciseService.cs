@@ -41,7 +41,8 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
                 exercise.Contraindications,
                 exercise.ModificationTip,
                 exercise.ImageUrl,
-                IsContraindicated(exercise.Contraindications, limitations)))
+                IsContraindicated(exercise.Contraindications, limitations),
+                exercise.Aliases))
             .ToArray();
     }
 
@@ -76,7 +77,8 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
             exercise.Contraindications,
             exercise.ModificationTip,
             exercise.ImageUrl,
-            isContraindicated);
+            isContraindicated,
+            exercise.Aliases);
     }
 
     public async Task<IReadOnlyCollection<MuscleGroupResult>> GetMuscleGroupsAsync(

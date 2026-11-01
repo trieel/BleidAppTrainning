@@ -220,4 +220,24 @@ public class ExerciseServiceTests
             .FirstOrDefaultAsync(db.Exercises, e => e.Name.Contains("serrucho", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(serrucho);
     }
+
+    [Fact]
+    public async Task SeedAsync_PopulatesMultilingualAliasesForSearch()
+    {
+        using var db = TestDbContextFactory.Create(nameof(SeedAsync_PopulatesMultilingualAliasesForSearch));
+
+        await BleidAppTraining.Infrastructure.Persistence.SeedData.SeedAsync(db);
+
+        var service = new ExerciseService(db);
+        var catalog = await service.GetCatalogAsync(Guid.NewGuid(), null);
+
+        var bench = catalog.FirstOrDefault(e => e.Name.Equals("Press plano con barra", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(bench);
+        Assert.NotNull(bench.Aliases);
+        Assert.Contains("bench press", bench.Aliases);
+
+        var rdl = catalog.FirstOrDefault(e => e.Name.Contains("rumano"));
+        Assert.NotNull(rdl);
+        Assert.Contains("rdl", rdl.Aliases);
+    }
 }

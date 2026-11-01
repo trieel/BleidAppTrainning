@@ -11,6 +11,7 @@ public class Exercise
     public EquipmentType Equipment { get; set; }
     public LevelType Level { get; set; }
     public List<string> Contraindications { get; set; } = new();
+    public List<string> Aliases { get; set; } = new();
     public string? ModificationTip { get; set; }
     public string? ImageUrl { get; set; }
 

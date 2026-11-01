@@ -122,6 +122,7 @@ public static class SeedData
                 existingExercise.Equipment = definition.Equipment;
                 existingExercise.Level = definition.Level;
                 existingExercise.Contraindications = definition.Contraindications.ToList();
+                existingExercise.Aliases = definition.Aliases.ToList();
                 if (!string.IsNullOrWhiteSpace(definition.ModificationTip))
                 {
                     existingExercise.ModificationTip = definition.ModificationTip;
@@ -137,6 +138,7 @@ public static class SeedData
                 Equipment = definition.Equipment,
                 Level = definition.Level,
                 Contraindications = definition.Contraindications.ToList(),
+                Aliases = definition.Aliases.ToList(),
                 ModificationTip = definition.ModificationTip
             };
             db.Exercises.Add(exercise);
@@ -724,6 +726,173 @@ public static class SeedData
             D("Core y cardio", X("Crunch en cable"), X("Pallof press"), X("Eliptico", 4, 15, 25, 45), X("Plancha lateral")));
     }
 
+    private static readonly Dictionary<string, string[]> ExerciseAliasesMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // Pecho
+        ["Press plano con barra"] = new[] { "bench press", "barbell bench press", "press banca", "banca plana", "pecho plano", "pecho" },
+        ["Press plano con mancuernas"] = new[] { "dumbbell bench press", "db bench press", "press banca con mancuernas", "pecho plano mancuernas" },
+        ["Press inclinado con mancuernas"] = new[] { "incline dumbbell press", "incline db press", "press inclinado", "pecho alto" },
+        ["Press inclinado con mancuernas agarre neutro"] = new[] { "neutral grip incline press", "incline dumbbell press neutral grip", "press inclinado neutro" },
+        ["Press de pecho en máquina"] = new[] { "chest press machine", "machine chest press", "press maquina pecho" },
+        ["Cruces en poleas para pecho"] = new[] { "cable crossover", "cable flyes", "cruce de cables", "cruces polea" },
+        ["Flexiones de pecho (lagartijas)"] = new[] { "push ups", "pushups", "lagartijas", "flexiones de brazos" },
+        ["Aperturas con mancuernas"] = new[] { "dumbbell flyes", "db flyes", "aperturas", "aperturas de pecho" },
+        ["Press declinado con barra"] = new[] { "decline bench press", "decline barbell press", "press declinado" },
+        ["Aperturas en máquina (Pec Deck)"] = new[] { "pec deck", "peck deck", "machine fly", "contractora de pecho", "mariposa" },
+        ["Fondos en paralelas (pecho)"] = new[] { "chest dips", "dips", "fondos en paralelas", "paralelas" },
+        ["Pullover con mancuerna"] = new[] { "dumbbell pullover", "pullover", "db pullover" },
+        ["Press inclinado en máquina Smith"] = new[] { "smith machine incline press", "incline smith press", "press inclinado smith" },
+        ["Flexiones con deficit"] = new[] { "deficit pushups", "deficit push ups", "flexiones deficit" },
+
+        // Espalda
+        ["Peso muerto convencional"] = new[] { "deadlift", "conventional deadlift", "peso muerto", "pmo" },
+        ["Dominadas libres (peso corporal)"] = new[] { "pull ups", "pullups", "chin ups", "dominadas", "traccion vertical" },
+        ["Dominadas asistidas"] = new[] { "assisted pull ups", "assisted chin ups", "dominadas en maquina" },
+        ["Jalón al pecho en polea"] = new[] { "lat pulldown", "pulldown", "jalon al pecho", "dorsalera", "jalon" },
+        ["Remo sentado en cable"] = new[] { "seated cable row", "cable row", "remo sentado", "remo polea" },
+        ["Remo en polea baja con agarre estrecho (Remo Gironda)"] = new[] { "gironda row", "close grip cable row", "remo gironda" },
+        ["Remo con barra"] = new[] { "barbell row", "bent over row", "remo barra" },
+        ["Remo con mancuerna a una mano (serrucho)"] = new[] { "serrucho", "one arm dumbbell row", "single arm db row", "remo mancuerna" },
+        ["Remo con apoyo de pecho"] = new[] { "chest supported row", "machine row", "remo con apoyo" },
+        ["Jalón con brazos rectos"] = new[] { "straight arm pulldown", "straight arm lat pulldown", "jalon brazos rectos" },
+        ["Hiperextensión lumbar"] = new[] { "back extension", "hyperextensions", "hiperextensiones", "lumbares" },
+        ["Face pull en polea alta"] = new[] { "face pull", "cable face pull", "face pulls" },
+        ["Remo en barra T"] = new[] { "t bar row", "t-bar row", "remo t" },
+        ["Jalón al pecho agarre supino"] = new[] { "reverse grip lat pulldown", "underhand pulldown", "jalon supino" },
+        ["Remo en polea baja con agarre neutro"] = new[] { "neutral grip cable row", "remo neutro polea" },
+        ["Pullover en polea alta"] = new[] { "cable pullover", "overhead cable pullover", "pullover polea" },
+
+        // Cuadriceps
+        ["Sentadilla trasera"] = new[] { "back squat", "barbell squat", "sentadilla con barra", "sentadillas" },
+        ["Sentadilla en máquina Smith"] = new[] { "smith machine squat", "smith squat", "sentadilla smith" },
+        ["Prensa de piernas"] = new[] { "leg press", "prensa de piernas", "prensa" },
+        ["Prensa a 45°"] = new[] { "45 degree leg press", "incline leg press", "prensa a 45 grados" },
+        ["Prensa horizontal"] = new[] { "horizontal leg press", "seated leg press", "prensa horizontal" },
+        ["Sillón de cuadríceps (extensiones)"] = new[] { "leg extension", "leg extensions", "extension de piernas", "sillon de cuadriceps" },
+        ["Sentadilla búlgara"] = new[] { "bulgarian split squat", "bulgaras", "sentadilla bulgara" },
+        ["Hack squat"] = new[] { "hack squat", "sentadilla hack" },
+        ["Sentadilla frontal"] = new[] { "front squat", "barbell front squat", "sentadilla delantera" },
+        ["Sentadilla goblet"] = new[] { "goblet squat", "dumbbell goblet squat", "sentadilla copa" },
+        ["Subidas al cajón"] = new[] { "step ups", "box step ups", "subidas al cajon" },
+        ["Estocadas hacia atrás con mancuernas"] = new[] { "reverse lunges", "dumbbell reverse lunge", "estocadas atras", "zancadas" },
+        ["Estocadas caminando con mancuernas"] = new[] { "walking lunges", "dumbbell walking lunges", "estocadas caminando" },
+        ["Sentadilla sissy"] = new[] { "sissy squat", "sentadilla sissy" },
+        ["Contracción de cuadríceps"] = new[] { "quad contraction", "contraccion de cuadriceps" },
+        ["Sentadilla con cinturón (Belt Squat)"] = new[] { "belt squat", "sentadilla con cinturon" },
+        ["Sentadilla cosaca"] = new[] { "cossack squat", "sentadilla cosaca" },
+
+        // Gluteos
+        ["Hip thrust con barra"] = new[] { "hip thrust", "barbell hip thrust", "puente de gluteo con barra", "empuje de cadera" },
+        ["Hip thrust en máquina"] = new[] { "machine hip thrust", "hip thrust machine", "hip thrust en maquina" },
+        ["Puente de glúteos"] = new[] { "glute bridge", "puente de gluteos", "puente de gluteo" },
+        ["Patada de glúteos en polea"] = new[] { "cable glute kickback", "glute kickback", "patada de burro", "patada de gluteo" },
+        ["Abducción de cadera en máquina"] = new[] { "seated hip abduction", "hip abductor machine", "abductores" },
+        ["Swing con kettlebell"] = new[] { "kettlebell swing", "kb swing", "swing" },
+        ["Puente de glúteo a una pierna"] = new[] { "single leg glute bridge", "puente a una pierna" },
+        ["Hiperextensiones a 45° para glúteo"] = new[] { "45 degree glute hyperextension", "hiperextension gluteo" },
+        ["Peso muerto sumo con mancuerna"] = new[] { "dumbbell sumo deadlift", "sumo deadlift db" },
+        ["Step up cruzado"] = new[] { "crossover step up", "step up cruzado" },
+
+        // Isquiotibiales
+        ["Peso muerto rumano"] = new[] { "romanian deadlift", "rdl", "barbell rdl", "peso muerto rumano" },
+        ["Peso muerto rumano con mancuernas"] = new[] { "dumbbell rdl", "db romanian deadlift", "rdl mancuernas" },
+        ["Camilla femoral acostado"] = new[] { "lying leg curl", "lying hamstring curl", "camilla femoral", "curl femoral acostado" },
+        ["Sillón de isquiotibiales (femoral sentado)"] = new[] { "seated leg curl", "seated hamstring curl", "sillon de isquiotibiales", "curl femoral sentado" },
+        ["Curl nórdico"] = new[] { "nordic curl", "nordic hamstring curl", "curl nordico" },
+        ["Buenos días"] = new[] { "good mornings", "good morning", "buenos dias" },
+        ["Curl femoral con pelota"] = new[] { "swiss ball leg curl", "curl con pelota" },
+        ["Peso muerto rumano a una pierna"] = new[] { "single leg rdl", "peso muerto a una pierna" },
+        ["Deslizamiento de isquiotibiales"] = new[] { "hamstring slide", "deslizamiento isquios" },
+        ["Curl femoral de pie en máquina"] = new[] { "standing leg curl", "curl femoral parado" },
+
+        // Pantorrillas
+        ["Gemelos de pie en máquina"] = new[] { "standing calf raise", "calf raises", "gemelos de pie", "pantorrillas de pie" },
+        ["Gemelos sentado en máquina (sóleo)"] = new[] { "seated calf raise", "soleus raise", "soleo", "gemelos sentado" },
+        ["Elevacion de talones en prensa"] = new[] { "leg press calf raise", "talones en prensa" },
+        ["Elevacion de talones a una pierna"] = new[] { "single leg calf raise", "talones a una pierna" },
+
+        // Hombros
+        ["Press militar con barra"] = new[] { "overhead press", "ohp", "barbell military press", "press militar" },
+        ["Press de hombros con mancuernas sentado"] = new[] { "seated dumbbell shoulder press", "db shoulder press", "press de hombros" },
+        ["Press militar sentado con mancuernas"] = new[] { "seated dumbbell overhead press", "seated db ohp", "press militar sentado" },
+        ["Vuelos laterales con mancuernas"] = new[] { "dumbbell lateral raise", "lateral raises", "vuelos laterales", "elevaciones laterales" },
+        ["Vuelos laterales en polea"] = new[] { "cable lateral raise", "side lateral cable", "vuelos en polea" },
+        ["Vuelos posteriores (pájaros)"] = new[] { "rear delt fly", "rear delt flyes", "pajaros", "vuelos posteriores" },
+        ["Remo al mentón"] = new[] { "upright row", "barbell upright row", "remo al menton" },
+        ["Press Arnold"] = new[] { "arnold press", "dumbbell arnold press", "press arnold" },
+        ["Elevacion frontal"] = new[] { "front raise", "dumbbell front raise", "elevacion frontal" },
+        ["Press militar en máquina Smith"] = new[] { "smith machine shoulder press", "smith ohp", "press hombros smith" },
+        ["Elevaciones laterales en banco inclinado"] = new[] { "incline lateral raise", "vuelos en banco inclinado" },
+        ["Y-Raises en banco inclinado"] = new[] { "y raises", "y-raises", "elevaciones en y" },
+        ["Face pull con rotación externa"] = new[] { "face pull external rotation", "face pull con rotacion externa" },
+
+        // Biceps
+        ["Curl inclinado con mancuernas"] = new[] { "incline dumbbell curl", "incline curl", "curl inclinado", "biceps cabeza larga" },
+        ["Curl Scott en banco (predicador)"] = new[] { "preacher curl", "scott curl", "banco scott", "curl predicador" },
+        ["Curl de bíceps con barra"] = new[] { "barbell curl", "barbell bicep curl", "curl de biceps con barra", "curl barra" },
+        ["Curl de bíceps con mancuernas"] = new[] { "dumbbell curl", "db bicep curl", "curl de biceps con mancuernas", "curl mancuernas" },
+        ["Curl martillo"] = new[] { "hammer curl", "dumbbell hammer curl", "curl martillo" },
+        ["Curl martillo en polea con soga"] = new[] { "cable hammer curl", "rope hammer curl", "curl martillo polea con soga" },
+        ["Curl de bíceps en cable"] = new[] { "cable bicep curl", "cable curl", "curl en polea" },
+        ["Curl de concentración"] = new[] { "concentration curl", "curl concentrado" },
+        ["Curl araña en banco inclinado"] = new[] { "spider curl", "spider bicep curl", "curl arana" },
+        ["Curl zottman"] = new[] { "zottman curl", "curl zottman" },
+        ["Curl 21 con barra"] = new[] { "21s curl", "barbell 21 curl", "curl 21" },
+
+        // Triceps
+        ["Press francés con barra (rompecráneos)"] = new[] { "skull crusher", "skullcrusher", "lying triceps extension", "french press", "rompecraneos" },
+        ["Press francés en banco plano con barra W"] = new[] { "ez bar skull crusher", "press frances barra w" },
+        ["Extensiones de tríceps en polea alta"] = new[] { "tricep pushdown", "cable tricep extension", "extension triceps polea" },
+        ["Extensiones de tríceps en polea con soga"] = new[] { "rope pushdown", "tricep rope pushdown", "extension triceps soga" },
+        ["Extensiones tras nuca en polea con soga"] = new[] { "overhead cable tricep extension", "overhead rope extension", "triceps tras nuca" },
+        ["Press cerrado"] = new[] { "close grip bench press", "close grip press", "press cerrado" },
+        ["Extension de triceps sobre la cabeza"] = new[] { "overhead tricep extension", "copa triceps" },
+        ["Fondos asistidos"] = new[] { "assisted dips", "fondos asistidos" },
+        ["Patada de triceps"] = new[] { "tricep kickbacks", "patada de triceps" },
+        ["Extension francesa con mancuerna sentado"] = new[] { "seated overhead dumbbell extension", "extension francesa sentado" },
+        ["Fondos en paralelas para triceps"] = new[] { "parallel bar tricep dips", "fondos en paralelas triceps" },
+
+        // Core
+        ["Plancha frontal"] = new[] { "plank", "abdominal plank", "plancha frontal", "plancha" },
+        ["Plancha lateral"] = new[] { "side plank", "plancha lateral" },
+        ["Abdominales crunch en colchoneta"] = new[] { "crunches", "ab crunch", "abdominales crunch" },
+        ["Crunch en cable"] = new[] { "cable crunch", "kneeling cable crunch", "crunch polea" },
+        ["Rueda abdominal (Ab wheel)"] = new[] { "ab wheel", "ab roller", "rueda abdominal" },
+        ["Elevación de rodillas colgado en barra"] = new[] { "hanging knee raise", "elevacion de rodillas colgado" },
+        ["Elevacion de piernas en paralelas"] = new[] { "captain chair leg raise", "elevacion piernas paralelas" },
+        ["Dead bug"] = new[] { "dead bug", "bicho muerto" },
+        ["Bird dog"] = new[] { "bird dog", "perro pajaro" },
+        ["Pallof press"] = new[] { "pallof press", "press pallof" },
+        ["Russian twist con peso"] = new[] { "russian twist", "giros rusos" },
+        ["Hollow body hold"] = new[] { "hollow body", "hollow body hold" },
+
+        // Cardio
+        ["Caminata en cinta"] = new[] { "treadmill walking", "incline treadmill", "cinta caminadora" },
+        ["Bicicleta fija"] = new[] { "stationary bike", "cycling", "bici fija" },
+        ["Eliptico"] = new[] { "elliptical", "eliptico", "eliptica" },
+        ["Bicicleta de aire (Air Bike / Assault Bike)"] = new[] { "air bike", "assault bike", "echo bike", "bici de aire" },
+        ["Remo ergometro"] = new[] { "rower", "rowing machine", "concept 2", "remo ergometro" },
+        ["Escaladora"] = new[] { "stairmaster", "stair climber", "escaladora" },
+        ["Cuerda de saltar"] = new[] { "jump rope", "skipping rope", "cuerda de saltar", "soga saltar" },
+        ["Burpees"] = new[] { "burpees", "burpee" },
+        ["Mountain climbers"] = new[] { "mountain climbers", "escaladores" }
+    };
+
+    private static string[] ResolveAliases(string name, string[]? explicitAliases)
+    {
+        if (explicitAliases != null && explicitAliases.Length > 0)
+            return explicitAliases;
+
+        if (ExerciseAliasesMap.TryGetValue(name, out var aliases))
+            return aliases;
+
+        var unaccented = RemoveDiacritics(name);
+        if (ExerciseAliasesMap.TryGetValue(unaccented, out aliases))
+            return aliases;
+
+        return Array.Empty<string>();
+    }
+
     private static ExerciseSeed E(
         string name,
         string muscleGroup,
@@ -731,8 +900,9 @@ public static class SeedData
         LevelType level,
         string description,
         string[]? contraindications = null,
-        string? modificationTip = null) =>
-        new(name, muscleGroup, equipment, level, description, contraindications ?? Array.Empty<string>(), modificationTip);
+        string? modificationTip = null,
+        string[]? aliases = null) =>
+        new(name, muscleGroup, equipment, level, description, contraindications ?? Array.Empty<string>(), modificationTip, ResolveAliases(name, aliases));
 
     private static RoutineSeed R(string name, GoalType goal, LevelType level, int daysPerWeek, params DaySeed[] days) =>
         new(name, goal, level, daysPerWeek, days);
@@ -751,7 +921,8 @@ public static class SeedData
         LevelType Level,
         string Description,
         string[] Contraindications,
-        string? ModificationTip);
+        string? ModificationTip,
+        string[] Aliases);
 
     private sealed record TipSeed(LimitationType Type, string Title, string Content, TipType TipType);
 
