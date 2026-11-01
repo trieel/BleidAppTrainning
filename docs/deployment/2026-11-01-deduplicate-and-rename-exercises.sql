@@ -53,9 +53,28 @@ BEGIN
         SELECT id FROM public.exercises
         WHERE name = p_canonical_name AND id != v_canonical_id
     LOOP
-        UPDATE public.workout_sets
-        SET exercise_id = v_canonical_id
-        WHERE exercise_id = v_dup_id;
+        -- Reasignar workout_sets evitando colisiones en (session_id, exercise_id, set_number)
+        WITH session_max AS (
+            SELECT session_id, COALESCE(MAX(set_number), 0) AS max_set
+            FROM public.workout_sets
+            WHERE exercise_id = v_canonical_id
+            GROUP BY session_id
+        ),
+        numbered_dup_sets AS (
+            SELECT ws.id,
+                   COALESCE(sm.max_set, 0) + ROW_NUMBER() OVER (
+                       PARTITION BY ws.session_id 
+                       ORDER BY ws.set_number, ws.created_at
+                   ) AS new_set_number
+            FROM public.workout_sets ws
+            LEFT JOIN session_max sm ON sm.session_id = ws.session_id
+            WHERE ws.exercise_id = v_dup_id
+        )
+        UPDATE public.workout_sets ws
+        SET exercise_id = v_canonical_id,
+            set_number = nds.new_set_number
+        FROM numbered_dup_sets nds
+        WHERE ws.id = nds.id;
 
         FOR v_routine_day_id IN
             SELECT routine_day_id FROM public.routine_exercises WHERE exercise_id = v_dup_id
@@ -83,9 +102,28 @@ BEGIN
             SELECT id FROM public.exercises
             WHERE name = v_dup_name AND id != v_canonical_id
         LOOP
-            UPDATE public.workout_sets
-            SET exercise_id = v_canonical_id
-            WHERE exercise_id = v_dup_id;
+            -- Reasignar workout_sets evitando colisiones en (session_id, exercise_id, set_number)
+        WITH session_max AS (
+            SELECT session_id, COALESCE(MAX(set_number), 0) AS max_set
+            FROM public.workout_sets
+            WHERE exercise_id = v_canonical_id
+            GROUP BY session_id
+        ),
+        numbered_dup_sets AS (
+            SELECT ws.id,
+                   COALESCE(sm.max_set, 0) + ROW_NUMBER() OVER (
+                       PARTITION BY ws.session_id 
+                       ORDER BY ws.set_number, ws.created_at
+                   ) AS new_set_number
+            FROM public.workout_sets ws
+            LEFT JOIN session_max sm ON sm.session_id = ws.session_id
+            WHERE ws.exercise_id = v_dup_id
+        )
+        UPDATE public.workout_sets ws
+        SET exercise_id = v_canonical_id,
+            set_number = nds.new_set_number
+        FROM numbered_dup_sets nds
+        WHERE ws.id = nds.id;
 
             FOR v_routine_day_id IN
                 SELECT routine_day_id FROM public.routine_exercises WHERE exercise_id = v_dup_id
