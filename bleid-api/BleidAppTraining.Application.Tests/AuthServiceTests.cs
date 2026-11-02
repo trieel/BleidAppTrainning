@@ -81,4 +81,42 @@ public class AuthServiceTests
 
         Assert.Contains("30, 45 o 60", ex.Message);
     }
+
+    private class TestTokenService : BleidAppTraining.Application.Interfaces.IJwtTokenService
+    {
+        public string CreateToken(User user, IEnumerable<string> roles) => "valid-jwt-token-" + user.Id;
+    }
+
+    [Fact]
+    public async Task RefreshTokenAsync_WhenUserExists_ReturnsNewTokenAndProfile()
+    {
+        using var db = TestDbContextFactory.Create(nameof(RefreshTokenAsync_WhenUserExists_ReturnsNewTokenAndProfile));
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Email = "atleta.persistente@bleid.app",
+            UserName = "atleta.persistente@bleid.app",
+            FullName = "Atleta Persistente",
+            DaysPerWeek = 4
+        };
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var service = new AuthService(null!, null!, new TestTokenService(), db);
+        var authResult = await service.RefreshTokenAsync(userId);
+
+        Assert.NotNull(authResult);
+        Assert.Equal("valid-jwt-token-" + userId, authResult.Token);
+        Assert.Equal("Atleta Persistente", authResult.User.FullName);
+    }
+
+    [Fact]
+    public async Task RefreshTokenAsync_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
+    {
+        using var db = TestDbContextFactory.Create(nameof(RefreshTokenAsync_WhenUserDoesNotExist_ThrowsKeyNotFoundException));
+        var service = new AuthService(null!, null!, new TestTokenService(), db);
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => service.RefreshTokenAsync(Guid.NewGuid()));
+    }
 }

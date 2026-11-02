@@ -29,6 +29,13 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(await authService.LoginAsync(command, cancellationToken));
     }
 
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AuthResult>> Refresh(CancellationToken cancellationToken)
+    {
+        var userId = Guid.Parse(User.FindFirst("userId")!.Value);
+        return Ok(await authService.RefreshTokenAsync(userId, cancellationToken));
+    }
+
     [HttpGet("me")]
     public async Task<ActionResult<UserProfileResult>> Me(CancellationToken cancellationToken)
     {

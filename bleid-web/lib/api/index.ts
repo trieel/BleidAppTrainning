@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api/client";
+import { cachedFetch, invalidateCache, setCachedData } from "@/lib/api/cache";
 import type {
   BodyWeightEntry,
   Exercise,
@@ -9,43 +10,59 @@ import type {
   VolumeProgress,
 } from "@/types";
 
-export function getActiveRoutine() {
-  return apiFetch<Routine>("/api/routines/my");
+export function getActiveRoutine(forceRefresh = false) {
+  return cachedFetch<Routine>(
+    "active_routine",
+    () => apiFetch<Routine>("/api/routines/my"),
+    { ttlMs: 120_000, staleWhileRevalidate: true, forceRefresh },
+  );
 }
 
-export function addRoutineDay(routineId: string, name?: string) {
-  return apiFetch<Routine>(`/api/routines/${routineId}/days`, {
+export async function addRoutineDay(routineId: string, name?: string) {
+  const updated = await apiFetch<Routine>(`/api/routines/${routineId}/days`, {
     method: "POST",
     body: JSON.stringify({ name }),
   });
+  setCachedData("active_routine", updated, 120_000);
+  return updated;
 }
 
-export function deleteRoutineDay(routineId: string, dayId: string) {
-  return apiFetch<Routine>(`/api/routines/${routineId}/days/${dayId}`, {
+export async function deleteRoutineDay(routineId: string, dayId: string) {
+  const updated = await apiFetch<Routine>(`/api/routines/${routineId}/days/${dayId}`, {
     method: "DELETE",
   });
+  setCachedData("active_routine", updated, 120_000);
+  return updated;
 }
 
-export function addRoutineExercise(routineId: string, dayId: string, input: {
-  exerciseId: string;
-  sets: number;
-  repsMin: number;
-  repsMax: number;
-  restSeconds: number;
-}) {
-  return apiFetch<Routine>(`/api/routines/${routineId}/day/${dayId}/exercises`, {
+export async function addRoutineExercise(
+  routineId: string,
+  dayId: string,
+  input: {
+    exerciseId: string;
+    sets: number;
+    repsMin: number;
+    repsMax: number;
+    restSeconds: number;
+  },
+) {
+  const updated = await apiFetch<Routine>(`/api/routines/${routineId}/day/${dayId}/exercises`, {
     method: "POST",
     body: JSON.stringify(input),
   });
+  setCachedData("active_routine", updated, 120_000);
+  return updated;
 }
 
-export function removeRoutineExercise(routineId: string, dayId: string, exerciseId: string) {
-  return apiFetch<Routine>(`/api/routines/${routineId}/day/${dayId}/exercises/${exerciseId}`, {
+export async function removeRoutineExercise(routineId: string, dayId: string, exerciseId: string) {
+  const updated = await apiFetch<Routine>(`/api/routines/${routineId}/day/${dayId}/exercises/${exerciseId}`, {
     method: "DELETE",
   });
+  setCachedData("active_routine", updated, 120_000);
+  return updated;
 }
 
-export function completeOnboarding(input: {
+export async function completeOnboarding(input: {
   goal: string;
   level: string;
   daysPerWeek: number;
@@ -54,31 +71,52 @@ export function completeOnboarding(input: {
   sex: string;
   limitations: { type: string; severity: string }[];
 }) {
+  invalidateCache();
   return apiFetch<{ user: unknown; routine: Routine }>("/api/onboarding", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
-export function getExercises(muscleGroupId?: string) {
+export function getExercises(muscleGroupId?: string, forceRefresh = false) {
   const query = muscleGroupId ? `?muscleGroupId=${muscleGroupId}` : "";
-  return apiFetch<Exercise[]>(`/api/exercises${query}`);
+  return cachedFetch<Exercise[]>(
+    `exercises_${muscleGroupId ?? "all"}`,
+    () => apiFetch<Exercise[]>(`/api/exercises${query}`),
+    { ttlMs: 600_000, staleWhileRevalidate: true, forceRefresh }, // 10 min
+  );
 }
 
 export function getExerciseById(exerciseId: string) {
-  return apiFetch<Exercise>(`/api/exercises/${exerciseId}`);
+  return cachedFetch<Exercise>(
+    `exercise_${exerciseId}`,
+    () => apiFetch<Exercise>(`/api/exercises/${exerciseId}`),
+    { ttlMs: 600_000, staleWhileRevalidate: true },
+  );
 }
 
-export function getVolumeProgress() {
-  return apiFetch<VolumeProgress[]>("/api/progress/volume");
+export function getVolumeProgress(forceRefresh = false) {
+  return cachedFetch<VolumeProgress[]>(
+    "progress_volume",
+    () => apiFetch<VolumeProgress[]>("/api/progress/volume"),
+    { ttlMs: 60_000, staleWhileRevalidate: true, forceRefresh },
+  );
 }
 
-export function getStreak() {
-  return apiFetch<Streak>("/api/progress/streak");
+export function getStreak(forceRefresh = false) {
+  return cachedFetch<Streak>(
+    "progress_streak",
+    () => apiFetch<Streak>("/api/progress/streak"),
+    { ttlMs: 60_000, staleWhileRevalidate: true, forceRefresh },
+  );
 }
 
-export function getExerciseProgress(exerciseId: string) {
-  return apiFetch<ExerciseProgress[]>(`/api/progress/exercise/${exerciseId}`);
+export function getExerciseProgress(exerciseId: string, forceRefresh = false) {
+  return cachedFetch<ExerciseProgress[]>(
+    `progress_exercise_${exerciseId}`,
+    () => apiFetch<ExerciseProgress[]>(`/api/progress/exercise/${exerciseId}`),
+    { ttlMs: 60_000, staleWhileRevalidate: true, forceRefresh },
+  );
 }
 
 export function getLatestExercisePerformance(exerciseId: string, excludeSessionId?: string) {
@@ -86,23 +124,35 @@ export function getLatestExercisePerformance(exerciseId: string, excludeSessionI
   return apiFetch<ExerciseLatestPerformance | null>(`/api/progress/exercise/${exerciseId}/latest${query}`);
 }
 
-export function getBodyWeightHistory(days = 90) {
-  return apiFetch<BodyWeightEntry[]>(`/api/progress/bodyweight?days=${days}`);
+export function getBodyWeightHistory(days = 90, forceRefresh = false) {
+  return cachedFetch<BodyWeightEntry[]>(
+    `bodyweight_history_${days}`,
+    () => apiFetch<BodyWeightEntry[]>(`/api/progress/bodyweight?days=${days}`),
+    { ttlMs: 60_000, staleWhileRevalidate: true, forceRefresh },
+  );
 }
 
-export function getLatestBodyWeight() {
-  return apiFetch<BodyWeightEntry | null>("/api/progress/bodyweight/latest");
+export function getLatestBodyWeight(forceRefresh = false) {
+  return cachedFetch<BodyWeightEntry | null>(
+    "bodyweight_latest",
+    () => apiFetch<BodyWeightEntry | null>("/api/progress/bodyweight/latest"),
+    { ttlMs: 60_000, staleWhileRevalidate: true, forceRefresh },
+  );
 }
 
-export function logBodyWeight(input: { weightKg: number; date?: string; notes?: string }) {
-  return apiFetch<BodyWeightEntry>("/api/progress/bodyweight", {
+export async function logBodyWeight(input: { weightKg: number; date?: string; notes?: string }) {
+  const entry = await apiFetch<BodyWeightEntry>("/api/progress/bodyweight", {
     method: "POST",
     body: JSON.stringify(input),
   });
+  invalidateCache("bodyweight_");
+  setCachedData("bodyweight_latest", entry, 60_000);
+  return entry;
 }
 
-export function deleteBodyWeight(id: string) {
-  return apiFetch<void>(`/api/progress/bodyweight/${id}`, {
+export async function deleteBodyWeight(id: string) {
+  await apiFetch<void>(`/api/progress/bodyweight/${id}`, {
     method: "DELETE",
   });
+  invalidateCache("bodyweight_");
 }

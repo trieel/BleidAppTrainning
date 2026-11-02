@@ -13,6 +13,7 @@ public class WorkoutSessionConfiguration : IEntityTypeConfiguration<WorkoutSessi
         builder.Property(session => session.StartedAt).HasDefaultValueSql("now()");
         builder.Property(session => session.Notes).HasMaxLength(2000);
         builder.HasIndex(session => new { session.UserId, session.StartedAt });
+        builder.HasIndex(session => new { session.UserId, session.FinishedAt });
         builder.HasOne(session => session.User)
             .WithMany(user => user.WorkoutSessions)
             .HasForeignKey(session => session.UserId)
@@ -33,6 +34,7 @@ public class WorkoutSetConfiguration : IEntityTypeConfiguration<WorkoutSet>
         builder.Property(set => set.WeightKg).HasPrecision(8, 2);
         builder.Property(set => set.CreatedAt).HasDefaultValueSql("now()");
         builder.HasIndex(set => new { set.SessionId, set.ExerciseId, set.SetNumber }).IsUnique();
+        builder.HasIndex(set => new { set.ExerciseId, set.Completed });
         builder.HasOne(set => set.Session)
             .WithMany(session => session.Sets)
             .HasForeignKey(set => set.SessionId)

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, CalendarDays, ChevronRight, Dumbbell, History as HistoryIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getHistory } from "@/lib/api/workout";
+import { getCachedDataSync } from "@/lib/api/cache";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import type { WorkoutSession } from "@/types";
 
@@ -12,8 +13,8 @@ import type { WorkoutSession } from "@/types";
  * Rediseñada para máxima compacidad en iPhone 13 (tarjetas de ~80px de alto).
  */
 export default function HistoryPage() {
-  const [sessions, setSessions] = useState<WorkoutSession[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [sessions, setSessions] = useState<WorkoutSession[]>(() => getCachedDataSync("history_1_20") ?? []);
+  const [loading, setLoading] = useState(() => !Boolean(getCachedDataSync("history_1_20")));
 
   useEffect(() => {
     getHistory()

@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { getExercises } from "@/lib/api";
+import { getCachedDataSync } from "@/lib/api/cache";
 import { ExerciseModal } from "@/components/features/exercise-modal";
 import { formatContraindications, formatEquipment, formatExerciseName, levelLabels } from "@/lib/labels";
 import {
@@ -37,8 +38,8 @@ const POPULAR_SUGGESTIONS = [
 ];
 
 export default function ExercisesPage() {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [exercises, setExercises] = useState<Exercise[]>(() => getCachedDataSync("exercises_all") ?? []);
+  const [loading, setLoading] = useState(() => !Boolean(getCachedDataSync("exercises_all")));
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");

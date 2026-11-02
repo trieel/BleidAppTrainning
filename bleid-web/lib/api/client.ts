@@ -1,4 +1,4 @@
-import { clearToken, getToken } from "@/lib/auth";
+import { clearToken, getToken, isTokenExpiringSoon, setToken } from "@/lib/auth";
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000").replace(/\/$/, "");
 
@@ -12,20 +12,83 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(path: string, options: RequestInit = {}) {
-  const token = getToken();
-  const headers = new Headers(options.headers);
-  headers.set("Content-Type", "application/json");
-  if (token) headers.set("Authorization", `Bearer ${token}`);
-  if (typeof window !== "undefined") {
-    headers.set("X-Timezone-Offset", String(-new Date().getTimezoneOffset()));
+let refreshPromise: Promise<string | null> | null = null;
+
+async function refreshAccessToken(): Promise<string | null> {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    const currentToken = getToken();
+    if (!currentToken) return null;
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${currentToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = (await response.json()) as { token: string };
+        if (data?.token) {
+          setToken(data.token);
+          return data.token;
+        }
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  let token = getToken();
+
+  // Si el token está próximo a expirar y no estamos en auth, renovar silenciosamente
+  if (
+    token &&
+    !path.startsWith("/api/auth/login") &&
+    !path.startsWith("/api/auth/register") &&
+    !path.startsWith("/api/auth/refresh") &&
+    isTokenExpiringSoon(7)
+  ) {
+    refreshAccessToken().then((newToken) => {
+      if (newToken) token = newToken;
+    });
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const buildHeaders = (authToken: string | null) => {
+    const headers = new Headers(options.headers);
+    headers.set("Content-Type", "application/json");
+    if (authToken) headers.set("Authorization", `Bearer ${authToken}`);
+    if (typeof window !== "undefined") {
+      headers.set("X-Timezone-Offset", String(-new Date().getTimezoneOffset()));
+    }
+    return headers;
+  };
+
+  let response = await fetch(`${API_URL}${path}`, {
     ...options,
-    headers,
-    cache: "no-store",
+    headers: buildHeaders(token),
   });
+
+  // Si da 401 e teníamos token, intentar refrescar y reintentar una vez
+  if (response.status === 401 && token && !path.startsWith("/api/auth/refresh")) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      response = await fetch(`${API_URL}${path}`, {
+        ...options,
+        headers: buildHeaders(newToken),
+      });
+    }
+  }
 
   if (response.status === 401) {
     clearToken();
@@ -37,6 +100,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}) {
       window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
     }
   }
+
   if (!response.ok) {
     const body = await response.json().catch(() => null);
     let errorMessage = body?.detail;

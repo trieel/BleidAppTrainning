@@ -592,6 +592,9 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                     b.HasIndex("RoutineDayId")
                         .HasDatabaseName("ix_workout_sessions_routine_day_id");
 
+                    b.HasIndex("UserId", "FinishedAt")
+                        .HasDatabaseName("ix_workout_sessions_user_id_finished_at");
+
                     b.HasIndex("UserId", "StartedAt")
                         .HasDatabaseName("ix_workout_sessions_user_id_started_at");
 
@@ -640,8 +643,8 @@ namespace BleidAppTraining.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_workout_sets");
 
-                    b.HasIndex("ExerciseId")
-                        .HasDatabaseName("ix_workout_sets_exercise_id");
+                    b.HasIndex("ExerciseId", "Completed")
+                        .HasDatabaseName("ix_workout_sets_exercise_id_completed");
 
                     b.HasIndex("SessionId", "ExerciseId", "SetNumber")
                         .IsUnique()

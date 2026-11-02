@@ -180,6 +180,7 @@ public class WorkoutService(IApplicationDbContext db) : IWorkoutService
 
         var sessions = await db.WorkoutSessions
             .AsNoTracking()
+            .AsSplitQuery()
             .Where(session => session.UserId == userId)
             .Include(session => session.RoutineDay)
             .Include(session => session.Sets)
@@ -199,6 +200,7 @@ public class WorkoutService(IApplicationDbContext db) : IWorkoutService
     {
         var session = await db.WorkoutSessions
             .AsNoTracking()
+            .AsSplitQuery()
             .Where(item => item.Id == sessionId && item.UserId == userId)
             .Include(item => item.RoutineDay)
             .Include(item => item.Sets)

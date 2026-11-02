@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IOSInstallModal } from "@/components/pwa/install-prompt";
 import { getMe, updateProfile } from "@/lib/api/auth";
+import { getCachedDataSync } from "@/lib/api/cache";
 import { ApiError } from "@/lib/api/client";
 import { clearToken } from "@/lib/auth";
 import { goalLabels, goalShortLabels, levelLabels, limitationLabels, severityLabels } from "@/lib/labels";
@@ -30,7 +31,7 @@ const ALL_LIMITATIONS: LimitationType[] = ["Knee", "Lumbar", "Shoulder", "Wrist"
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(() => getCachedDataSync("auth_me") ?? null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ message: string; isError: boolean } | null>(null);

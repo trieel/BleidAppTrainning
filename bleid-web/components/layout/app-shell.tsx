@@ -8,6 +8,8 @@ import { AuthGuard } from "@/components/auth/auth-guard";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { getActiveSession } from "@/lib/api/workout";
+import { getCachedDataSync } from "@/lib/api/cache";
+import type { WorkoutSession } from "@/types";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -21,7 +23,10 @@ const navigation = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [hasActiveWorkout, setHasActiveWorkout] = useState(false);
+  const [hasActiveWorkout, setHasActiveWorkout] = useState(() => {
+    const cached = getCachedDataSync<WorkoutSession>("active_session");
+    return Boolean(cached?.id && !cached.finishedAt);
+  });
 
   useEffect(() => {
     let isMounted = true;
