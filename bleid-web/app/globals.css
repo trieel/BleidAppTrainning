@@ -55,10 +55,13 @@
   html {
     background: hsl(var(--background));
     color-scheme: light;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-background text-foreground antialiased font-sans;
+    min-height: 100dvh;
+    overflow-x: hidden;
   }
 
   ::selection {
