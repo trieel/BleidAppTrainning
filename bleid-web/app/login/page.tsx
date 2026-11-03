@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { ArrowRight, Loader2, LockKeyhole, Mail } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { BrandMark } from "@/components/ui/brand-mark";
-import { setToken } from "@/lib/auth";
+import { isAuthenticated, setToken } from "@/lib/auth";
 import { login } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
 
@@ -16,6 +16,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.replace("/dashboard");
+    }
+  }, [router]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -85,6 +85,21 @@ public class AuthServiceTests
     private class TestTokenService : BleidAppTraining.Application.Interfaces.IJwtTokenService
     {
         public string CreateToken(User user, IEnumerable<string> roles) => "valid-jwt-token-" + user.Id;
+
+        public System.Security.Claims.ClaimsPrincipal? GetPrincipalFromToken(string token, bool allowGracePeriod = true)
+        {
+            if (token.StartsWith("valid-jwt-token-"))
+            {
+                var id = token["valid-jwt-token-".Length..];
+                var claims = new[]
+                {
+                    new System.Security.Claims.Claim("userId", id),
+                    new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, id)
+                };
+                return new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity(claims, "Test"));
+            }
+            return null;
+        }
     }
 
     [Fact]
@@ -118,5 +133,41 @@ public class AuthServiceTests
         var service = new AuthService(null!, null!, new TestTokenService(), db);
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() => service.RefreshTokenAsync(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public async Task RefreshTokenWithGracePeriodAsync_WhenTokenIsValid_ReturnsNewToken()
+    {
+        using var db = TestDbContextFactory.Create(nameof(RefreshTokenWithGracePeriodAsync_WhenTokenIsValid_ReturnsNewToken));
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Email = "atleta.gracia@bleid.app",
+            UserName = "atleta.gracia@bleid.app",
+            FullName = "Atleta Gracia",
+            DaysPerWeek = 4
+        };
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var service = new AuthService(null!, null!, new TestTokenService(), db);
+        var authResult = await service.RefreshTokenWithGracePeriodAsync("valid-jwt-token-" + userId);
+
+        Assert.NotNull(authResult);
+        Assert.Equal("valid-jwt-token-" + userId, authResult.Token);
+        Assert.Equal("Atleta Gracia", authResult.User.FullName);
+    }
+
+    [Fact]
+    public async Task RefreshTokenWithGracePeriodAsync_WhenTokenIsInvalid_ThrowsServiceValidationException()
+    {
+        using var db = TestDbContextFactory.Create(nameof(RefreshTokenWithGracePeriodAsync_WhenTokenIsInvalid_ThrowsServiceValidationException));
+        var service = new AuthService(null!, null!, new TestTokenService(), db);
+
+        var ex = await Assert.ThrowsAsync<ServiceValidationException>(() => 
+            service.RefreshTokenWithGracePeriodAsync("invalid-tampered-token"));
+        Assert.Contains("grace period", ex.Message);
+    }
     }
 }
