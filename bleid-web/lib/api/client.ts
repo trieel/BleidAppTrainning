@@ -1,4 +1,4 @@
-import { clearToken, getToken, isTokenExpiringSoon, setToken } from "@/lib/auth";
+import { clearToken, getToken, isTokenExpiringSoon, parseJwtPayload, setToken } from "@/lib/auth";
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000").replace(/\/$/, "");
 
@@ -22,13 +22,19 @@ async function refreshAccessToken(): Promise<string | null> {
     if (!currentToken) return null;
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
+
       const response = await fetch(`${API_URL}/api/auth/refresh`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${currentToken}`,
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = (await response.json()) as { token: string };
@@ -51,17 +57,26 @@ async function refreshAccessToken(): Promise<string | null> {
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   let token = getToken();
 
-  // Si el token está próximo a expirar y no estamos en auth, renovar silenciosamente
-  if (
-    token &&
-    !path.startsWith("/api/auth/login") &&
-    !path.startsWith("/api/auth/register") &&
-    !path.startsWith("/api/auth/refresh") &&
-    isTokenExpiringSoon(7)
-  ) {
-    refreshAccessToken().then((newToken) => {
-      if (newToken) token = newToken;
-    });
+  // Si tenemos token y no es ruta de autenticación básica
+  const isAuthRoute =
+    path.startsWith("/api/auth/login") ||
+    path.startsWith("/api/auth/register") ||
+    path.startsWith("/api/auth/refresh");
+
+  if (token && !isAuthRoute) {
+    const payload = parseJwtPayload(token);
+    const isExpired = payload?.exp ? Date.now() >= payload.exp * 1000 : false;
+
+    // Si ya expiró (en periodo de gracia), renovarlo antes de hacer la petición
+    if (isExpired) {
+      const refreshed = await refreshAccessToken();
+      if (refreshed) {
+        token = refreshed;
+      }
+    } else if (isTokenExpiringSoon(7)) {
+      // Si está próximo a vencer en 7 días, renovar en segundo plano sin bloquear
+      refreshAccessToken().catch(() => null);
+    }
   }
 
   const buildHeaders = (authToken: string | null) => {
@@ -74,19 +89,44 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     return headers;
   };
 
-  let response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: buildHeaders(token),
-  });
+  let response: Response;
+  try {
+    const controller = new AbortController();
+    const timeoutMs = options.signal ? 60000 : 45000;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  // Si da 401 e teníamos token, intentar refrescar y reintentar una vez
-  if (response.status === 401 && token && !path.startsWith("/api/auth/refresh")) {
+    response = await fetch(`${API_URL}${path}`, {
+      ...options,
+      signal: options.signal ?? controller.signal,
+      headers: buildHeaders(token),
+    });
+
+    clearTimeout(timeoutId);
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new ApiError(
+        "El servidor está tardando en responder. Si el servicio estaba en reposo, puede demorar unos segundos.",
+        504,
+      );
+    }
+    throw new ApiError(
+      "Error de conexión con el servidor. Verifica tu conexión a internet.",
+      0,
+    );
+  }
+
+  // Si da 401 y teníamos token, intentar refrescar una vez y reintentar
+  if (response.status === 401 && token && !isAuthRoute) {
     const newToken = await refreshAccessToken();
     if (newToken) {
-      response = await fetch(`${API_URL}${path}`, {
-        ...options,
-        headers: buildHeaders(newToken),
-      });
+      try {
+        response = await fetch(`${API_URL}${path}`, {
+          ...options,
+          headers: buildHeaders(newToken),
+        });
+      } catch {
+        // En caso de corte en el reintento, mantener la respuesta original 401
+      }
     }
   }
 

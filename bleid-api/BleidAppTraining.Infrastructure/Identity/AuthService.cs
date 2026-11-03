@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using BleidAppTraining.Application.Common;
 using BleidAppTraining.Application.Contracts;
 using BleidAppTraining.Application.Interfaces;
@@ -94,6 +96,24 @@ public class AuthService(
             : new[] { RoleNames.User };
         var profile = await GetProfileAsync(user.Id, cancellationToken);
         return new AuthResult(tokenService.CreateToken(user, roles), profile);
+    }
+
+    public async Task<AuthResult> RefreshTokenWithGracePeriodAsync(
+        string token,
+        CancellationToken cancellationToken = default)
+    {
+        var principal = tokenService.GetPrincipalFromToken(token, allowGracePeriod: true);
+        if (principal is null)
+            throw new ServiceValidationException("Token is invalid or expired beyond the grace period.");
+
+        var userIdClaim = principal.FindFirst("userId")?.Value 
+            ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            throw new ServiceValidationException("Token does not contain a valid user identifier.");
+
+        return await RefreshTokenAsync(userId, cancellationToken);
     }
 
     public async Task<UserProfileResult> GetProfileAsync(

@@ -42,4 +42,51 @@ public class JwtTokenService(IConfiguration configuration) : IJwtTokenService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public ClaimsPrincipal? GetPrincipalFromToken(string token, bool allowGracePeriod = true)
+    {
+        var secret = configuration["Jwt:Secret"]
+            ?? throw new InvalidOperationException("Jwt:Secret is not configured.");
+        var issuer = configuration["Jwt:Issuer"] ?? "BleidAppTraining";
+        var audience = configuration["Jwt:Audience"] ?? "BleidAppTraining";
+
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+            ValidateIssuer = true,
+            ValidIssuer = issuer,
+            ValidateAudience = true,
+            ValidAudience = audience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1),
+            LifetimeValidator = (notBefore, expires, securityToken, validationParameters) =>
+            {
+                if (!expires.HasValue) return false;
+                if (!allowGracePeriod)
+                {
+                    return DateTime.UtcNow < expires.Value.Add(TimeSpan.FromMinutes(1));
+                }
+                var maxGrace = TimeSpan.FromDays(30);
+                return DateTime.UtcNow < expires.Value.Add(maxGrace);
+            }
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    }
 }
