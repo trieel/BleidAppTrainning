@@ -8,6 +8,8 @@ import { AuthGuard } from "@/components/auth/auth-guard";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { getActiveSession } from "@/lib/api/workout";
+import { getCachedDataSync } from "@/lib/api/cache";
+import type { WorkoutSession } from "@/types";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -21,7 +23,10 @@ const navigation = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [hasActiveWorkout, setHasActiveWorkout] = useState(false);
+  const [hasActiveWorkout, setHasActiveWorkout] = useState(() => {
+    const cached = getCachedDataSync<WorkoutSession>("active_session");
+    return Boolean(cached?.id && !cached.finishedAt);
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -102,10 +107,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </aside>
 
           {/* Main Workspace with Notch & Island Protection */}
-          <main className="min-h-screen pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(6rem,calc(5rem+env(safe-area-inset-bottom)))] lg:pt-0 lg:pb-10">{children}</main>
+          <main className="min-h-screen pt-[max(0.75rem,env(safe-area-inset-top))] pb-[calc(7.5rem+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-10">{children}</main>
 
           {/* Mobile Monolithic Inverted Navigation Dock */}
-          <nav className="fixed bottom-4 inset-x-3 z-50 lg:hidden pointer-events-none">
+          <nav
+            className="fixed inset-x-3 z-50 lg:hidden pointer-events-none"
+            style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
+          >
             <div className="mx-auto flex max-w-md items-center justify-around rounded-2xl border border-stone-800/80 bg-[#16120E] px-2 py-2 shadow-dock backdrop-blur-2xl pointer-events-auto">
               {navigation.map((item) => {
                 const Icon = item.icon;

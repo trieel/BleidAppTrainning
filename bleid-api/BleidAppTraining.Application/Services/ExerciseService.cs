@@ -2,10 +2,11 @@ using BleidAppTraining.Application.Contracts;
 using BleidAppTraining.Application.Interfaces;
 using BleidAppTraining.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BleidAppTraining.Application.Services;
 
-public class ExerciseService(IApplicationDbContext db) : IExerciseService
+public class ExerciseService(IApplicationDbContext db, Microsoft.Extensions.Caching.Memory.IMemoryCache? cache = null) : IExerciseService
 {
     public async Task<IReadOnlyCollection<ExerciseResult>> GetCatalogAsync(
         Guid userId,
@@ -22,7 +23,29 @@ public class ExerciseService(IApplicationDbContext db) : IExerciseService
         if (muscleGroupId.HasValue)
             query = query.Where(exercise => exercise.MuscleGroupId == muscleGroupId.Value);
 
-        var exercises = await query.OrderBy(exercise => exercise.Name).ToListAsync(cancellationToken);
+        List<BleidAppTraining.Domain.Entities.Exercise> exercises;
+
+        if (cache is not null)
+        {
+            var cachedAll = await cache.GetOrCreateAsync("catalog_all_exercises", async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                return await db.Exercises
+                    .AsNoTracking()
+                    .Include(exercise => exercise.MuscleGroup)
+                    .OrderBy(exercise => exercise.Name)
+                    .ToListAsync(cancellationToken);
+            });
+
+            var source = cachedAll ?? [];
+            exercises = muscleGroupId.HasValue
+                ? source.Where(exercise => exercise.MuscleGroupId == muscleGroupId.Value).ToList()
+                : source.ToList();
+        }
+        else
+        {
+            exercises = await query.OrderBy(exercise => exercise.Name).ToListAsync(cancellationToken);
+        }
 
         if (!includeContraindicated)
         {

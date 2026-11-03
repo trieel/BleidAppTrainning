@@ -5,6 +5,7 @@ import { ArrowRight, Loader2, LockKeyhole, Mail } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthLayout } from "@/components/auth/auth-layout";
+import { BrandMark } from "@/components/ui/brand-mark";
 import { setToken } from "@/lib/auth";
 import { login } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
@@ -33,53 +34,75 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-      <div className="mx-auto max-w-md">
-        <p className="text-xs font-mono font-bold uppercase tracking-[0.22em] text-primary">Acceso de Atleta</p>
-        <h1 className="display-face mt-3 text-4xl font-black tracking-tight text-foreground sm:text-5xl">Volvé a tu ritmo.</h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">Entrá para revisar tu split de hoy y continuar tu sobrecarga progresiva.</p>
-        
+      <div className="w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+        {/* Brand Logo */}
+        <div className="mb-8 flex justify-center">
+          <BrandMark />
+        </div>
+
+        {/* Title */}
+        <div className="text-center">
+          <h1 className="display-face text-3xl font-black tracking-tight text-foreground sm:text-4xl">
+            Iniciar sesión
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Ingresá tus credenciales para acceder a tus entrenamientos
+          </p>
+        </div>
+
+        {/* Form */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <label className="block text-sm font-semibold text-foreground">
             Email
             <span className="relative mt-2 block">
               <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
-                className="h-12 w-full rounded-xl border border-border bg-muted/40 pl-11 pr-4 text-sm text-foreground outline-none transition focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20"
+                className="h-12 w-full rounded-xl border border-border bg-card pl-11 pr-4 text-base sm:text-sm text-foreground outline-none transition focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 shadow-soft"
                 type="email"
                 required
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="atleta@ejemplo.com"
+                autoComplete="email"
+                inputMode="email"
               />
             </span>
           </label>
-          
+
           <label className="block text-sm font-semibold text-foreground">
             Contraseña
             <span className="relative mt-2 block">
               <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
-                className="h-12 w-full rounded-xl border border-border bg-muted/40 pl-11 pr-4 text-sm text-foreground outline-none transition focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20"
+                className="h-12 w-full rounded-xl border border-border bg-card pl-11 pr-4 text-base sm:text-sm text-foreground outline-none transition focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 shadow-soft"
                 type="password"
                 required
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="Mínimo 8 caracteres"
+                placeholder="••••••••"
+                autoComplete="current-password"
               />
             </span>
           </label>
-          
+
           {error && (
-            <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive font-medium">
+            <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive font-medium animate-in fade-in duration-200">
               {error}
             </p>
           )}
 
           <button
+            type="submit"
             disabled={loading}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-primary-foreground shadow-soft hover:shadow-soft-hover transition-all duration-150 tactile-press disabled:cursor-not-allowed disabled:opacity-60 border border-primary/25"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Entrar a mi espacio <ArrowRight className="h-4 w-4" /></>}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                Entrar a mi espacio <ArrowRight className="h-4 w-4" />
+              </>
+            )}
           </button>
         </form>
 

@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { getActiveRoutine, getLatestBodyWeight, getStreak, getVolumeProgress } from "@/lib/api";
 import { getMe } from "@/lib/api/auth";
 import { getActiveSession, getHistory } from "@/lib/api/workout";
+import { getCachedDataSync } from "@/lib/api/cache";
 import { ApiError } from "@/lib/api/client";
 import { formatExerciseName, goalShortLabels, limitationLabels } from "@/lib/labels";
 import { LoadingScreen } from "@/components/ui/loading-screen";
@@ -29,15 +30,15 @@ import type { BodyWeightEntry, Routine, Streak, UserProfile, VolumeProgress, Wor
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [routine, setRoutine] = useState<Routine | null>(null);
-  const [streak, setStreak] = useState<Streak | null>(null);
-  const [volume, setVolume] = useState<VolumeProgress[]>([]);
-  const [bodyWeight, setBodyWeight] = useState<BodyWeightEntry | null>(null);
-  const [activeSession, setActiveSession] = useState<WorkoutSession | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(() => getCachedDataSync("auth_me") ?? null);
+  const [routine, setRoutine] = useState<Routine | null>(() => getCachedDataSync("active_routine") ?? null);
+  const [streak, setStreak] = useState<Streak | null>(() => getCachedDataSync("progress_streak") ?? null);
+  const [volume, setVolume] = useState<VolumeProgress[]>(() => getCachedDataSync("progress_volume") ?? []);
+  const [bodyWeight, setBodyWeight] = useState<BodyWeightEntry | null>(() => getCachedDataSync("bodyweight_latest") ?? null);
+  const [activeSession, setActiveSession] = useState<WorkoutSession | null>(() => getCachedDataSync("active_session") ?? null);
   const [lastFinishedSession, setLastFinishedSession] = useState<WorkoutSession | null>(null);
   const [selectedDayOverride, setSelectedDayOverride] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !Boolean(getCachedDataSync("auth_me") && getCachedDataSync("active_routine")));
   const [error, setError] = useState("");
 
   useEffect(() => {

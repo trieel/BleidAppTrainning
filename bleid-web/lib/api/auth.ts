@@ -1,7 +1,9 @@
 import { apiFetch } from "@/lib/api/client";
+import { cachedFetch, invalidateCache } from "@/lib/api/cache";
 import type { AuthResult, UserProfile } from "@/types";
 
 export function register(input: { email: string; password: string; fullName: string }) {
+  invalidateCache();
   return apiFetch<AuthResult>("/api/auth/register", {
     method: "POST",
     body: JSON.stringify(input),
@@ -9,17 +11,27 @@ export function register(input: { email: string; password: string; fullName: str
 }
 
 export function login(input: { email: string; password: string }) {
+  invalidateCache();
   return apiFetch<AuthResult>("/api/auth/login", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
-export function getMe() {
-  return apiFetch<UserProfile>("/api/auth/me");
+export function refreshSession() {
+  return apiFetch<AuthResult>("/api/auth/refresh", {
+    method: "POST",
+  });
 }
 
-export function updateProfile(input: {
+export function getMe() {
+  return cachedFetch<UserProfile>("auth_me", () => apiFetch<UserProfile>("/api/auth/me"), {
+    ttlMs: 300_000, // 5 min
+    staleWhileRevalidate: true,
+  });
+}
+
+export async function updateProfile(input: {
   fullName?: string;
   age?: number | null;
   sex?: string | null;
@@ -29,8 +41,10 @@ export function updateProfile(input: {
   sessionMin?: number | null;
   limitations?: { type: string; severity: string }[];
 }) {
-  return apiFetch<UserProfile>("/api/auth/profile", {
+  const updated = await apiFetch<UserProfile>("/api/auth/profile", {
     method: "PUT",
     body: JSON.stringify(input),
   });
+  invalidateCache("auth_me");
+  return updated;
 }

@@ -43,10 +43,33 @@ builder.Services.AddControllers(options =>
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterCommandValidator>();
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
+builder.Services.AddMemoryCache();
 
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+    {
+        var remoteIp = context.Connection.RemoteIpAddress?.ToString();
+        if (string.IsNullOrEmpty(remoteIp) && context.Request.Headers.TryGetValue("X-Forwarded-For", out var forwarded))
+        {
+            remoteIp = forwarded.ToString().Split(',')[0].Trim();
+        }
+        var partitionKey = !string.IsNullOrEmpty(remoteIp) ? remoteIp : context.TraceIdentifier;
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey,
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 180,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            });
+    });
     options.AddPolicy(AuthRateLimitPolicy, context =>
     {
         var remoteIp = context.Connection.RemoteIpAddress?.ToString();
@@ -151,6 +174,7 @@ catch (Exception ex)
     throw;
 }
 
+app.UseResponseCompression();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseForwardedHeaders();
 

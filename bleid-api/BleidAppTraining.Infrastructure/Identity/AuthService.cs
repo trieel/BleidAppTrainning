@@ -45,7 +45,9 @@ public class AuthService(
         if (!roleResult.Succeeded)
             throw new InvalidOperationException("The user was created but its default role could not be assigned.");
 
-        var roles = await userManager.GetRolesAsync(user);
+        var roles = userManager is not null
+            ? await userManager.GetRolesAsync(user)
+            : new[] { RoleNames.User };
         return new AuthResult(tokenService.CreateToken(user, roles), ResultMappings.User(user));
     }
 
@@ -70,7 +72,26 @@ public class AuthService(
         if (!result.Succeeded)
             throw new ServiceValidationException("Invalid email or password.");
 
-        var roles = await userManager.GetRolesAsync(user);
+        var roles = userManager is not null
+            ? await userManager.GetRolesAsync(user)
+            : new[] { RoleNames.User };
+        var profile = await GetProfileAsync(user.Id, cancellationToken);
+        return new AuthResult(tokenService.CreateToken(user, roles), profile);
+    }
+
+    public async Task<AuthResult> RefreshTokenAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = userManager is not null
+            ? await userManager.FindByIdAsync(userId.ToString())
+            : await db.Users.SingleOrDefaultAsync(item => item.Id == userId, cancellationToken);
+        if (user is null)
+            throw new KeyNotFoundException("The authenticated user was not found.");
+
+        var roles = userManager is not null
+            ? await userManager.GetRolesAsync(user)
+            : new[] { RoleNames.User };
         var profile = await GetProfileAsync(user.Id, cancellationToken);
         return new AuthResult(tokenService.CreateToken(user, roles), profile);
     }
